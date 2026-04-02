@@ -83,4 +83,10 @@ describe('POST /api/enquiry', () => {
       expect.objectContaining({ utm_source: 'instagram', utm_medium: 'social' })
     )
   })
+
+  it('returns 400 when enquiry_type is invalid', async () => {
+    const req = makeRequest({ email: 'test@example.com', enquiry_type: 'unknown' })
+    const res = await POST(req)
+    expect(res.status).toBe(400)
+  })
 })

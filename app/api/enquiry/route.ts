@@ -24,10 +24,8 @@ export async function POST(request: NextRequest) {
 
   const parsed = enquirySchema.safeParse(body)
   if (!parsed.success) {
-    const issues = parsed.error.issues ?? parsed.error.errors
-    const message = issues?.[0]?.message ?? parsed.error.message ?? 'Validation error'
     return NextResponse.json(
-      { error: message },
+      { error: parsed.error.issues[0]?.message ?? 'Validation error' },
       { status: 400 }
     )
   }
