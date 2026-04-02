@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Hydro</title>
+  <title>H2 Revive</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;600&family=Raleway:wght@200;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;700&family=Cormorant+Garamond:wght@300;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
     :root {
-      --deep:    #020b18;
-      --mid:     #041525;
-      --cyan:    #00d4ff;
-      --teal:    #007ea7;
-      --foam:    #e0f7ff;
+      --deep:   #010e18;
+      --teal:   #00b4c8;
+      --cyan:   #00d4e8;
+      --light:  #e6f9fc;
+      --mid:    #007a92;
     }
 
     html, body {
@@ -29,79 +29,119 @@
       display: block;
     }
 
-    /* grain overlay */
+    /* grain */
     .grain {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       pointer-events: none;
-      opacity: .045;
+      opacity: .04;
       background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
       background-size: 180px 180px;
     }
 
+    .scan-line {
+      position: fixed; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+      opacity: 0;
+      animation: scan 7s 2.5s ease-in-out infinite;
+    }
+
+    /* ── hero ── */
     .hero {
-      position: fixed;
-      inset: 0;
+      position: fixed; inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 1.2rem;
+      gap: 0;
       pointer-events: none;
     }
 
-    .hero h1 {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: clamp(5rem, 18vw, 14rem);
-      letter-spacing: .18em;
-      color: transparent;
-      -webkit-text-stroke: 1px rgba(0,212,255,.55);
-      text-transform: uppercase;
+    /* logo mark */
+    .logo-wrap {
+      animation: fadeUp 1.6s cubic-bezier(.16,1,.3,1) both;
+      display: flex;
+      align-items: flex-start;
+      gap: .12em;
+      margin-bottom: .3em;
+    }
+
+    .logo-h {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 700;
+      font-size: clamp(4.5rem, 14vw, 10rem);
       line-height: 1;
-      animation: fadeUp 1.8s cubic-bezier(.16,1,.3,1) both;
-      position: relative;
+      background: linear-gradient(160deg, var(--cyan) 0%, var(--teal) 60%, var(--mid) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: -.02em;
     }
 
-    .hero h1::after {
-      content: attr(data-text);
-      position: absolute;
-      inset: 0;
-      color: var(--foam);
-      -webkit-text-stroke: 0;
-      clip-path: inset(60% 0 0 0);
-      opacity: .18;
-      filter: blur(1px);
+    .logo-2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+      font-size: clamp(1.6rem, 5vw, 3.6rem);
+      line-height: 1;
+      margin-top: .18em;
+      background: linear-gradient(160deg, var(--cyan), var(--teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .hero p {
-      font-family: 'Raleway', sans-serif;
+    .logo-revive {
+      font-family: 'Montserrat', sans-serif;
       font-weight: 200;
-      font-size: clamp(.65rem, 1.5vw, .85rem);
-      letter-spacing: .55em;
+      font-size: clamp(2rem, 6.5vw, 4.8rem);
+      letter-spacing: .32em;
       text-transform: uppercase;
-      color: var(--teal);
-      animation: fadeUp 1.8s .3s cubic-bezier(.16,1,.3,1) both;
+      background: linear-gradient(90deg, var(--teal), var(--cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeUp 1.6s .2s cubic-bezier(.16,1,.3,1) both;
+      margin-top: -.1em;
     }
 
-    .scan-line {
+    .tagline {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 200;
+      font-size: clamp(.55rem, 1.3vw, .78rem);
+      letter-spacing: .5em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-top: 1.6em;
+      animation: fadeUp 1.6s .45s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    /* glow disc behind logo */
+    .glow {
       position: fixed;
-      left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-      opacity: 0;
-      animation: scan 6s 2s ease-in-out infinite;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -55%);
+      width: min(60vw, 480px);
+      height: min(60vw, 480px);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,180,200,.13) 0%, transparent 70%);
+      pointer-events: none;
+      animation: pulse 4s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: .7; transform: translate(-50%,-55%) scale(1); }
+      50%       { opacity: 1;  transform: translate(-50%,-55%) scale(1.08); }
     }
 
     @keyframes scan {
       0%   { top: -2px; opacity: 0; }
-      5%   { opacity: .4; }
-      95%  { opacity: .1; }
+      5%   { opacity: .35; }
+      95%  { opacity: .08; }
       100% { top: 100%; opacity: 0; }
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
+      from { opacity: 0; transform: translateY(24px); }
       to   { opacity: 1; transform: translateY(0); }
     }
   </style>
@@ -111,33 +151,32 @@
 <canvas id="c"></canvas>
 <div class="grain"></div>
 <div class="scan-line"></div>
+<div class="glow"></div>
 
 <div class="hero">
-  <h1 data-text="Hydro">Hydro</h1>
-  <p>pure &nbsp;·&nbsp; fluid &nbsp;·&nbsp; motion</p>
+  <div class="logo-wrap">
+    <span class="logo-h">H</span><span class="logo-2">2</span>
+  </div>
+  <div class="logo-revive">Revive</div>
+  <p class="tagline">pure hydration &nbsp;·&nbsp; renewed energy</p>
 </div>
 
 <script>
 (function () {
   const canvas = document.getElementById('c');
   const ctx    = canvas.getContext('2d');
-
-  let W, H, particles = [], cols, rows;
-  const CELL   = 14;
-  const COUNT  = 1400;
+  let W, H, particles = [];
+  const COUNT  = 1600;
   const TWO_PI = Math.PI * 2;
 
-  // ── resize ─────────────────────────────────────────────
   function resize() {
     W = canvas.width  = window.innerWidth;
     H = canvas.height = window.innerHeight;
-    cols = Math.ceil(W / CELL) + 1;
-    rows = Math.ceil(H / CELL) + 1;
   }
 
-  // ── Perlin-like noise (simple smooth noise) ─────────────
+  // simple smooth noise
   const perm = new Uint8Array(512);
-  (function seedPerm() {
+  (function () {
     const p = [...Array(256)].map((_, i) => i);
     for (let i = 255; i > 0; i--) {
       const j = Math.random() * (i + 1) | 0;
@@ -146,105 +185,83 @@
     for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
   })();
 
-  function fade(t)  { return t * t * t * (t * (t * 6 - 15) + 10); }
+  function fade(t)    { return t * t * t * (t * (t * 6 - 15) + 10); }
   function lerp(a,b,t){ return a + t * (b - a); }
-  function grad(h, x, y) {
-    const g = h & 3;
-    const u = g < 2 ? x : y;
-    const v = g < 2 ? y : x;
-    return ((h & 1) ? -u : u) + ((h & 2) ? -v : v);
-  }
-  function noise(x, y) {
-    const X = Math.floor(x) & 255, Y = Math.floor(y) & 255;
-    x -= Math.floor(x); y -= Math.floor(y);
-    const u = fade(x), v = fade(y);
-    const a  = perm[X]   + Y, aa = perm[a],   ab = perm[a+1];
-    const b  = perm[X+1] + Y, ba = perm[b],   bb = perm[b+1];
+  function grad(h,x,y){ const u=h<2?x:y,v=h<2?y:x; return((h&1)?-u:u)+((h&2)?-v:v); }
+  function noise(x,y) {
+    const X=Math.floor(x)&255, Y=Math.floor(y)&255;
+    x-=Math.floor(x); y-=Math.floor(y);
+    const u=fade(x),v=fade(y);
+    const a=perm[X]+Y, aa=perm[a], ab=perm[a+1];
+    const b=perm[X+1]+Y, ba=perm[b], bb=perm[b+1];
     return lerp(
-      lerp(grad(perm[aa], x,   y  ), grad(perm[ba], x-1, y  ), u),
-      lerp(grad(perm[ab], x,   y-1), grad(perm[bb], x-1, y-1), u), v
+      lerp(grad(perm[aa]&3,x,y),   grad(perm[ba]&3,x-1,y),   u),
+      lerp(grad(perm[ab]&3,x,y-1), grad(perm[bb]&3,x-1,y-1), u), v
     );
   }
 
-  // ── particles ───────────────────────────────────────────
-  function mkParticle() {
-    return {
-      x:    Math.random() * W,
-      y:    Math.random() * H,
-      vx:   0, vy: 0,
-      life: Math.random(),
-      spd:  .4 + Math.random() * .9,
-      size: .35 + Math.random() * .9,
-      hue:  185 + Math.random() * 40,   // cyan-teal band
+  function mkParticle(edge) {
+    const p = {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: 0, vy: 0,
+      life: Math.random() * .8,
+      spd: .5 + Math.random() * 1.1,
+      size: .3 + Math.random() * .85,
+      // H2 Revive teal/cyan band: hsl 185–200
+      hue: 185 + Math.random() * 18,
       alpha: 0
     };
+    if (edge) {
+      if (Math.random() < .5) { p.x = Math.random() < .5 ? -2 : W + 2; p.y = Math.random() * H; }
+      else                    { p.y = Math.random() < .5 ? -2 : H + 2; p.x = Math.random() * W; }
+      p.life = 0;
+    }
+    return p;
   }
 
   function initParticles() {
-    particles = Array.from({ length: COUNT }, mkParticle);
+    particles = Array.from({ length: COUNT }, () => mkParticle(false));
   }
 
-  // ── flow field angle ─────────────────────────────────────
   let t = 0;
   function flowAngle(x, y) {
-    const scale = .0025;
-    const n = noise(x * scale + t * .12, y * scale + t * .08);
-    // Two-layer curl for water-like swirl
-    const n2 = noise(x * scale * 2 - t * .07, y * scale * 2 + t * .05);
-    return (n + n2 * .5) * TWO_PI * 2.4;
+    const s = .0022;
+    return (noise(x*s + t*.1, y*s + t*.07) + noise(x*s*2 - t*.06, y*s*2 + t*.04) * .5) * TWO_PI * 2.6;
   }
 
-  // ── draw ─────────────────────────────────────────────────
   function draw() {
-    // Fade trail — very dark wash preserves streaks
-    ctx.fillStyle = 'rgba(2, 11, 24, 0.18)';
+    ctx.fillStyle = 'rgba(1,14,24,0.17)';
     ctx.fillRect(0, 0, W, H);
-
-    t += .003;
+    t += .0025;
 
     for (let i = 0; i < particles.length; i++) {
       const p = particles[i];
-      const angle = flowAngle(p.x, p.y);
+      const a = flowAngle(p.x, p.y);
+      p.vx = p.vx * .86 + Math.cos(a) * p.spd * .14;
+      p.vy = p.vy * .86 + Math.sin(a) * p.spd * .14;
+      p.x += p.vx; p.y += p.vy;
+      p.life += .0035;
 
-      p.vx = p.vx * .88 + Math.cos(angle) * p.spd * .12;
-      p.vy = p.vy * .88 + Math.sin(angle) * p.spd * .12;
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life += .004;
+      p.alpha = p.life < .1 ? p.life / .1
+              : p.life > .85 ? (1 - p.life) / .15
+              : 1;
 
-      // fade in/out
-      if (p.life < .1)       p.alpha = p.life / .1;
-      else if (p.life > .85) p.alpha = (1 - p.life) / .15;
-      else                   p.alpha = 1;
-
-      // depth-based brightness
-      const bright = 55 + p.alpha * 45;
-
+      const bright = 55 + p.alpha * 40;
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, TWO_PI);
-      ctx.fillStyle = `hsla(${p.hue}, 90%, ${bright}%, ${p.alpha * .7})`;
+      ctx.fillStyle = `hsla(${p.hue},88%,${bright}%,${p.alpha * .65})`;
       ctx.fill();
 
-      // respawn
-      if (p.life > 1 || p.x < 0 || p.x > W || p.y < 0 || p.y > H) {
-        particles[i] = mkParticle();
-        // bias spawn to edges so particles drift through scene
-        const edge = Math.random() < .5;
-        if (edge) {
-          particles[i].x = Math.random() < .5 ? 0 : W;
-          particles[i].y = Math.random() * H;
-        } else {
-          particles[i].x = Math.random() * W;
-          particles[i].y = Math.random() < .5 ? 0 : H;
-        }
-        particles[i].life = 0;
+      if (p.life > 1 || p.x < -10 || p.x > W+10 || p.y < -10 || p.y > H+10) {
+        particles[i] = mkParticle(true);
       }
     }
 
-    // Subtle radial vignette
-    const vg = ctx.createRadialGradient(W*.5, H*.5, H*.2, W*.5, H*.5, H*.9);
+    // vignette
+    const vg = ctx.createRadialGradient(W*.5,H*.5,H*.15,W*.5,H*.5,H*.95);
     vg.addColorStop(0, 'rgba(0,0,0,0)');
-    vg.addColorStop(1, 'rgba(2,11,24,0.55)');
+    vg.addColorStop(1, 'rgba(1,14,24,.6)');
     ctx.fillStyle = vg;
     ctx.fillRect(0, 0, W, H);
 
@@ -254,7 +271,7 @@
   resize();
   initParticles();
   draw();
-  window.addEventListener('resize', () => { resize(); });
+  window.addEventListener('resize', resize);
 })();
 </script>
 </body>
