@@ -1,0 +1,29 @@
+import { NextRequest, NextResponse } from 'next/server'
+
+// Phase 1: all non-API, non-static traffic goes to root (waitlist)
+// Remove entries from LIVE_ROUTES as each page ships
+const LIVE_ROUTES = new Set(['/'])
+
+export function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  // Always pass through: API routes, static files, Next.js internals, admin
+  if (
+    pathname.startsWith('/api/') ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/admin') ||
+    pathname.includes('.')  // static files (favicon.ico, logo.svg, etc.)
+  ) {
+    return NextResponse.next()
+  }
+
+  if (!LIVE_ROUTES.has(pathname)) {
+    return NextResponse.redirect(new URL('/', request.url))
+  }
+
+  return NextResponse.next()
+}
+
+export const config = {
+  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
+}
