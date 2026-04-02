@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(vercel --version)",
+      "Bash(bash \"C:/Users/david.mcaughtrie/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh\" --project-dir \"C:/Users/david.mcaughtrie/OneDrive - Cyncly/Documents/Hydro\")",
+      "Bash(claude mcp:*)",
+      "Bash(git -C \"c:/Users/david.mcaughtrie/OneDrive - Cyncly/Documents/Hydro\" log --oneline -5)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --yes --no-git)",
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --yes --no-git --skip-install)",
+      "Bash(npx create-next-app@latest --version)",
+      "Bash(npx create-next-app@14 . --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --yes --no-git)",
+      "Bash(mkdir -p \"c:/Users/david.mcaughtrie/OneDrive - Cyncly/Documents/h2revive-temp\")",
+      "Read(//c/Users/david.mcaughtrie/OneDrive - Cyncly/Documents/**)",
+      "Bash(npx create-next-app@14 h2revive-temp --typescript --tailwind --eslint --app --src-dir=false --import-alias=\"@/*\" --yes --no-git)",
+      "Bash(npx create-next-app@14 h2revive-temp2 --typescript --tailwind --eslint --app --no-git)",
+      "Bash(node -e ':*)"
+    ]
+  }
+}
