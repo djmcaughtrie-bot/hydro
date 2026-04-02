@@ -5,23 +5,29 @@ import { NextRequest, NextResponse } from 'next/server'
 const LIVE_ROUTES = new Set(['/'])
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl
+  try {
+    const { pathname } = request.nextUrl
 
-  // Always pass through: API routes, static files, Next.js internals, admin
-  if (
-    pathname.startsWith('/api/') ||
-    pathname.startsWith('/_next/') ||
-    pathname.startsWith('/admin') ||
-    pathname.includes('.')  // static files (favicon.ico, logo.svg, etc.)
-  ) {
+    // Always pass through: API routes, static files, Next.js internals, admin
+    if (
+      pathname.startsWith('/api/') ||
+      pathname.startsWith('/_next/') ||
+      pathname.startsWith('/admin') ||
+      pathname.includes('.')  // static files (favicon.ico, logo.svg, etc.)
+    ) {
+      return NextResponse.next()
+    }
+
+    if (!LIVE_ROUTES.has(pathname)) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
+
+    return NextResponse.next()
+  } catch {
     return NextResponse.next()
   }
-
-  if (!LIVE_ROUTES.has(pathname)) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  return NextResponse.next()
 }
 
 export const config = {
