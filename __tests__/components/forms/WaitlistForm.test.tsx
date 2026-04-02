@@ -45,6 +45,13 @@ describe('WaitlistForm', () => {
       '/api/enquiry',
       expect.objectContaining({ method: 'POST' })
     )
+    // Verify the request body contains required fields
+    const body = JSON.parse(mockFetch.mock.calls[0][1].body)
+    expect(body).toMatchObject({
+      enquiry_type: 'waitlist',
+      source_page: '/start',
+      email: 'sarah@example.com',
+    })
   })
 
   it('shows error message when API call fails', async () => {
