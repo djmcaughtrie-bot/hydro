@@ -1,7 +1,5 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 interface LeadNotificationParams {
   name?: string | null
   email: string
@@ -14,6 +12,7 @@ export async function sendLeadNotification(params: LeadNotificationParams) {
   const to = process.env.ADMIN_NOTIFICATION_EMAIL
   if (!to) return { data: null, error: new Error('ADMIN_NOTIFICATION_EMAIL not set') }
 
+  const resend = new Resend(process.env.RESEND_API_KEY)
   return resend.emails.send({
     from: process.env.RESEND_FROM_EMAIL ?? 'hello@h2revive.co.uk',
     to,

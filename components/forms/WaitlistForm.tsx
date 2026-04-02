@@ -10,10 +10,7 @@ import { cn } from '@/lib/cn'
 
 const schema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
-  persona: z.preprocess(
-    (val) => (val == null || val === '' ? undefined : val),
-    z.enum(['sarah', 'marcus', 'elena']).optional()
-  ),
+  persona: z.enum(['sarah', 'marcus', 'elena']).optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -21,7 +18,7 @@ type FormData = z.infer<typeof schema>
 const personas = [
   { value: 'sarah', label: 'I want more energy and mental clarity' },
   { value: 'marcus', label: 'I train hard and want to recover better' },
-  { value: 'elena', label: "I'm investing in longevity" },
+  { value: 'elena', label: "I'm investing in longevity" }, // apostrophe is safe in JS string, not JSX
 ] as const
 
 export function WaitlistForm() {
@@ -63,9 +60,9 @@ export function WaitlistForm() {
   if (submitted) {
     return (
       <div className="text-center">
-        <p className="font-display text-2xl text-teal">You're on the list.</p>
+        <p className="font-display text-2xl text-teal">You&apos;re on the list.</p>
         <p className="mt-2 font-sans text-sm text-ink-light">
-          We'll be in touch when H2 Revive launches in the UK.
+          We&apos;ll be in touch when H2 Revive launches in the UK.
         </p>
       </div>
     )
