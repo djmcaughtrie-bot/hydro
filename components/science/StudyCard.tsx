@@ -44,7 +44,7 @@ export function StudyCard({ study }: StudyCardProps) {
       </p>
 
       {/* Key finding callout */}
-      {study.key_finding && (
+      {study.key_finding !== null && (
         <blockquote className="mb-3 border-l-2 border-teal pl-3 font-sans text-xs italic text-ink-mid">
           {study.key_finding}
         </blockquote>
