@@ -32,6 +32,7 @@ vi.mock('@/lib/supabase/admin', () => ({
 describe('GET /api/admin/media', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.resetModules()
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
   })
 
@@ -67,6 +68,7 @@ describe('GET /api/admin/media', () => {
 describe('POST /api/admin/media', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.resetModules()
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
     mockStorageUpload.mockResolvedValue({ data: { path: 'image/hero.jpg' }, error: null })
     mockStorageGetPublicUrl.mockReturnValue({ data: { publicUrl: 'https://cdn.test/image/hero.jpg' } })
@@ -92,6 +94,26 @@ describe('POST /api/admin/media', () => {
     const req = new Request('http://localhost', { method: 'POST', body: formData })
     const res = await POST(req)
     expect(res.status).toBe(401)
+  })
+
+  it('returns 400 when media_type is invalid', async () => {
+    const { POST } = await import('@/app/api/admin/media/route')
+    const mockFile = {
+      name: 'hero.jpg', type: 'image/jpeg', size: 4,
+      stream: () => new ReadableStream(), text: async () => 'data',
+      arrayBuffer: async () => new ArrayBuffer(4), slice: () => new Blob(),
+    } as unknown as File
+    const mockFormData = {
+      get: vi.fn((key: string) => {
+        const map: Record<string, unknown> = { file: mockFile, media_type: 'malicious-type' }
+        return map[key] ?? null
+      }),
+    } as unknown as FormData
+    const mockReq = { formData: vi.fn().mockResolvedValue(mockFormData) } as unknown as Request
+    const res = await POST(mockReq)
+    expect(res.status).toBe(400)
+    const body = await res.json()
+    expect(body.error).toBe('Invalid media_type')
   })
 
   it('uploads image, inserts into media table, returns MediaItem', async () => {

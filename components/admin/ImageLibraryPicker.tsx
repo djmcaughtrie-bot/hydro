@@ -17,7 +17,10 @@ export function ImageLibraryPicker({ onSelect, onClose, guidelines }: Props) {
 
   useEffect(() => {
     fetch('/api/admin/media')
-      .then(r => r.json())
+      .then(r => {
+        if (!r.ok) throw new Error('API error')
+        return r.json()
+      })
       .then((data: MediaItem[]) => {
         setItems(data.filter(i => i.media_type === 'image'))
       })
