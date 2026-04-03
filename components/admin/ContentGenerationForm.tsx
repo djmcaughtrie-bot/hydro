@@ -8,10 +8,10 @@ interface Props {
 }
 
 const PERSONAS = [
-  { value: '',       label: 'General' },
-  { value: 'sarah',  label: 'Sarah — Energy' },
-  { value: 'marcus', label: 'Marcus — Performance' },
-  { value: 'elena',  label: 'Elena — Longevity' },
+  { value: '',            label: 'General' },
+  { value: 'energy',      label: 'Energy' },
+  { value: 'performance', label: 'Performance' },
+  { value: 'longevity',   label: 'Longevity' },
 ]
 
 type GenStatus = 'idle' | 'generating' | 'done' | 'error'

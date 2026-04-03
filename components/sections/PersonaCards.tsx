@@ -5,19 +5,19 @@ const personas = [
     icon: '⚡',
     label: 'Energy',
     description: 'Mental clarity and sustained energy without the crash',
-    href: '/product?persona=sarah',
+    href: '/product?persona=energy',
   },
   {
     icon: '🏃',
     label: 'Recovery',
     description: 'Train harder, recover faster, reduce inflammation',
-    href: '/product?persona=marcus',
+    href: '/product?persona=performance',
   },
   {
     icon: '🌿',
     label: 'Longevity',
     description: 'Cellular health, oxidative stress, and the long game',
-    href: '/product?persona=elena',
+    href: '/product?persona=longevity',
   },
 ]
 

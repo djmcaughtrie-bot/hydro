@@ -16,7 +16,7 @@ const item: ContentItem = {
   updated_at: '2026-04-01T12:00:00Z',
   page: 'homepage',
   section: 'hero',
-  persona: 'sarah',
+  persona: 'energy',
   content_type: 'headline',
   content_json: {
     headline: 'Your biology already knows how to perform',

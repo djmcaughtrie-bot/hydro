@@ -10,17 +10,17 @@ export const metadata: Metadata = {
 }
 
 const outcomesTabs = {
-  sarah: {
+  energy: {
     label: 'Energy',
     content:
       "Molecular hydrogen has been studied for its potential effects on mitochondrial efficiency and cognitive function. Research suggests it may support mental clarity and sustained energy levels by addressing oxidative stress at the cellular level — without the stimulant effects of caffeine.",
   },
-  marcus: {
-    label: 'Recovery',
+  performance: {
+    label: 'Performance',
     content:
       "Athletes exploring molecular hydrogen report faster perceived recovery and reduced post-exercise inflammation markers. Studies suggest it may support the body's natural antioxidant response after intense training, potentially reducing muscle soreness and improving readiness for the next session.",
   },
-  elena: {
+  longevity: {
     label: 'Longevity',
     content:
       "Oxidative stress is one of the primary drivers of cellular ageing. Molecular hydrogen is a selective antioxidant — it targets only the most harmful free radicals, leaving beneficial reactive oxygen species intact. Research explores its potential role in supporting long-term cellular health.",
@@ -28,7 +28,7 @@ const outcomesTabs = {
 } as const
 
 type Persona = keyof typeof outcomesTabs
-const personaKeys: Persona[] = ['sarah', 'marcus', 'elena']
+const personaKeys: Persona[] = ['energy', 'performance', 'longevity']
 
 const specRows: [string, string][] = [
   ['H₂ concentration', 'Up to 1,200 ppb'],
@@ -73,7 +73,7 @@ interface ProductPageProps {
 
 export default function ProductPage({ searchParams }: ProductPageProps) {
   const raw = searchParams.persona
-  const persona: Persona = personaKeys.includes(raw as Persona) ? (raw as Persona) : 'sarah'
+  const persona: Persona = personaKeys.includes(raw as Persona) ? (raw as Persona) : 'energy'
 
   return (
     <div>

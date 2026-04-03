@@ -12,21 +12,21 @@ const schema = z.object({
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Please enter a valid email address'),
   phone: z.string().optional(),
-  persona: z.enum(['sarah', 'marcus', 'elena']).optional(),
+  persona: z.enum(['energy', 'performance', 'longevity']).optional(),
   message: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
 
 const personaOptions = [
-  { value: 'sarah' as const, label: 'Energy' },
-  { value: 'marcus' as const, label: 'Recovery' },
-  { value: 'elena' as const, label: 'Longevity' },
+  { value: 'energy'      as const, label: 'Energy' },
+  { value: 'performance' as const, label: 'Performance' },
+  { value: 'longevity'   as const, label: 'Longevity' },
 ]
 
 interface EnquiryFormProps {
   source: 'product' | 'clinics' | 'homepage'
-  defaultPersona?: 'sarah' | 'marcus' | 'elena'
+  defaultPersona?: 'energy' | 'performance' | 'longevity'
   showMessage?: boolean
   ctaText?: string
 }

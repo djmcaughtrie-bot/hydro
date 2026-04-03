@@ -24,7 +24,7 @@ const categoryMeta: Record<
     headline: string
     subline: string
     mechanism: string
-    persona: 'sarah' | 'marcus' | 'elena' | null
+    persona: 'energy' | 'performance' | 'longevity' | null
     personaQuote: string | null
     personaCta: string | null
     ctaHeadline: string
@@ -37,7 +37,7 @@ const categoryMeta: Record<
       "Research exploring molecular hydrogen's effects on mitochondrial function and cognitive performance.",
     mechanism:
       "Mitochondria produce ATP — the cell's energy currency. Research suggests oxidative stress within mitochondria is a significant driver of fatigue. Studies explore whether molecular hydrogen's selective antioxidant action at the mitochondrial level may support energy metabolism.",
-    persona: 'sarah',
+    persona: 'energy',
     personaQuote:
       '"What if the reason nothing\'s working isn\'t you — it\'s that nothing works at the right level?"',
     personaCta: 'Explore for energy & clarity',
@@ -50,7 +50,7 @@ const categoryMeta: Record<
       "Studies on molecular hydrogen's potential role in post-exercise inflammation and recovery time.",
     mechanism:
       "Intense exercise generates oxidative stress and inflammatory markers. Research suggests molecular hydrogen may support the body's natural antioxidant response post-exercise — studies have measured reductions in blood lactate and inflammation markers including IL-6 and TNF-α.",
-    persona: 'marcus',
+    persona: 'performance',
     personaQuote:
       '"600ml/min. 99.99% purity. The recovery tool most serious athletes haven\'t discovered yet."',
     personaCta: 'Explore for recovery',
@@ -63,7 +63,7 @@ const categoryMeta: Record<
       "Research on molecular hydrogen's potential role in oxidative stress, cellular ageing, and long-term health markers.",
     mechanism:
       "Oxidative stress is one of the primary drivers of cellular ageing. Research explores whether molecular hydrogen's selective targeting of hydroxyl radicals — the most damaging reactive oxygen species — may reduce cumulative cellular damage over time.",
-    persona: 'elena',
+    persona: 'longevity',
     personaQuote:
       '"The most interesting thing about molecular hydrogen isn\'t what it does — it\'s how it decides what to target."',
     personaCta: 'Explore for longevity',

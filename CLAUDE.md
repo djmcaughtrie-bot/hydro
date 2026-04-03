@@ -4,8 +4,8 @@
 
 H2 Revive is the UK's dedicated hydrogen inhalation wellness brand. This Next.js website
 sells a premium molecular hydrogen inhalation device (£1,200–1,600) to three personas:
-Sarah (chronic fatigue / energy), Marcus (athletic recovery / biohacking),
-Elena (longevity / cellular health).
+Energy (chronic fatigue / mental clarity), Performance (athletic recovery / biohacking),
+Longevity (cellular health / ageing).
 
 Phase 1: marketing site with enquiry-based lead capture + custom admin panel.
 No ecommerce checkout — product page drives to an enquiry form.
@@ -86,7 +86,7 @@ Shadows:        subtle only — box-shadow: 0 1px 3px rgba(0,0,0,0.06)
 ### leads
 ```sql
 id uuid pk, created_at, name, email, phone,
-persona text,          -- 'sarah' | 'marcus' | 'elena' | 'clinic' | 'general'
+persona text,          -- 'energy' | 'performance' | 'longevity' | 'clinic' | 'general'
 enquiry_type text,     -- 'product' | 'clinic' | 'waitlist' | 'general'
 message text, source_page text,
 utm_source, utm_medium, utm_campaign text,
@@ -115,7 +115,7 @@ sort_order integer default 0
 id uuid pk, created_at, updated_at,
 page text,             -- 'homepage' | 'product' | 'about' | 'clinics' etc.
 section text,          -- 'hero' | 'faq' | 'features' | 'ceo-intro' etc.
-persona text,          -- null = all, or 'sarah' | 'marcus' | 'elena'
+persona text,          -- null = all, or 'energy' | 'performance' | 'longevity'
 content_type text,     -- 'headline' | 'body' | 'cta' | 'faq-item' | 'testimonial'
 content_json jsonb,    -- structured content (headline, subheading, body, cta_text etc.)
 status text default 'draft',  -- 'draft' | 'published'
@@ -216,17 +216,17 @@ const PROHIBITED = [
 4. Proof Points — studies, specs, CEO credibility, user reports.
 
 ### Persona Entry Points
-**Sarah Mitchell — Energy Seeker (48F)**
+**Energy Persona**
 Pain: chronic fatigue, brain fog, post-viral. Nothing has touched it.
 Hook: "What if the reason nothing's working isn't you — it's that nothing works at the right level?"
 Lead with: energy/clarity — gentle science. Tone: warm, peer-to-peer, permission-giving.
 
-**Marcus Chen — Performance Optimizer (34M)**
+**Performance Persona**
 Pain: recovery time, inflammation, biohacking edge.
 Hook: "600ml/min. 99.99% purity. The recovery tool most serious athletes haven't discovered yet."
 Lead with: specs — mechanism — evidence. Tone: precise, peer-level, efficient.
 
-**Elena Rossi — Longevity Seeker (57F)**
+**Longevity Persona**
 Pain: ageing (cardiovascular, cognitive, skin), wants evidence not promises.
 Hook: "The most interesting thing about molecular hydrogen isn't what it does — it's how it decides what to target."
 Lead with: selective antioxidant mechanism — depth of research — investment framing.

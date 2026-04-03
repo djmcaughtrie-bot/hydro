@@ -38,7 +38,7 @@ describe('ContentGenerationForm', () => {
     render(<ContentGenerationForm onGenerated={mockOnGenerated} />)
     await user.selectOptions(screen.getByLabelText(/page/i), 'homepage')
     await user.selectOptions(screen.getByLabelText(/section/i), 'hero')
-    await user.selectOptions(screen.getByLabelText(/persona/i), 'sarah')
+    await user.selectOptions(screen.getByLabelText(/persona/i), 'energy')
     await user.click(screen.getByRole('button', { name: /generate/i }))
     await waitFor(() => {
       expect(mockFetch).toHaveBeenCalledWith(

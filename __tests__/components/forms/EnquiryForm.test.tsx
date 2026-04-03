@@ -17,13 +17,13 @@ describe('EnquiryForm', () => {
     expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument()
     expect(screen.getByPlaceholderText(/phone/i)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^energy$/i })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /^recovery$/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /^performance$/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /^longevity$/i })).toBeInTheDocument()
   })
 
   it('pre-selects persona from defaultPersona prop', () => {
-    render(<EnquiryForm source="product" defaultPersona="marcus" />)
-    expect(screen.getByRole('button', { name: /^recovery$/i })).toHaveClass('bg-teal')
+    render(<EnquiryForm source="product" defaultPersona="performance" />)
+    expect(screen.getByRole('button', { name: /^performance$/i })).toHaveClass('bg-teal')
   })
 
   it('shows validation errors when name and email are empty on submit', async () => {

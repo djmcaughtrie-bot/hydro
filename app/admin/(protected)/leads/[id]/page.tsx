@@ -12,11 +12,11 @@ interface NoteEntry {
 }
 
 const personaLabels: Record<string, string> = {
-  sarah:   'Sarah — Energy',
-  marcus:  'Marcus — Recovery',
-  elena:   'Elena — Longevity',
-  clinic:  'Clinic',
-  general: 'General',
+  energy:      'Energy',
+  performance: 'Performance',
+  longevity:   'Longevity',
+  clinic:      'Clinic',
+  general:     'General',
 }
 
 function formatDate(iso: string): string {

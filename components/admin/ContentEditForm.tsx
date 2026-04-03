@@ -23,9 +23,9 @@ const STATUS_LABELS: Record<ContentStatus, string> = {
   needs_review: '⚠ Needs review',
 }
 const PERSONA_LABELS: Record<string, string> = {
-  sarah: 'Sarah',
-  marcus: 'Marcus',
-  elena: 'Elena',
+  energy:      'Energy',
+  performance: 'Performance',
+  longevity:   'Longevity',
 }
 
 export function ContentEditForm({ item }: Props) {

@@ -20,9 +20,9 @@ const STATUS_LABELS: Record<string, string> = {
   needs_review: '⚠ Review',
 }
 const PERSONA_STYLES: Record<string, string> = {
-  sarah:  'bg-blue-100 text-blue-800',
-  marcus: 'bg-amber-100 text-amber-800',
-  elena:  'bg-purple-100 text-purple-800',
+  energy:      'bg-blue-100 text-blue-800',
+  performance: 'bg-amber-100 text-amber-800',
+  longevity:   'bg-purple-100 text-purple-800',
 }
 
 function getPreview(item: ContentItem): string {

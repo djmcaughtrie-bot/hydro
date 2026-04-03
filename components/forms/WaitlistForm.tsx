@@ -10,15 +10,15 @@ import { cn } from '@/lib/cn'
 
 const schema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
-  persona: z.enum(['sarah', 'marcus', 'elena']).optional(),
+  persona: z.enum(['energy', 'performance', 'longevity']).optional(),
 })
 
 type FormData = z.infer<typeof schema>
 
 const personas = [
-  { value: 'sarah', label: 'I want more energy and mental clarity' },
-  { value: 'marcus', label: 'I train hard and want to recover better' },
-  { value: 'elena', label: "I'm investing in longevity" }, // apostrophe is safe in JS string, not JSX
+  { value: 'energy',      label: 'I want more energy and mental clarity' },
+  { value: 'performance', label: 'I train hard and want to recover better' },
+  { value: 'longevity',   label: "I'm investing in longevity" }, // apostrophe is safe in JS string, not JSX
 ] as const
 
 export function WaitlistForm() {
