@@ -27,19 +27,27 @@ interface ResizeState {
   focalPoint: FocalPoint
 }
 
+interface SuggestedMeta {
+  alt: string
+  title: string
+  caption: string
+}
+
 interface MetaFieldsProps {
   prefix: string
   url: string | undefined
   contentJson: Record<string, unknown>
   onChange: (updates: Record<string, unknown>) => void
+  generatingMeta?: boolean
+  suggestedMeta?: SuggestedMeta | null
 }
 
-function MetaFields({ prefix, url, contentJson, onChange }: MetaFieldsProps) {
+function MetaFields({ prefix, url, contentJson, onChange, generatingMeta, suggestedMeta }: MetaFieldsProps) {
   const [alt, setAlt] = useState((contentJson[`${prefix}_alt`] as string) ?? '')
   const [title, setTitle] = useState((contentJson[`${prefix}_title`] as string) ?? '')
   const [caption, setCaption] = useState((contentJson[`${prefix}_caption`] as string) ?? '')
 
-  // When the image changes (new upload or library pick), reset the text fields
+  // When the image URL changes (new upload or library pick), reset the text fields
   const prevUrlRef = useRef<string | undefined>(url)
   if (url !== prevUrlRef.current) {
     prevUrlRef.current = url
@@ -48,9 +56,26 @@ function MetaFields({ prefix, url, contentJson, onChange }: MetaFieldsProps) {
     setCaption((contentJson[`${prefix}_caption`] as string) ?? '')
   }
 
+  // When AI-generated meta arrives, apply it to local state and propagate up
+  const prevSuggestedRef = useRef<SuggestedMeta | null | undefined>(suggestedMeta)
+  if (suggestedMeta && suggestedMeta !== prevSuggestedRef.current) {
+    prevSuggestedRef.current = suggestedMeta
+    setAlt(suggestedMeta.alt)
+    setTitle(suggestedMeta.title)
+    setCaption(suggestedMeta.caption)
+    onChange({
+      [`${prefix}_alt`]: suggestedMeta.alt,
+      [`${prefix}_title`]: suggestedMeta.title,
+      [`${prefix}_caption`]: suggestedMeta.caption,
+    })
+  }
+
   if (!url) return null
   return (
     <div className="mt-3 space-y-2">
+      {generatingMeta && (
+        <p className="font-mono text-xs text-teal">✦ Generating metadata…</p>
+      )}
       <div>
         <label htmlFor={`${prefix}_alt`} className="font-sans text-xs font-medium text-ink">
           Alt text <span className="text-red-500">*</span>
@@ -103,6 +128,25 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
   const [resizeState, setResizeState] = useState<ResizeState | null>(null)
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
+  const [generatingMeta, setGeneratingMeta] = useState<{ desktop: boolean; mobile: boolean }>({ desktop: false, mobile: false })
+  const [suggestedMeta, setSuggestedMeta] = useState<{ desktop: SuggestedMeta | null; mobile: SuggestedMeta | null }>({ desktop: null, mobile: null })
+
+  async function generateMeta(imageUrl: string, slot: Slot) {
+    setGeneratingMeta(prev => ({ ...prev, [slot]: true }))
+    try {
+      const res = await fetch('/api/admin/generate-image-meta', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl }),
+      })
+      if (res.ok) {
+        const meta = await res.json() as SuggestedMeta
+        setSuggestedMeta(prev => ({ ...prev, [slot]: meta }))
+      }
+    } finally {
+      setGeneratingMeta(prev => ({ ...prev, [slot]: false }))
+    }
+  }
 
   const desktopUrl = contentJson.image_url as string | undefined
   const mobileUrl = contentJson.mobile_image_url as string | undefined
@@ -144,6 +188,9 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
         onChange({ mobile_image_url: data.url, mobile_image_width: data.width, mobile_image_height: data.height })
         if (mobileInputRef.current) mobileInputRef.current.value = ''
       }
+      // Reset previous suggestions and generate new metadata
+      setSuggestedMeta(prev => ({ ...prev, [slot]: null }))
+      generateMeta(data.url, slot)
     } catch {
       setUploadError('Network error. Please try again.')
     } finally {
@@ -286,7 +333,7 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
           className="hidden"
           onChange={handleFileSelect('desktop')}
         />
-        <MetaFields prefix="image" url={desktopUrl} contentJson={contentJson} onChange={onChange} />
+        <MetaFields prefix="image" url={desktopUrl} contentJson={contentJson} onChange={onChange} generatingMeta={generatingMeta.desktop} suggestedMeta={suggestedMeta.desktop} />
       </div>
 
       {/* Mobile slot */}
@@ -333,7 +380,7 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
           className="hidden"
           onChange={handleFileSelect('mobile')}
         />
-        <MetaFields prefix="mobile_image" url={mobileUrl} contentJson={contentJson} onChange={onChange} />
+        <MetaFields prefix="mobile_image" url={mobileUrl} contentJson={contentJson} onChange={onChange} generatingMeta={generatingMeta.mobile} suggestedMeta={suggestedMeta.mobile} />
       </div>
 
       {showLibrary && (

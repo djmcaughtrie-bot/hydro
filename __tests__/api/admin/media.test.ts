@@ -69,6 +69,7 @@ describe('POST /api/admin/media', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     vi.resetModules()
+    process.env.SUPABASE_SERVICE_ROLE_KEY = 'test-service-role-key'
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
     mockStorageUpload.mockResolvedValue({ data: { path: 'image/hero.jpg' }, error: null })
     mockStorageGetPublicUrl.mockReturnValue({ data: { publicUrl: 'https://cdn.test/image/hero.jpg' } })
