@@ -35,7 +35,7 @@ export async function POST(request: Request) {
 
   const { page, section, persona, additional_context } = await request.json()
 
-  const sectionConfig = CONTENT_CONFIG[page]?.sections[section]
+  const sectionConfig = CONTENT_CONFIG[page as keyof typeof CONTENT_CONFIG]?.sections[section]
   if (!sectionConfig) return Response.json({ error: 'Invalid page/section' }, { status: 400 })
 
   const VALID_PERSONAS = ['sarah', 'marcus', 'elena'] as const
