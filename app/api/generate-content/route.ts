@@ -38,38 +38,51 @@ export async function POST(request: Request) {
   const sectionConfig = CONTENT_CONFIG[page]?.sections[section]
   if (!sectionConfig) return Response.json({ error: 'Invalid page/section' }, { status: 400 })
 
+  const VALID_PERSONAS = ['sarah', 'marcus', 'elena'] as const
+  const sanitisedPersona = VALID_PERSONAS.includes(persona) ? persona : null
+  const sanitisedContext = typeof additional_context === 'string'
+    ? additional_context.slice(0, 500).replace(/[\x00-\x1F\x7F]/g, '')
+    : ''
+
   const fieldList = [...Object.keys(sectionConfig.fields), 'image_suggestion'].join(', ')
   const generation_prompt = `Generate content for the H2 Revive ${page} page, ${section} section.
-${persona ? `Persona: ${persona}` : 'Persona: General audience'}
-${additional_context ? `Additional context: ${additional_context}` : ''}
+${sanitisedPersona ? `Persona: ${sanitisedPersona}` : 'Persona: General audience'}
+${sanitisedContext ? `Additional context: ${sanitisedContext}` : ''}
 
 Return a JSON object with exactly these fields: ${fieldList}.
 The image_suggestion should be a vivid description for a photographer, 1-2 sentences.`
 
   const anthropic = createAnthropicClient()
 
-  async function generate(): Promise<Record<string, unknown>> {
+  async function generate(): Promise<Record<string, unknown> | null> {
     const msg = await anthropic.messages.create({
       model: 'claude-sonnet-4-20250514',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: generation_prompt }],
     })
-    const text = msg.content[0].type === 'text' ? msg.content[0].text : '{}'
-    return JSON.parse(text)
+    const text = msg.content[0].type === 'text' ? msg.content[0].text : null
+    if (!text) return null
+    try {
+      return JSON.parse(text) as Record<string, unknown>
+    } catch {
+      return null
+    }
   }
 
   let content: Record<string, unknown> = {}
-  let complianceResult = checkCompliance({})
+  let complianceResult: import('@/lib/compliance').ComplianceResult = { pass: false, violations: [] }
   let attempts = 0
 
   while (attempts < 3) {
-    content = await generate()
+    const generated = await generate()
+    attempts++
+    if (!generated) continue
+    content = generated
     const textFields = Object.fromEntries(
       Object.entries(content).filter(([, v]) => typeof v === 'string')
     ) as Record<string, string>
     complianceResult = checkCompliance(textFields)
-    attempts++
     if (complianceResult.pass) break
   }
 
@@ -81,7 +94,7 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
     .insert({
       page,
       section,
-      persona: persona ?? null,
+      persona: sanitisedPersona,
       content_type: sectionConfig.contentType,
       content_json: content,
       status,
