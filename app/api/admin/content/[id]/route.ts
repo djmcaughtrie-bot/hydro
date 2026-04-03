@@ -11,7 +11,16 @@ export async function PATCH(
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
-  const body = await request.json()
+
+  let body: Record<string, unknown>
+  try {
+    body = await request.json()
+  } catch {
+    return Response.json({ error: 'Invalid JSON' }, { status: 400 })
+  }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return Response.json({ error: 'Body must be a JSON object' }, { status: 400 })
+  }
 
   if (body.content_json) {
     const textFields = Object.fromEntries(
@@ -24,10 +33,17 @@ export async function PATCH(
     }
   }
 
+  const update: Record<string, unknown> = { updated_at: new Date().toISOString() }
+  if (body.content_json !== undefined) update.content_json = body.content_json
+  if (body.persona !== undefined) update.persona = body.persona ?? null
+  if (body.status !== undefined && (body.status === 'draft' || body.status === 'needs_review')) {
+    update.status = body.status
+  }
+
   const adminClient = createAdminClient()
   const { error } = await adminClient
     .from('content_items')
-    .update({ ...body, updated_at: new Date().toISOString() })
+    .update(update)
     .eq('id', id)
 
   if (error) return Response.json({ error: error.message }, { status: 500 })

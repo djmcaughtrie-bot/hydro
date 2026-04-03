@@ -84,7 +84,17 @@ describe('PATCH /api/admin/content/[id]', () => {
     expect(res.status).toBe(200)
   })
 
-  it('DELETE returns 200 on success', async () => {
+})
+
+describe('DELETE /api/admin/content/[id]', () => {
+  beforeEach(() => {
+    vi.resetAllMocks()
+    vi.resetModules()
+    mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
+    mockDelete.mockResolvedValue({ error: null })
+  })
+
+  it('returns 200 on success', async () => {
     const { DELETE } = await import('@/app/api/admin/content/[id]/route')
     const res = await DELETE(
       new Request('http://localhost', { method: 'DELETE' }),
@@ -93,7 +103,7 @@ describe('PATCH /api/admin/content/[id]', () => {
     expect(res.status).toBe(200)
   })
 
-  it('DELETE returns 401 when unauthenticated', async () => {
+  it('returns 401 when unauthenticated', async () => {
     mockGetUser.mockResolvedValue({ data: { user: null } })
     const { DELETE } = await import('@/app/api/admin/content/[id]/route')
     const res = await DELETE(
