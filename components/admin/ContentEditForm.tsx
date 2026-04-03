@@ -53,23 +53,28 @@ export function ContentEditForm({ item }: Props) {
     setSaving(true)
     setSaveError('')
     setFieldErrors({})
-    const res = await fetch(`/api/admin/content/${item.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content_json: { ...item.content_json, ...fields } }),
-    })
-    const data = await res.json()
-    setSaving(false)
-    if (!res.ok) {
-      if (res.status === 422 && data.violations) {
-        const errs: Record<string, string> = {}
-        for (const v of data.violations as { field: string; word: string }[]) {
-          errs[v.field] = `Contains prohibited word: "${v.word}"`
+    try {
+      const res = await fetch(`/api/admin/content/${item.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ content_json: { ...item.content_json, ...fields } }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (res.status === 422 && data.violations) {
+          const errs: Record<string, string> = {}
+          for (const v of data.violations as { field: string; word: string }[]) {
+            errs[v.field] = `Contains prohibited word: "${v.word}"`
+          }
+          setFieldErrors(errs)
+        } else {
+          setSaveError(data.error ?? 'Save failed')
         }
-        setFieldErrors(errs)
-      } else {
-        setSaveError(data.error ?? 'Save failed')
       }
+    } catch {
+      setSaveError('Network error. Please try again.')
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -77,22 +82,27 @@ export function ContentEditForm({ item }: Props) {
     setPublishing(true)
     setPublishError('')
     setFieldErrors({})
-    const res = await fetch(`/api/admin/content/${item.id}/publish`, { method: 'POST' })
-    const data = await res.json()
-    setPublishing(false)
-    if (!res.ok) {
-      if (res.status === 422 && data.violations) {
-        const errs: Record<string, string> = {}
-        for (const v of data.violations as { field: string; word: string }[]) {
-          errs[v.field] = `Contains prohibited word: "${v.word}"`
+    try {
+      const res = await fetch(`/api/admin/content/${item.id}/publish`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) {
+        if (res.status === 422 && data.violations) {
+          const errs: Record<string, string> = {}
+          for (const v of data.violations as { field: string; word: string }[]) {
+            errs[v.field] = `Contains prohibited word: "${v.word}"`
+          }
+          setFieldErrors(errs)
+          setPublishError('Compliance violations must be resolved before publishing.')
+        } else {
+          setPublishError(data.error ?? 'Publish failed')
         }
-        setFieldErrors(errs)
-        setPublishError('Compliance violations must be resolved before publishing.')
       } else {
-        setPublishError(data.error ?? 'Publish failed')
+        setStatus('published')
       }
-    } else {
-      setStatus('published')
+    } catch {
+      setPublishError('Network error. Please try again.')
+    } finally {
+      setPublishing(false)
     }
   }
 
