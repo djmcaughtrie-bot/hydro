@@ -1,5 +1,5 @@
-// Longer phrases must appear before shorter substrings they contain,
-// so "proven to help" is checked before "proven to".
+// Phrases are deduplicated per field: if "proven to help" and "proven to" both match,
+// only the longer phrase is reported. Array order does not affect the result.
 const PROHIBITED = [
   'proven to help',
   'proven to',
