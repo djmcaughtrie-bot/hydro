@@ -39,7 +39,8 @@ export function Footer() {
               </li>
               <li>
                 <span className="cursor-not-allowed font-sans text-sm text-ink-light/50">
-                  Science (coming soon)
+                  Science{' '}
+                  <span className="text-xs">(coming soon)</span>
                 </span>
               </li>
             </ul>

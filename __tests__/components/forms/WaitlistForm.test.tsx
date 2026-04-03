@@ -4,11 +4,11 @@ import userEvent from '@testing-library/user-event'
 import { WaitlistForm } from '@/components/forms/WaitlistForm'
 
 const mockFetch = vi.fn()
-global.fetch = mockFetch
 
 describe('WaitlistForm', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    vi.resetAllMocks()
+    global.fetch = mockFetch
   })
 
   it('renders email input and persona radio buttons', () => {
@@ -62,6 +62,7 @@ describe('WaitlistForm', () => {
     })
     render(<WaitlistForm />)
     await user.type(screen.getByPlaceholderText(/email/i), 'sarah@example.com')
+    await user.click(screen.getByLabelText(/more energy/i))
     await user.click(screen.getByRole('button', { name: /join/i }))
     await waitFor(() => {
       expect(screen.getByText(/something went wrong/i)).toBeInTheDocument()
