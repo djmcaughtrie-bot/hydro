@@ -44,9 +44,9 @@ export function checkCompliance(fields: Record<string, unknown>): ComplianceResu
       }
     }
     // Filter out substrings: if "proven to help" matched, remove "proven to"
-    for (const word of matchedWords) {
+    for (const word of Array.from(matchedWords)) {
       let isSubstring = false
-      for (const other of matchedWords) {
+      for (const other of Array.from(matchedWords)) {
         if (word !== other && other.includes(word)) {
           isSubstring = true
           break
