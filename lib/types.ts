@@ -12,4 +12,6 @@ export interface Study {
   doi_url: string | null
   pubmed_url: string | null
   is_featured: boolean
+  is_published?: boolean
+  sort_order?: number
 }
