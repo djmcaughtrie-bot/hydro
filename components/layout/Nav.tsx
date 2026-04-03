@@ -25,26 +25,29 @@ export function Nav() {
 
         {/* Desktop nav */}
         <ul className="hidden items-center gap-6 md:flex">
-          {navLinks.map(({ label, href, disabled }) => (
-            <li key={href}>
-              {disabled ? (
-                <span
-                  className="cursor-not-allowed font-sans text-sm text-ink-light"
-                  title="Coming soon"
-                  aria-disabled="true"
-                >
-                  {label}
-                </span>
-              ) : (
-                <Link
-                  href={href}
-                  className="font-sans text-sm text-ink-mid transition-colors hover:text-ink"
-                >
-                  {label}
-                </Link>
-              )}
-            </li>
-          ))}
+          {navLinks.map(({ label, href, ...rest }) => {
+            const disabled = 'disabled' in rest ? rest.disabled : false
+            return (
+              <li key={href}>
+                {disabled ? (
+                  <span
+                    className="cursor-not-allowed font-sans text-sm text-ink-light"
+                    title="Coming soon"
+                    aria-disabled="true"
+                  >
+                    {label}
+                  </span>
+                ) : (
+                  <Link
+                    href={href}
+                    className="font-sans text-sm text-ink-mid transition-colors hover:text-ink"
+                  >
+                    {label}
+                  </Link>
+                )}
+              </li>
+            )
+          })}
         </ul>
 
         <Link
@@ -72,23 +75,26 @@ export function Nav() {
       {open && (
         <div className="border-t border-ink-light/20 bg-cream px-6 py-4 md:hidden">
           <ul className="flex flex-col gap-4">
-            {navLinks.map(({ label, href, disabled }) => (
-              <li key={href}>
-                {disabled ? (
-                  <span className="font-sans text-sm text-ink-light" aria-disabled="true">
-                    {label}
-                  </span>
-                ) : (
-                  <Link
-                    href={href}
-                    className="font-sans text-sm text-ink-mid hover:text-ink"
-                    onClick={() => setOpen(false)}
-                  >
-                    {label}
-                  </Link>
-                )}
-              </li>
-            ))}
+            {navLinks.map(({ label, href, ...rest }) => {
+              const disabled = 'disabled' in rest ? rest.disabled : false
+              return (
+                <li key={href}>
+                  {disabled ? (
+                    <span className="font-sans text-sm text-ink-light" aria-disabled="true">
+                      {label}
+                    </span>
+                  ) : (
+                    <Link
+                      href={href}
+                      className="font-sans text-sm text-ink-mid hover:text-ink"
+                      onClick={() => setOpen(false)}
+                    >
+                      {label}
+                    </Link>
+                  )}
+                </li>
+              )
+            })}
             <li>
               <Link
                 href="/product"
