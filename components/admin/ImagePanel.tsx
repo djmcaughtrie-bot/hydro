@@ -241,6 +241,8 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
         mobile_focal_point: item.focal_point,
       })
     }
+    setSuggestedMeta(prev => ({ ...prev, [activeSlot]: null }))
+    generateMeta(item.url, activeSlot)
   }
 
   return (
