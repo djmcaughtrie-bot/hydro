@@ -10,18 +10,19 @@ interface AccordionItem {
 
 interface AccordionProps {
   items: AccordionItem[]
+  className?: string
 }
 
-export function Accordion({ items }: AccordionProps) {
+export function Accordion({ items, className }: AccordionProps) {
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
-    <div className="divide-y divide-ink-light/20">
+    <div className={cn('divide-y divide-ink-light/20', className)}>
       {items.map((item, index) => (
         <div key={index}>
           <button
             type="button"
-            className="flex w-full items-center justify-between py-4 text-left"
+            className="flex w-full items-center justify-between py-4 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal"
             onClick={() => setOpenIndex(openIndex === index ? null : index)}
             aria-expanded={openIndex === index}
           >
@@ -53,3 +54,5 @@ export function Accordion({ items }: AccordionProps) {
     </div>
   )
 }
+
+Accordion.displayName = 'Accordion'

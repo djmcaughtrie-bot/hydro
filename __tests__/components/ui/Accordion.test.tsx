@@ -45,4 +45,11 @@ describe('Accordion', () => {
     expect(screen.getByRole('button', { name: /first question/i })).toHaveAttribute('aria-expanded', 'false')
     expect(screen.getByRole('button', { name: /second question/i })).toHaveAttribute('aria-expanded', 'true')
   })
+
+  it('shows answer text when item is opened', async () => {
+    const user = userEvent.setup()
+    render(<Accordion items={items} />)
+    await user.click(screen.getByRole('button', { name: /first question/i }))
+    expect(screen.getByText('First answer.')).toBeInTheDocument()
+  })
 })
