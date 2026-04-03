@@ -18,7 +18,6 @@ vi.mock('@/lib/supabase/server', () => ({
 describe('getPageContent', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.resetModules()
   })
 
   it('returns empty object when no published rows exist', async () => {
