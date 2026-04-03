@@ -72,39 +72,44 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
     }
   }
 
-  let content: Record<string, unknown> = {}
-  let complianceResult: import('@/lib/compliance').ComplianceResult = { pass: false, violations: [] }
-  let attempts = 0
+  try {
+    let content: Record<string, unknown> = {}
+    let complianceResult: import('@/lib/compliance').ComplianceResult = { pass: false, violations: [] }
+    let attempts = 0
 
-  while (attempts < 3) {
-    const generated = await generate()
-    attempts++
-    if (!generated) continue
-    content = generated
-    const textFields = Object.fromEntries(
-      Object.entries(content).filter(([, v]) => typeof v === 'string')
-    ) as Record<string, string>
-    complianceResult = checkCompliance(textFields)
-    if (complianceResult.pass) break
+    while (attempts < 3) {
+      const generated = await generate()
+      attempts++
+      if (!generated) continue
+      content = generated
+      const textFields = Object.fromEntries(
+        Object.entries(content).filter(([, v]) => typeof v === 'string')
+      ) as Record<string, string>
+      complianceResult = checkCompliance(textFields)
+      if (complianceResult.pass) break
+    }
+
+    const status = complianceResult.pass ? 'draft' : 'needs_review'
+    const adminClient = createAdminClient()
+
+    const { data, error } = await adminClient
+      .from('content_items')
+      .insert({
+        page,
+        section,
+        persona: sanitisedPersona,
+        content_type: sectionConfig.contentType,
+        content_json: content,
+        status,
+        generation_prompt,
+      })
+      .select('id')
+      .single()
+
+    if (error) return Response.json({ error: error.message }, { status: 500 })
+    return Response.json({ id: data.id, status })
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Generation failed'
+    return Response.json({ error: message }, { status: 500 })
   }
-
-  const status = complianceResult.pass ? 'draft' : 'needs_review'
-  const adminClient = createAdminClient()
-
-  const { data, error } = await adminClient
-    .from('content_items')
-    .insert({
-      page,
-      section,
-      persona: sanitisedPersona,
-      content_type: sectionConfig.contentType,
-      content_json: content,
-      status,
-      generation_prompt,
-    })
-    .select('id')
-    .single()
-
-  if (error) return Response.json({ error: error.message }, { status: 500 })
-  return Response.json({ id: data.id, status })
 }
