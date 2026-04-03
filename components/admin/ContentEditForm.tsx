@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { ContentItem, ContentStatus } from '@/lib/types'
 import { CONTENT_CONFIG } from '@/lib/content-config'
+import type { FieldMeta } from '@/lib/content-config'
 
 interface Props {
   item: ContentItem
@@ -26,8 +27,10 @@ const PERSONA_LABELS: Record<string, string> = {
 }
 
 export function ContentEditForm({ item }: Props) {
-  const sectionConfig = CONTENT_CONFIG[item.page as keyof typeof CONTENT_CONFIG]?.sections[item.section]
-  const fieldDefs = sectionConfig?.fields ?? {}
+  const pageConfig = CONTENT_CONFIG[item.page as keyof typeof CONTENT_CONFIG]
+  const sections = pageConfig?.sections as Record<string, { label: string; fields: Record<string, FieldMeta> }> | undefined
+  const sectionConfig = sections?.[item.section]
+  const fieldDefs: Record<string, FieldMeta> = sectionConfig?.fields ?? {}
 
   const [fields, setFields] = useState<Record<string, string>>(() => {
     const json = item.content_json as Record<string, unknown>
@@ -93,7 +96,7 @@ export function ContentEditForm({ item }: Props) {
     }
   }
 
-  const pageLabel = CONTENT_CONFIG[item.page as keyof typeof CONTENT_CONFIG]?.label ?? item.page
+  const pageLabel = pageConfig?.label ?? item.page
   const sectionLabel = sectionConfig?.label ?? item.section
   const personaLabel = item.persona ? (PERSONA_LABELS[item.persona] ?? item.persona) : null
 
