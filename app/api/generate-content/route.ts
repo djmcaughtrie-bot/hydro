@@ -3,6 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkCompliance } from '@/lib/compliance'
 import { CONTENT_CONFIG } from '@/lib/content-config'
+import type { SectionConfig } from '@/lib/content-config'
 
 const SYSTEM_PROMPT = `You are the content writer for H2 Revive, a UK wellness brand specialising in molecular hydrogen inhalation therapy. Write in the H2 Revive brand voice:
 
@@ -35,7 +36,8 @@ export async function POST(request: Request) {
 
   const { page, section, persona, additional_context } = await request.json()
 
-  const sectionConfig = CONTENT_CONFIG[page as keyof typeof CONTENT_CONFIG]?.sections[section]
+  const pageConfig = CONTENT_CONFIG[page as keyof typeof CONTENT_CONFIG]
+  const sectionConfig = (pageConfig?.sections as Record<string, SectionConfig> | undefined)?.[section]
   if (!sectionConfig) return Response.json({ error: 'Invalid page/section' }, { status: 400 })
 
   const VALID_PERSONAS = ['sarah', 'marcus', 'elena'] as const
