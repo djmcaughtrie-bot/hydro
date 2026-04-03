@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 // Phase 1: all non-API, non-static traffic goes to root (waitlist)
 // Remove entries from LIVE_ROUTES as each page ships
-const LIVE_ROUTES = new Set(['/'])
+const LIVE_ROUTES = new Set(['/', '/faq'])
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
