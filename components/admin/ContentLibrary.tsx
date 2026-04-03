@@ -51,17 +51,37 @@ export function ContentLibrary({ items: initialItems }: Props) {
     return true
   })
 
+  function restoreItem(item: ContentItem) {
+    setItems(prev => {
+      // Find where this item was relative to its neighbours in the original list
+      const origIdx = initialItems.findIndex(i => i.id === item.id)
+      // Find the nearest item that still exists in current state (search forward then backward)
+      let insertAt = prev.length // default: append
+      for (let i = origIdx + 1; i < initialItems.length; i++) {
+        const neighbour = initialItems[i]
+        const currentIdx = prev.findIndex(ci => ci.id === neighbour.id)
+        if (currentIdx !== -1) {
+          insertAt = currentIdx
+          break
+        }
+      }
+      const next = [...prev]
+      next.splice(insertAt, 0, item)
+      return next
+    })
+  }
+
   async function handleDelete(item: ContentItem) {
     if (!confirm('Delete this content item? This cannot be undone.')) return
     setItems(prev => prev.filter(i => i.id !== item.id))
-    const res = await fetch(`/api/admin/content/${item.id}`, { method: 'DELETE' })
-    if (!res.ok) {
-      setItems(prev => {
-        const idx = initialItems.findIndex(i => i.id === item.id)
-        const next = [...prev]
-        next.splice(idx, 0, item)
-        return next
-      })
+    try {
+      const res = await fetch(`/api/admin/content/${item.id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        restoreItem(item)
+        setErrors(prev => ({ ...prev, [item.id]: 'Failed to delete' }))
+      }
+    } catch {
+      restoreItem(item)
       setErrors(prev => ({ ...prev, [item.id]: 'Failed to delete' }))
     }
   }
