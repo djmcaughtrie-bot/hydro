@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { StudyGrid } from '@/components/science/StudyGrid'
+import { getPageContent } from '@/lib/content'
 import type { Study } from '@/lib/types'
 
 export const metadata: Metadata = {
@@ -22,6 +23,12 @@ export default async function SciencePage() {
 
   const studies: Study[] = data ?? []
 
+  const content = await getPageContent('science', ['hero'], null)
+  const hero = content['hero'] ?? {}
+
+  const heroHeadline = (hero.headline as string) ?? '50+ peer-reviewed studies.\nOne remarkable molecule.'
+  const heroBody = (hero.body as string) ?? 'Peer-reviewed research on molecular hydrogen — summarised for humans.'
+
   return (
     <>
       {/* Hero */}
@@ -31,12 +38,9 @@ export default async function SciencePage() {
             The Science
           </p>
           <h1 className="font-display text-5xl leading-tight text-white md:text-6xl">
-            50+ peer-reviewed studies.<br />
-            One remarkable molecule.
+            {heroHeadline}
           </h1>
-          <p className="mt-4 max-w-xl font-sans text-base text-ink-light">
-            Peer-reviewed research on molecular hydrogen — summarised for humans.
-          </p>
+          <p className="mt-4 max-w-xl font-sans text-base text-ink-light">{heroBody}</p>
           <div className="mt-8 flex flex-wrap gap-8">
             {[
               { value: '52', label: 'studies' },

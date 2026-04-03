@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Accordion } from '@/components/ui/Accordion'
+import { getPageContent } from '@/lib/content'
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -49,12 +50,17 @@ const faqs = [
   },
 ]
 
-export default function FAQPage() {
+export default async function FAQPage() {
+  const content = await getPageContent('faq', ['hero'], null)
+  const hero = content['hero'] ?? {}
+
+  const heroHeadline = (hero.headline as string) ?? 'Common questions.'
+
   return (
     <div className="bg-cream">
       <div className="mx-auto max-w-2xl px-6 py-16">
         <p className="mb-3 font-mono text-xs uppercase tracking-widest text-teal">FAQ</p>
-        <h1 className="mb-10 font-display text-4xl text-ink">Common questions.</h1>
+        <h1 className="mb-10 font-display text-4xl text-ink">{heroHeadline}</h1>
         <Accordion items={faqs} />
       </div>
     </div>
