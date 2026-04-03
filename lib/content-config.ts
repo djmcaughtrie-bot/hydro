@@ -1,3 +1,5 @@
+export type ContentType = 'headline' | 'body' | 'faq-item' | 'testimonial' | 'cta'
+
 export interface FieldMeta {
   label: string
   hint: string
@@ -13,10 +15,10 @@ export interface ImageGuidelines {
 
 export interface SectionConfig {
   label: string
-  contentType: string
+  contentType: ContentType
   fields: Record<string, FieldMeta>
   imageGuidelines?: ImageGuidelines
-  videoType?: 'ambient' | 'content'
+  videoType?: 'ambient' | 'content'  // undefined = no video (same as null in spec; ? is idiomatic TS)
   lazyLoadDefault?: boolean
 }
 
@@ -25,7 +27,7 @@ export interface PageConfig {
   sections: Record<string, SectionConfig>
 }
 
-export const CONTENT_CONFIG: Record<string, PageConfig> = {
+export const CONTENT_CONFIG = {
   homepage: {
     label: 'Homepage',
     sections: {
@@ -217,4 +219,4 @@ export const CONTENT_CONFIG: Record<string, PageConfig> = {
       },
     },
   },
-}
+} satisfies Record<string, PageConfig>
