@@ -29,7 +29,7 @@ describe('POST /api/enquiry', () => {
   })
 
   it('returns 400 when email is missing', async () => {
-    const req = makeRequest({ persona: 'sarah', enquiry_type: 'waitlist' })
+    const req = makeRequest({ persona: 'energy', enquiry_type: 'waitlist' })
     const res = await POST(req)
     expect(res.status).toBe(400)
     const body = await res.json()
@@ -45,7 +45,7 @@ describe('POST /api/enquiry', () => {
   it('returns 200 and inserts lead for valid waitlist submission', async () => {
     const req = makeRequest({
       email: 'sarah@example.com',
-      persona: 'sarah',
+      persona: 'energy',
       enquiry_type: 'waitlist',
       source_page: '/start',
     })
@@ -55,7 +55,7 @@ describe('POST /api/enquiry', () => {
     expect(mockInsert).toHaveBeenCalledWith(
       expect.objectContaining({
         email: 'sarah@example.com',
-        persona: 'sarah',
+        persona: 'energy',
         enquiry_type: 'waitlist',
         status: 'new',
       })

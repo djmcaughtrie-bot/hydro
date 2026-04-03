@@ -40,7 +40,7 @@ export async function POST(request: Request) {
   const sectionConfig = (pageConfig?.sections as Record<string, SectionConfig> | undefined)?.[section]
   if (!sectionConfig) return Response.json({ error: 'Invalid page/section' }, { status: 400 })
 
-  const VALID_PERSONAS = ['sarah', 'marcus', 'elena'] as const
+  const VALID_PERSONAS = ['energy', 'performance', 'longevity'] as const
   const sanitisedPersona = VALID_PERSONAS.includes(persona) ? persona : null
   const sanitisedContext = typeof additional_context === 'string'
     ? additional_context.slice(0, 500).replace(/[\x00-\x1F\x7F]/g, '')

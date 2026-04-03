@@ -8,7 +8,7 @@ const enquirySchema = z.object({
   name: z.string().optional().nullable(),
   email: z.string().email({ message: 'A valid email address is required' }),
   phone: z.string().optional().nullable(),
-  persona: z.enum(['sarah', 'marcus', 'elena', 'clinic', 'general']).optional().nullable(),
+  persona: z.enum(['energy', 'performance', 'longevity', 'clinic', 'general']).optional().nullable(),
   enquiry_type: z.enum(['product', 'clinic', 'waitlist', 'general']),
   message: z.string().optional().nullable(),
   source_page: z.string().optional().nullable(),
