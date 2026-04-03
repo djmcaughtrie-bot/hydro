@@ -25,7 +25,7 @@ describe('sendLeadNotification', () => {
     const result = await sendLeadNotification({
       name: 'Sarah',
       email: 'sarah@example.com',
-      persona: 'sarah',
+      persona: 'energy',
       enquiry_type: 'waitlist',
       source_page: '/start',
     })
