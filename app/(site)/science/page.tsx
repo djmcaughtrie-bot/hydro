@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { StudyGrid } from '@/components/science/StudyGrid'
 import type { Study } from '@/lib/types'
@@ -83,7 +84,9 @@ export default async function SciencePage() {
       {/* Study grid */}
       <section className="bg-cream pb-16">
         <div className="mx-auto max-w-6xl px-6">
-          <StudyGrid studies={studies} />
+          <Suspense fallback={<p className="font-sans text-sm text-ink-light">Loading studies...</p>}>
+            <StudyGrid studies={studies} />
+          </Suspense>
         </div>
       </section>
 
