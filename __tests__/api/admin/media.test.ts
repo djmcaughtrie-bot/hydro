@@ -127,11 +127,12 @@ describe('POST /api/admin/media', () => {
     const body = await res.json()
     expect(body.id).toBe('m-2')
     expect(body.url).toBe('https://cdn.test/image/hero.jpg')
+    expect(mockStorageUpload).toHaveBeenCalled()
+    expect(mockInsert).toHaveBeenCalled()
   })
 
   it('returns url only for captions upload (no media table insert)', async () => {
     mockStorageGetPublicUrl.mockReturnValue({ data: { publicUrl: 'https://cdn.test/captions/subs.vtt' } })
-    mockInsert.mockClear()
     const { POST } = await import('@/app/api/admin/media/route')
     const mockFile = {
       name: 'subs.vtt',

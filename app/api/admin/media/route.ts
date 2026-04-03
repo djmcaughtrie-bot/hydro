@@ -31,9 +31,10 @@ export async function POST(request: Request) {
   if (!file) return Response.json({ error: 'No file provided' }, { status: 400 })
 
   const rawMediaType = formData.get('media_type') as string | null
-  const mediaType = VALID_MEDIA_TYPES.includes(rawMediaType as typeof VALID_MEDIA_TYPES[number])
-    ? (rawMediaType as typeof VALID_MEDIA_TYPES[number])
-    : 'image'
+  if (!rawMediaType || !VALID_MEDIA_TYPES.includes(rawMediaType as typeof VALID_MEDIA_TYPES[number])) {
+    return Response.json({ error: 'Invalid media_type' }, { status: 400 })
+  }
+  const mediaType = rawMediaType as typeof VALID_MEDIA_TYPES[number]
 
   const rawFocalPoint = formData.get('focal_point') as string | null
   const focalPoint = VALID_FOCAL_POINTS.includes(rawFocalPoint as typeof VALID_FOCAL_POINTS[number])
@@ -44,7 +45,8 @@ export async function POST(request: Request) {
   const height = parseInt((formData.get('height') as string) ?? '0', 10) || 0
   const fileSizeKb = Math.round(file.size / 1024)
   const filename = file.name
-  const storagePath = `${mediaType}/${Date.now()}-${filename}`
+  const safeFilename = filename.replace(/[^a-zA-Z0-9.\-_]/g, '_')
+  const storagePath = `${mediaType}/${Date.now()}-${safeFilename}`
 
   const adminClient = createAdminClient()
   const { error: uploadError } = await adminClient.storage
