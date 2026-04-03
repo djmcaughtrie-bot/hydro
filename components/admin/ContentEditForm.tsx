@@ -4,7 +4,9 @@ import { useState } from 'react'
 import Link from 'next/link'
 import type { ContentItem, ContentStatus } from '@/lib/types'
 import { CONTENT_CONFIG } from '@/lib/content-config'
-import type { FieldMeta } from '@/lib/content-config'
+import type { FieldMeta, SectionConfig } from '@/lib/content-config'
+import { ImagePanel } from './ImagePanel'
+import { VideoPanel } from './VideoPanel'
 
 interface Props {
   item: ContentItem
@@ -28,9 +30,10 @@ const PERSONA_LABELS: Record<string, string> = {
 
 export function ContentEditForm({ item }: Props) {
   const pageConfig = CONTENT_CONFIG[item.page as keyof typeof CONTENT_CONFIG]
-  const sections = pageConfig?.sections as Record<string, { label: string; fields: Record<string, FieldMeta> }> | undefined
-  const sectionConfig = sections?.[item.section]
+  const sectionConfig = pageConfig?.sections[item.section] as SectionConfig | undefined
   const fieldDefs: Record<string, FieldMeta> = sectionConfig?.fields ?? {}
+
+  const [mediaFields, setMediaFields] = useState<Record<string, unknown>>({})
 
   const [fields, setFields] = useState<Record<string, string>>(() => {
     const json = item.content_json as Record<string, unknown>
@@ -57,7 +60,7 @@ export function ContentEditForm({ item }: Props) {
       const res = await fetch(`/api/admin/content/${item.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ content_json: { ...item.content_json, ...fields } }),
+        body: JSON.stringify({ content_json: { ...item.content_json, ...fields, ...mediaFields } }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -109,6 +112,7 @@ export function ContentEditForm({ item }: Props) {
   const pageLabel = pageConfig?.label ?? item.page
   const sectionLabel = sectionConfig?.label ?? item.section
   const personaLabel = item.persona ? (PERSONA_LABELS[item.persona] ?? item.persona) : null
+  const mergedContentJson = { ...item.content_json, ...mediaFields }
 
   return (
     <div>
@@ -216,10 +220,26 @@ export function ContentEditForm({ item }: Props) {
             </div>
           )}
 
-          {/* Placeholder: ImagePanel (Plan 3c-media) */}
-          <div className="rounded-lg border border-dashed border-gray-200 p-4 text-center">
-            <p className="font-sans text-xs text-ink-light">Image &amp; video panels — Plan 3c-media</p>
-          </div>
+          {sectionConfig?.imageGuidelines && (
+            <div className="mb-6">
+              <ImagePanel
+                contentJson={mergedContentJson}
+                imageGuidelines={sectionConfig.imageGuidelines}
+                onChange={(updates) => setMediaFields(prev => ({ ...prev, ...updates }))}
+              />
+            </div>
+          )}
+
+          {sectionConfig?.videoType && (
+            <div className="mb-6">
+              <VideoPanel
+                contentJson={mergedContentJson}
+                videoType={sectionConfig.videoType}
+                lazyLoadDefault={sectionConfig.lazyLoadDefault ?? true}
+                onChange={(updates) => setMediaFields(prev => ({ ...prev, ...updates }))}
+              />
+            </div>
+          )}
 
           <div className="mt-6 space-y-2 border-t border-gray-100 pt-4">
             <p className="mb-2 font-mono text-xs font-semibold uppercase tracking-wider text-ink-light">Meta</p>
