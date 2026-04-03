@@ -30,7 +30,7 @@ const PERSONA_LABELS: Record<string, string> = {
 
 export function ContentEditForm({ item }: Props) {
   const pageConfig = CONTENT_CONFIG[item.page as keyof typeof CONTENT_CONFIG]
-  const sectionConfig = pageConfig?.sections[item.section] as SectionConfig | undefined
+  const sectionConfig = (pageConfig?.sections as Record<string, SectionConfig> | undefined)?.[item.section]
   const fieldDefs: Record<string, FieldMeta> = sectionConfig?.fields ?? {}
 
   const [mediaFields, setMediaFields] = useState<Record<string, unknown>>({})
