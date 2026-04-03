@@ -27,6 +27,73 @@ interface ResizeState {
   focalPoint: FocalPoint
 }
 
+interface MetaFieldsProps {
+  prefix: string
+  url: string | undefined
+  contentJson: Record<string, unknown>
+  onChange: (updates: Record<string, unknown>) => void
+}
+
+function MetaFields({ prefix, url, contentJson, onChange }: MetaFieldsProps) {
+  const [alt, setAlt] = useState((contentJson[`${prefix}_alt`] as string) ?? '')
+  const [title, setTitle] = useState((contentJson[`${prefix}_title`] as string) ?? '')
+  const [caption, setCaption] = useState((contentJson[`${prefix}_caption`] as string) ?? '')
+
+  // When the image changes (new upload or library pick), reset the text fields
+  const prevUrlRef = useRef<string | undefined>(url)
+  if (url !== prevUrlRef.current) {
+    prevUrlRef.current = url
+    setAlt((contentJson[`${prefix}_alt`] as string) ?? '')
+    setTitle((contentJson[`${prefix}_title`] as string) ?? '')
+    setCaption((contentJson[`${prefix}_caption`] as string) ?? '')
+  }
+
+  if (!url) return null
+  return (
+    <div className="mt-3 space-y-2">
+      <div>
+        <label htmlFor={`${prefix}_alt`} className="font-sans text-xs font-medium text-ink">
+          Alt text <span className="text-red-500">*</span>
+          <span className="ml-1 font-mono text-xs text-ink-light">accessibility · SEO signal</span>
+        </label>
+        <input
+          id={`${prefix}_alt`}
+          type="text"
+          value={alt}
+          onChange={(e) => { setAlt(e.target.value); onChange({ [`${prefix}_alt`]: e.target.value }) }}
+          className="mt-0.5 w-full rounded border border-gray-200 px-2 py-1.5 font-sans text-sm text-ink"
+        />
+      </div>
+      <div>
+        <label htmlFor={`${prefix}_title`} className="font-sans text-xs font-medium text-ink">
+          Title
+          <span className="ml-1 font-mono text-xs text-ink-light">tooltip · image search</span>
+        </label>
+        <input
+          id={`${prefix}_title`}
+          type="text"
+          value={title}
+          onChange={(e) => { setTitle(e.target.value); onChange({ [`${prefix}_title`]: e.target.value }) }}
+          className="mt-0.5 w-full rounded border border-gray-200 px-2 py-1.5 font-sans text-sm text-ink"
+        />
+      </div>
+      <div>
+        <label htmlFor={`${prefix}_caption`} className="font-sans text-xs font-medium text-ink">
+          Caption
+          <span className="ml-1 font-mono text-xs text-ink-light">figure element · GEO context</span>
+        </label>
+        <input
+          id={`${prefix}_caption`}
+          type="text"
+          value={caption}
+          onChange={(e) => { setCaption(e.target.value); onChange({ [`${prefix}_caption`]: e.target.value }) }}
+          className="mt-0.5 w-full rounded border border-gray-200 px-2 py-1.5 font-sans text-sm text-ink"
+        />
+      </div>
+    </div>
+  )
+}
+
 export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
   const desktopInputRef = useRef<HTMLInputElement>(null)
   const mobileInputRef = useRef<HTMLInputElement>(null)
@@ -43,7 +110,11 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
   async function handleUpload(file: File, slot: Slot, focalPoint: FocalPoint = 'center') {
     setUploading(true)
     setUploadError('')
-    setResizeState(null)
+    // Revoke any pending resize preview URL before clearing
+    setResizeState(prev => {
+      if (prev) URL.revokeObjectURL(prev.objectUrl)
+      return null
+    })
 
     // Read dimensions from image
     const objectUrl = URL.createObjectURL(file)
@@ -68,8 +139,10 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
 
       if (slot === 'desktop') {
         onChange({ image_url: data.url, image_width: data.width, image_height: data.height })
+        if (desktopInputRef.current) desktopInputRef.current.value = ''
       } else {
         onChange({ mobile_image_url: data.url, mobile_image_width: data.width, mobile_image_height: data.height })
+        if (mobileInputRef.current) mobileInputRef.current.value = ''
       }
     } catch {
       setUploadError('Network error. Please try again.')
@@ -115,58 +188,12 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
       })
     } else {
       onChange({
-        mobile_image_url: item.url, mobile_image_width: item.width, mobile_image_height: item.height,
+        mobile_image_url: item.url,
+        mobile_image_width: item.width,
+        mobile_image_height: item.height,
+        mobile_focal_point: item.focal_point,
       })
     }
-  }
-
-  function MetaFields({ slot }: { slot: Slot }) {
-    const prefix = slot === 'desktop' ? 'image' : 'mobile_image'
-    const url = slot === 'desktop' ? desktopUrl : mobileUrl
-    if (!url) return null
-    return (
-      <div className="mt-3 space-y-2">
-        <div>
-          <label htmlFor={`${prefix}_alt`} className="font-sans text-xs font-medium text-ink">
-            Alt text <span className="text-red-500">*</span>
-            <span className="ml-1 font-mono text-xs text-ink-light">accessibility · SEO signal</span>
-          </label>
-          <input
-            id={`${prefix}_alt`}
-            type="text"
-            defaultValue={(contentJson[`${prefix}_alt`] as string) ?? ''}
-            onChange={(e) => onChange({ [`${prefix}_alt`]: e.target.value })}
-            className="mt-0.5 w-full rounded border border-gray-200 px-2 py-1.5 font-sans text-sm text-ink"
-          />
-        </div>
-        <div>
-          <label htmlFor={`${prefix}_title`} className="font-sans text-xs font-medium text-ink">
-            Title
-            <span className="ml-1 font-mono text-xs text-ink-light">tooltip · image search</span>
-          </label>
-          <input
-            id={`${prefix}_title`}
-            type="text"
-            defaultValue={(contentJson[`${prefix}_title`] as string) ?? ''}
-            onChange={(e) => onChange({ [`${prefix}_title`]: e.target.value })}
-            className="mt-0.5 w-full rounded border border-gray-200 px-2 py-1.5 font-sans text-sm text-ink"
-          />
-        </div>
-        <div>
-          <label htmlFor={`${prefix}_caption`} className="font-sans text-xs font-medium text-ink">
-            Caption
-            <span className="ml-1 font-mono text-xs text-ink-light">figure element · GEO context</span>
-          </label>
-          <input
-            id={`${prefix}_caption`}
-            type="text"
-            defaultValue={(contentJson[`${prefix}_caption`] as string) ?? ''}
-            onChange={(e) => onChange({ [`${prefix}_caption`]: e.target.value })}
-            className="mt-0.5 w-full rounded border border-gray-200 px-2 py-1.5 font-sans text-sm text-ink"
-          />
-        </div>
-      </div>
-    )
   }
 
   return (
@@ -259,7 +286,7 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
           className="hidden"
           onChange={handleFileSelect('desktop')}
         />
-        <MetaFields slot="desktop" />
+        <MetaFields prefix="image" url={desktopUrl} contentJson={contentJson} onChange={onChange} />
       </div>
 
       {/* Mobile slot */}
@@ -306,7 +333,7 @@ export function ImagePanel({ contentJson, imageGuidelines, onChange }: Props) {
           className="hidden"
           onChange={handleFileSelect('mobile')}
         />
-        <MetaFields slot="mobile" />
+        <MetaFields prefix="mobile_image" url={mobileUrl} contentJson={contentJson} onChange={onChange} />
       </div>
 
       {showLibrary && (
