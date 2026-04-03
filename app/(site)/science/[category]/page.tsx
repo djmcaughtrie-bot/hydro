@@ -27,6 +27,7 @@ const categoryMeta: Record<
     persona: 'sarah' | 'marcus' | 'elena' | null
     personaQuote: string | null
     personaCta: string | null
+    ctaHeadline: string
   }
 > = {
   energy: {
@@ -40,6 +41,7 @@ const categoryMeta: Record<
     personaQuote:
       '"What if the reason nothing\'s working isn\'t you — it\'s that nothing works at the right level?"',
     personaCta: 'Explore for energy & clarity',
+    ctaHeadline: 'Ready to try it for yourself?',
   },
   recovery: {
     title: 'Athletic Recovery',
@@ -52,6 +54,7 @@ const categoryMeta: Record<
     personaQuote:
       '"600ml/min. 99.99% purity. The recovery tool most serious athletes haven\'t discovered yet."',
     personaCta: 'Explore for recovery',
+    ctaHeadline: 'Ready to try it for yourself?',
   },
   longevity: {
     title: 'Longevity & Cellular Health',
@@ -64,6 +67,7 @@ const categoryMeta: Record<
     personaQuote:
       '"The most interesting thing about molecular hydrogen isn\'t what it does — it\'s how it decides what to target."',
     personaCta: 'Explore for longevity',
+    ctaHeadline: 'Ready to try it for yourself?',
   },
   safety: {
     title: 'Safety',
@@ -75,6 +79,7 @@ const categoryMeta: Record<
     persona: null,
     personaQuote: null,
     personaCta: null,
+    ctaHeadline: 'Fifteen years of research. Ready to experience it?',
   },
   inflammation: {
     title: 'Inflammation',
@@ -86,6 +91,7 @@ const categoryMeta: Record<
     persona: null,
     personaQuote: null,
     personaCta: null,
+    ctaHeadline: 'See the science. Then decide.',
   },
   respiratory: {
     title: 'Respiratory Health',
@@ -97,6 +103,7 @@ const categoryMeta: Record<
     persona: null,
     personaQuote: null,
     personaCta: null,
+    ctaHeadline: 'Delivered directly to the bloodstream. Ready to explore?',
   },
 }
 
@@ -228,7 +235,7 @@ export default async function CategoryPage({ params }: Props) {
       <section className="bg-ink py-12">
         <div className="mx-auto max-w-6xl px-6 text-center">
           <h2 className="mb-4 font-display text-3xl text-white">
-            {meta.personaCta ?? 'Learn more about the device'}
+            {meta.ctaHeadline}
           </h2>
           <Link
             href={productHref}
