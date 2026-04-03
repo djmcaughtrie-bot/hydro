@@ -38,10 +38,9 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <span className="cursor-not-allowed font-sans text-sm text-ink-light/50">
-                  Science{' '}
-                  <span className="text-xs">(coming soon)</span>
-                </span>
+                <Link href="/science" className="font-sans text-sm transition-colors hover:text-white">
+                  Science
+                </Link>
               </li>
             </ul>
           </div>

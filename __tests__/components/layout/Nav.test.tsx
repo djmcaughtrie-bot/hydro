@@ -26,11 +26,9 @@ describe('Nav', () => {
     expect(screen.getByRole('link', { name: /^faq$/i })).toBeInTheDocument()
   })
 
-  it('renders Science as aria-disabled (not a link)', () => {
+  it('renders Science as a link to /science', () => {
     render(<Nav />)
-    const scienceEl = screen.getByText(/^science$/i)
-    expect(scienceEl).toHaveAttribute('aria-disabled', 'true')
-    expect(scienceEl.tagName).not.toBe('A')
+    expect(screen.getByRole('link', { name: /^science$/i })).toHaveAttribute('href', '/science')
   })
 
   it('renders Enquire CTA linking to /product', () => {
