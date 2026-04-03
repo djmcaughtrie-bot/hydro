@@ -15,12 +15,22 @@ const PROHIBITED = [
   'prevent disease',
   'from my own experience',
   'no side effects',
-]
+] as const
 
 export type ComplianceResult =
   | { pass: true }
   | { pass: false; violations: { field: string; word: string }[] }
 
+/**
+ * Scans content fields for prohibited marketing claims.
+ * Accepts `Record<string, unknown>` (not `string`) to handle JSONB objects
+ * from Supabase that may contain non-string values (numbers, URLs, booleans).
+ * Non-string values are silently skipped.
+ * Deduplication: if both "proven to help" and "proven to" match in a field,
+ * only the longer phrase is reported. The deduplication assumes no two phrases
+ * in PROHIBITED are independent substrings of each other — verify this holds
+ * when adding new entries.
+ */
 export function checkCompliance(fields: Record<string, unknown>): ComplianceResult {
   const violations: { field: string; word: string }[] = []
   for (const [field, value] of Object.entries(fields)) {

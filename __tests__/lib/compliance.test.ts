@@ -23,6 +23,8 @@ describe('checkCompliance', () => {
     expect(result.pass).toBe(false)
     if (!result.pass) {
       expect(result.violations).toHaveLength(2)
+      expect(result.violations).toContainEqual({ field: 'headline', word: 'proven to help' })
+      expect(result.violations).toContainEqual({ field: 'body', word: 'cures' })
     }
   })
 
