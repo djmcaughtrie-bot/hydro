@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TrustBar } from '@/components/sections/TrustBar'
 import { PersonaCards } from '@/components/sections/PersonaCards'
+import { PersonaSelector } from '@/components/PersonaSelector'
+import { getPageContent } from '@/lib/content'
 
 export const metadata: Metadata = {
   title: 'H2 Revive — Hydrogen Inhalation Technology',
@@ -9,7 +11,34 @@ export const metadata: Metadata = {
     "The UK's dedicated hydrogen inhalation wellness brand. Research-backed molecular hydrogen technology for energy, recovery, and longevity.",
 }
 
-export default function HomePage() {
+const VALID_PERSONAS = ['energy', 'performance', 'longevity'] as const
+type Persona = typeof VALID_PERSONAS[number]
+
+interface Props {
+  searchParams: { persona?: string }
+}
+
+export default async function HomePage({ searchParams }: Props) {
+  const raw = searchParams.persona
+  const persona: Persona | null = VALID_PERSONAS.includes(raw as Persona) ? (raw as Persona) : null
+
+  const content = await getPageContent(
+    'homepage',
+    ['hero', 'features', 'social-proof'],
+    persona
+  )
+
+  const hero = content['hero'] ?? {}
+  const features = content['features'] ?? {}
+  const socialProof = content['social-proof'] ?? {}
+
+  const heroHeadline = (hero.headline as string) ?? 'The smallest molecule in existence. The biggest idea in British wellness.'
+  const heroBody = (hero.body as string) ?? 'Clinically studied. UK-based. Built for the serious.'
+  const heroCta = (hero.cta_text as string) ?? 'Explore the device'
+
+  const featuresHeadline = (features.headline as string) ?? '50+ peer-reviewed studies. One remarkable molecule.'
+  const featuresBody = (features.body as string) ?? 'Molecular hydrogen is the smallest antioxidant in existence. It crosses the blood-brain barrier, enters mitochondria, and selectively neutralises only the most harmful free radicals.'
+
   return (
     <div>
       {/* Hero */}
@@ -21,18 +50,16 @@ export default function HomePage() {
                 Hydrogen inhalation technology
               </p>
               <h1 className="mb-4 font-display text-5xl leading-tight text-ink sm:text-6xl">
-                The smallest molecule in existence.{' '}
-                <span className="text-teal">The biggest idea in British wellness.</span>
+                {heroHeadline}
               </h1>
-              <p className="mb-8 font-sans text-base text-ink-mid">
-                Clinically studied. UK-based. Built for the serious.
-              </p>
-              <div className="flex flex-wrap gap-3">
+              <p className="mb-6 font-sans text-base text-ink-mid">{heroBody}</p>
+              <PersonaSelector current={persona} />
+              <div className="mt-4 flex flex-wrap gap-3">
                 <Link
-                  href="/product"
+                  href={`/product${persona ? `?persona=${persona}` : ''}`}
                   className="inline-flex items-center rounded-pill bg-teal px-6 py-2.5 font-sans text-sm font-medium text-white transition-colors hover:bg-teal-dark"
                 >
-                  Explore the device
+                  {heroCta}
                 </Link>
                 <span
                   className="inline-flex cursor-not-allowed items-center rounded-pill border border-ink-mid/30 px-6 py-2.5 font-sans text-sm font-medium text-ink-light"
@@ -67,8 +94,9 @@ export default function HomePage() {
             </div>
             <div className="md:col-span-2">
               <blockquote className="font-display text-2xl leading-snug text-ink">
-                &ldquo;I started H2 Revive because I believe the British market deserves honest,
-                research-backed wellness technology. No overclaiming. Just the science.&rdquo;
+                {socialProof.quote
+                  ? `\u201c${socialProof.quote as string}\u201d`
+                  : '\u201cI started H2 Revive because I believe the British market deserves honest, research-backed wellness technology. No overclaiming. Just the science.\u201d'}
               </blockquote>
               <Link
                 href="/about"
@@ -84,14 +112,8 @@ export default function HomePage() {
       {/* Science teaser */}
       <section className="bg-teal-light py-16">
         <div className="mx-auto max-w-6xl px-6 text-center">
-          <h2 className="mb-4 font-display text-4xl text-ink">
-            50+ peer-reviewed studies. One remarkable molecule.
-          </h2>
-          <p className="mx-auto mb-8 max-w-xl font-sans text-base text-ink-mid">
-            Molecular hydrogen is the smallest antioxidant in existence. It crosses the
-            blood-brain barrier, enters mitochondria, and selectively neutralises only the most
-            harmful free radicals.
-          </p>
+          <h2 className="mb-4 font-display text-4xl text-ink">{featuresHeadline}</h2>
+          <p className="mx-auto mb-8 max-w-xl font-sans text-base text-ink-mid">{featuresBody}</p>
           <span
             className="inline-flex cursor-not-allowed font-mono text-xs uppercase tracking-widest text-ink-light"
             title="Coming soon"
@@ -119,7 +141,7 @@ export default function HomePage() {
                 CE certified. 2-year UK warranty. Up to 1,200&nbsp;ppb H&#8322; concentration.
               </p>
               <Link
-                href="/product"
+                href={`/product${persona ? `?persona=${persona}` : ''}`}
                 className="inline-flex items-center rounded-pill bg-teal px-6 py-2.5 font-sans text-sm font-medium text-white transition-colors hover:bg-teal-dark"
               >
                 Enquire now
