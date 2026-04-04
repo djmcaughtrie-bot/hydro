@@ -90,11 +90,17 @@ export function EnquiryForm({
 
   if (submitted) {
     return (
-      <div className="text-center">
-        <p className="font-display text-2xl text-teal">Thank you.</p>
-        <p className="mt-2 font-sans text-sm text-ink-light">
-          We&apos;ll be in touch shortly.
+      <div className="space-y-4 rounded-lg border border-teal/20 bg-teal-light p-6">
+        <p className="font-display text-2xl text-ink">We&apos;ve got your enquiry.</p>
+        <p className="font-sans text-sm leading-relaxed text-ink-mid">
+          Someone from the H2 Revive team will be in touch within one working day. In the meantime, the Science Hub has the full research behind everything we do.
         </p>
+        <a
+          href="/science"
+          className="inline-flex items-center font-mono text-xs uppercase tracking-widest text-teal transition-colors hover:text-teal-dark"
+        >
+          Explore the science &rarr;
+        </a>
       </div>
     )
   }

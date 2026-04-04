@@ -9,7 +9,7 @@ export function Footer() {
           <div className="md:col-span-2">
             <Image src="/logo.svg" alt="H2 Revive" width={80} height={54} />
             <p className="mt-4 max-w-xs font-sans text-sm leading-relaxed text-ink-light">
-              Hydrogen inhalation technology, coming to the UK.
+              Hydrogen inhalation technology. UK-based.
             </p>
           </div>
 
@@ -40,6 +40,11 @@ export function Footer() {
               <li>
                 <Link href="/science" className="font-sans text-sm transition-colors hover:text-white">
                   Science
+                </Link>
+              </li>
+              <li>
+                <Link href="/clinics" className="font-sans text-sm transition-colors hover:text-white">
+                  For clinics
                 </Link>
               </li>
             </ul>

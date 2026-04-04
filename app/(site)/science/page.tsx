@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { StudyGrid } from '@/components/science/StudyGrid'
 import { getPageContent } from '@/lib/content'
 import { isPageHidden } from '@/lib/site-settings'
+import { EmailCapture } from '@/components/forms/EmailCapture'
 import type { Study } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -119,6 +120,19 @@ export default async function SciencePage() {
           <Suspense fallback={<p className="font-sans text-sm text-ink-light">Loading studies...</p>}>
             <StudyGrid studies={studies} />
           </Suspense>
+        </div>
+      </section>
+
+      {/* Email capture — between studies and CTA */}
+      <section className="bg-ink py-12">
+        <div className="mx-auto max-w-6xl px-6">
+          <EmailCapture
+            heading="The research, delivered to you."
+            subheading="New studies, plain-English summaries, and H2 Revive news — occasional and useful."
+            source="science"
+            enquiryType="general"
+            darkBackground
+          />
         </div>
       </section>
 

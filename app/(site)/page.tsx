@@ -7,6 +7,9 @@ import { getPageContent } from '@/lib/content'
 import { resolvePersonaServer } from '@/lib/persona'
 import { getTestimonials } from '@/lib/testimonials'
 import { TestimonialStrip } from '@/components/testimonials/TestimonialStrip'
+import { createClient } from '@/lib/supabase/server'
+import type { Study } from '@/lib/types'
+import { EmailCapture } from '@/components/forms/EmailCapture'
 
 export const dynamic = 'force-dynamic'
 
@@ -24,12 +27,23 @@ export default async function HomePage({ searchParams }: Props) {
   const persona = resolvePersonaServer(searchParams)
   const personaParam = persona ? `?persona=${persona}` : ''
 
-  const [content, energyT, performanceT, longevityT] = await Promise.all([
+  const supabase = await createClient()
+
+  const [content, energyT, performanceT, longevityT, { data: featuredStudiesData }] = await Promise.all([
     getPageContent('homepage', ['hero', 'features', 'social-proof', 'device-cta', 'trust-bar', 'persona-cards'], persona),
     getTestimonials('homepage', 'energy'),
     getTestimonials('homepage', 'performance'),
     getTestimonials('homepage', 'longevity'),
+    supabase
+      .from('studies')
+      .select('id, title, summary, key_finding, evidence_level, study_type, doi_url, pubmed_url')
+      .eq('is_featured', true)
+      .eq('is_published', true)
+      .order('sort_order', { ascending: true })
+      .limit(3),
   ])
+
+  const featuredStudies: Pick<Study, 'id' | 'title' | 'summary' | 'key_finding' | 'evidence_level' | 'study_type' | 'doi_url' | 'pubmed_url'>[] = featuredStudiesData ?? []
 
   // One per persona, in a fixed order so the strip always reads Energy → Performance → Longevity
   const testimonials = [energyT[0], performanceT[0], longevityT[0]].filter(Boolean)
@@ -156,25 +170,76 @@ export default async function HomePage({ searchParams }: Props) {
         </div>
       </section>
 
+      {/* Email capture — below CEO intro */}
+      <section className="bg-ink py-12">
+        <div className="mx-auto max-w-6xl px-6">
+          <EmailCapture
+            heading="Stay informed as we launch."
+            subheading="Research updates, launch news, and early access — nothing else."
+            source="homepage"
+            enquiryType="waitlist"
+            darkBackground
+          />
+        </div>
+      </section>
+
       {/* Science teaser */}
       <section className="bg-teal-light py-16">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <h2 className="mb-4 font-display text-4xl text-ink">{featuresHeadline}</h2>
-          <p className="mx-auto mb-8 max-w-xl font-sans text-base text-ink-mid">{featuresBody}</p>
-          {featuresCta ? (
-            <Link
-              href={featuresUrl}
-              className="inline-flex items-center font-mono text-xs uppercase tracking-widest text-teal hover:text-teal-dark"
-            >
-              {featuresCta} &rarr;
-            </Link>
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="mb-10 text-center">
+            <h2 className="mb-4 font-display text-4xl text-ink">{featuresHeadline}</h2>
+            <p className="mx-auto max-w-xl font-sans text-base text-ink-mid">{featuresBody}</p>
+          </div>
+          {featuredStudies.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                {featuredStudies.map((study) => (
+                  <div key={study.id} className="rounded-lg border border-teal/20 bg-white p-5">
+                    <div className="mb-3 flex flex-wrap gap-2">
+                      <span className="rounded bg-teal/10 px-1.5 py-0.5 font-mono text-xs text-teal">
+                        {study.evidence_level}
+                      </span>
+                      <span className="rounded bg-ink-light/10 px-1.5 py-0.5 font-mono text-xs text-ink-mid">
+                        {study.study_type}
+                      </span>
+                    </div>
+                    <h3 className="mb-2 font-sans text-sm font-semibold leading-snug text-ink">
+                      {study.title}
+                    </h3>
+                    <p className="mb-3 font-sans text-xs leading-relaxed text-ink-mid">
+                      {study.summary}
+                    </p>
+                    {(study.doi_url || study.pubmed_url) && (
+                      <a
+                        href={study.doi_url ?? study.pubmed_url ?? '#'}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-xs text-teal transition-colors hover:text-teal-dark"
+                      >
+                        {study.doi_url ? 'DOI ↗' : 'PubMed ↗'}
+                      </a>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-8 text-center">
+                <Link
+                  href={featuresUrl}
+                  className="inline-flex items-center font-mono text-xs uppercase tracking-widest text-teal hover:text-teal-dark"
+                >
+                  {featuresCta || 'Explore the research'} &rarr;
+                </Link>
+              </div>
+            </>
           ) : (
-            <span
-              className="inline-flex cursor-not-allowed font-mono text-xs uppercase tracking-widest text-ink-light"
-              title="Coming soon"
-            >
-              Explore the research &mdash; coming soon
-            </span>
+            <div className="text-center">
+              <Link
+                href={featuresUrl}
+                className="inline-flex items-center font-mono text-xs uppercase tracking-widest text-teal hover:text-teal-dark"
+              >
+                {featuresCta || 'Explore the research'} &rarr;
+              </Link>
+            </div>
           )}
         </div>
       </section>

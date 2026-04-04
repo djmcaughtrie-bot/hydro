@@ -9,6 +9,37 @@ import type { Persona } from '@/lib/persona'
 import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
 import type { Testimonial } from '@/lib/types'
 
+// Per-persona featured study callout
+const FEATURED_STUDIES: Record<Persona, {
+  label: string
+  title: string
+  finding: string
+  citation: string
+  url: string
+}> = {
+  energy: {
+    label: 'Featured study — Energy',
+    title: 'Hydrogen inhalation and fat oxidation at rest',
+    finding: 'A 2025 study from Palacký University found 60 minutes of H₂ inhalation was associated with increased fat oxidation at rest — suggesting a potential role in metabolic energy regulation.',
+    citation: 'Palacký University, 2025',
+    url: 'https://pubmed.ncbi.nlm.nih.gov',
+  },
+  performance: {
+    label: 'Featured study — Recovery',
+    title: 'Molecular hydrogen and exercise-induced oxidative stress',
+    finding: 'Research published in Medical Gas Research found that H₂-enriched water significantly reduced blood lactate levels and improved peak torque during exercise — suggesting a potential recovery benefit for trained athletes.',
+    citation: 'Medical Gas Research, 2012',
+    url: 'https://doi.org/10.1186/2045-9912-2-12',
+  },
+  longevity: {
+    label: 'Featured study — Longevity',
+    title: 'HYBRID II: hydrogen inhalation in cardiac arrest recovery',
+    finding: 'The HYBRID II trial, published in The Lancet eClinicalMedicine (2023), reported 46% full neurological recovery in the H₂ group vs 21% in controls — the strongest human RCT evidence to date for hydrogen\'s neuroprotective potential.',
+    citation: 'Lancet eClinicalMedicine, 2023',
+    url: 'https://doi.org/10.1016/j.eclinm.2023.101832',
+  },
+}
+
 // Per-persona hero/tab copy
 type PersonaKey = Persona | 'general'
 
@@ -188,6 +219,33 @@ export function ProductPageClient({
           </div>
         </div>
       </section>
+
+      {/* Featured study callout — persona-matched */}
+      {persona && (
+        <section className="bg-teal-light py-12">
+          <div className="mx-auto max-w-6xl px-6">
+            <div className="mx-auto max-w-2xl">
+              <p className="mb-3 font-mono text-xs uppercase tracking-widest text-teal">
+                {FEATURED_STUDIES[persona].label}
+              </p>
+              <h3 className="mb-3 font-display text-xl text-ink">
+                {FEATURED_STUDIES[persona].title}
+              </h3>
+              <p className="mb-4 font-sans text-sm leading-relaxed text-ink-mid">
+                {FEATURED_STUDIES[persona].finding}
+              </p>
+              <a
+                href={FEATURED_STUDIES[persona].url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-mono text-xs text-teal transition-colors hover:text-teal-dark"
+              >
+                {FEATURED_STUDIES[persona].citation} ↗
+              </a>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Testimonials — near enquiry form for maximum conversion impact */}
       {testimonials.length > 0 && (
