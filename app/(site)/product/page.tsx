@@ -4,7 +4,6 @@ import { getPageContent } from '@/lib/content'
 export const dynamic = 'force-dynamic'
 import { getTestimonials } from '@/lib/testimonials'
 import { ProductPageClient } from '@/components/product/ProductPageClient'
-import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
 
 export const metadata: Metadata = {
   title: 'The Device',
@@ -26,22 +25,14 @@ export default async function ProductPage() {
   const cta        = content['cta']           ?? {}
 
   return (
-    <>
-      <ProductPageClient
-        cmsHeroHeadline={hero.headline as string | undefined}
-        cmsHeroBody={hero.body as string | undefined}
-        cmsHeroCta={hero.cta_text as string | undefined}
-        cmsHowItWorksHeadline={howItWorks.headline as string | undefined}
-        cmsCtaHeadline={cta.headline as string | undefined}
-        cmsCtaSubheading={cta.subheading as string | undefined}
-      />
-      {testimonials.length > 0 && (
-        <section className="py-16 bg-cream">
-          <div className="mx-auto max-w-6xl px-6">
-            <TestimonialBlock testimonials={testimonials} />
-          </div>
-        </section>
-      )}
-    </>
+    <ProductPageClient
+      cmsHeroHeadline={hero.headline as string | undefined}
+      cmsHeroBody={hero.body as string | undefined}
+      cmsHeroCta={hero.cta_text as string | undefined}
+      cmsHowItWorksHeadline={howItWorks.headline as string | undefined}
+      cmsCtaHeadline={cta.headline as string | undefined}
+      cmsCtaSubheading={cta.subheading as string | undefined}
+      testimonials={testimonials}
+    />
   )
 }

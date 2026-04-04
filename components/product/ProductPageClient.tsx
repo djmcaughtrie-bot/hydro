@@ -6,6 +6,8 @@ import { PersonaSelector } from '@/components/PersonaSelector'
 import { usePersona } from '@/hooks/usePersona'
 import { PERSONAS } from '@/lib/persona'
 import type { Persona } from '@/lib/persona'
+import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
+import type { Testimonial } from '@/lib/types'
 
 // Per-persona hero/tab copy
 type PersonaKey = Persona | 'general'
@@ -74,6 +76,7 @@ interface Props {
   cmsHowItWorksHeadline?: string
   cmsCtaHeadline?: string
   cmsCtaSubheading?: string
+  testimonials?: Testimonial[]
 }
 
 export function ProductPageClient({
@@ -83,6 +86,7 @@ export function ProductPageClient({
   cmsHowItWorksHeadline,
   cmsCtaHeadline,
   cmsCtaSubheading,
+  testimonials = [],
 }: Props) {
   const { persona } = usePersona()
   const key: PersonaKey = persona ?? 'general'
@@ -184,6 +188,16 @@ export function ProductPageClient({
           </div>
         </div>
       </section>
+
+      {/* Testimonials — near enquiry form for maximum conversion impact */}
+      {testimonials.length > 0 && (
+        <section className="bg-white py-16">
+          <div className="mx-auto max-w-6xl px-6">
+            <p className="mb-8 font-mono text-xs uppercase tracking-widest text-teal">What people say</p>
+            <TestimonialBlock testimonials={testimonials} showPersonaBadge />
+          </div>
+        </section>
+      )}
 
       {/* Enquiry form */}
       <section id="enquiry" className="bg-ink py-16">

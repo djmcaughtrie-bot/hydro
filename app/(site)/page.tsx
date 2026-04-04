@@ -24,10 +24,15 @@ export default async function HomePage({ searchParams }: Props) {
   const persona = resolvePersonaServer(searchParams)
   const personaParam = persona ? `?persona=${persona}` : ''
 
-  const [content, testimonials] = await Promise.all([
+  const [content, energyT, performanceT, longevityT] = await Promise.all([
     getPageContent('homepage', ['hero', 'features', 'social-proof', 'device-cta', 'trust-bar', 'persona-cards'], persona),
-    getTestimonials('homepage'),
+    getTestimonials('homepage', 'energy'),
+    getTestimonials('homepage', 'performance'),
+    getTestimonials('homepage', 'longevity'),
   ])
+
+  // One per persona, in a fixed order so the strip always reads Energy → Performance → Longevity
+  const testimonials = [energyT[0], performanceT[0], longevityT[0]].filter(Boolean)
 
   const hero         = content['hero']           ?? {}
   const features     = content['features']       ?? {}
