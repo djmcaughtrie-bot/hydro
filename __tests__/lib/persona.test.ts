@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { isValidPersona, resolvePersonaServer, DEFAULT_PERSONA, PERSONAS } from '@/lib/persona'
+import { describe, it, expect } from 'vitest'
+import { isValidPersona, resolvePersonaServer, PERSONAS } from '@/lib/persona'
 
 describe('persona utilities', () => {
   describe('isValidPersona', () => {
@@ -33,20 +33,16 @@ describe('persona utilities', () => {
       expect(resolvePersonaServer({ persona: 'performance' })).toBe('performance')
     })
 
-    it('returns DEFAULT_PERSONA when persona is undefined', () => {
-      expect(resolvePersonaServer({})).toBe(DEFAULT_PERSONA)
+    it('returns null when persona is undefined', () => {
+      expect(resolvePersonaServer({})).toBeNull()
     })
 
-    it('returns DEFAULT_PERSONA when persona is invalid', () => {
-      expect(resolvePersonaServer({ persona: 'sarah' })).toBe(DEFAULT_PERSONA)
+    it('returns null when persona is invalid', () => {
+      expect(resolvePersonaServer({ persona: 'sarah' })).toBeNull()
     })
   })
 
   describe('constants', () => {
-    it('DEFAULT_PERSONA is energy', () => {
-      expect(DEFAULT_PERSONA).toBe('energy')
-    })
-
     it('PERSONAS contains all three values', () => {
       expect(PERSONAS).toEqual(['energy', 'performance', 'longevity'])
     })

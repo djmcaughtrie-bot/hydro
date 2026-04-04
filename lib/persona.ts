@@ -1,6 +1,5 @@
 export type Persona = 'energy' | 'performance' | 'longevity'
 export const PERSONAS: Persona[] = ['energy', 'performance', 'longevity']
-export const DEFAULT_PERSONA: Persona = 'energy'
 
 const STORAGE_KEY = 'h2r_persona'
 
@@ -9,13 +8,13 @@ export function isValidPersona(value: string | null | undefined): value is Perso
 }
 
 // Server-safe: reads from searchParams only (no window, no localStorage)
-export function resolvePersonaServer(searchParams: { persona?: string }): Persona {
-  return isValidPersona(searchParams.persona ?? null) ? (searchParams.persona as Persona) : DEFAULT_PERSONA
+export function resolvePersonaServer(searchParams: { persona?: string }): Persona | null {
+  return isValidPersona(searchParams.persona ?? null) ? (searchParams.persona as Persona) : null
 }
 
-// Client-only: URL param → localStorage → default
-export function resolvePersona(): Persona {
-  if (typeof window === 'undefined') return DEFAULT_PERSONA
+// Client-only: URL param → localStorage → null (general)
+export function resolvePersona(): Persona | null {
+  if (typeof window === 'undefined') return null
   const fromURL = new URLSearchParams(window.location.search).get('persona')
   if (isValidPersona(fromURL)) {
     localStorage.setItem(STORAGE_KEY, fromURL)
@@ -23,7 +22,7 @@ export function resolvePersona(): Persona {
   }
   const stored = localStorage.getItem(STORAGE_KEY)
   if (isValidPersona(stored)) return stored
-  return DEFAULT_PERSONA
+  return null
 }
 
 export function setStoredPersona(persona: Persona): void {
