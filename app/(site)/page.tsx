@@ -4,6 +4,7 @@ import { TrustBar } from '@/components/sections/TrustBar'
 import { PersonaCards } from '@/components/sections/PersonaCards'
 import { PersonaSelector } from '@/components/PersonaSelector'
 import { getPageContent } from '@/lib/content'
+import { resolvePersonaServer } from '@/lib/persona'
 
 export const metadata: Metadata = {
   title: 'H2 Revive — Hydrogen Inhalation Technology',
@@ -11,16 +12,12 @@ export const metadata: Metadata = {
     "The UK's dedicated hydrogen inhalation wellness brand. Research-backed molecular hydrogen technology for energy, recovery, and longevity.",
 }
 
-const VALID_PERSONAS = ['energy', 'performance', 'longevity'] as const
-type Persona = typeof VALID_PERSONAS[number]
-
 interface Props {
   searchParams: { persona?: string }
 }
 
 export default async function HomePage({ searchParams }: Props) {
-  const raw = searchParams.persona
-  const persona: Persona | null = VALID_PERSONAS.includes(raw as Persona) ? (raw as Persona) : null
+  const persona = resolvePersonaServer(searchParams)
 
   const content = await getPageContent(
     'homepage',
@@ -53,7 +50,7 @@ export default async function HomePage({ searchParams }: Props) {
                 {heroHeadline}
               </h1>
               <p className="mb-6 font-sans text-base text-ink-mid">{heroBody}</p>
-              <PersonaSelector current={persona} />
+              <PersonaSelector />
               <div className="mt-4 flex flex-wrap gap-3">
                 <Link
                   href={`/product${persona ? `?persona=${persona}` : ''}`}

@@ -4,6 +4,8 @@ import { EnquiryForm } from '@/components/forms/EnquiryForm'
 import { Accordion } from '@/components/ui/Accordion'
 import { PersonaSelector } from '@/components/PersonaSelector'
 import { getPageContent } from '@/lib/content'
+import { resolvePersonaServer, PERSONAS } from '@/lib/persona'
+import type { Persona } from '@/lib/persona'
 
 export const metadata: Metadata = {
   title: 'The Device',
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
     'Hydrogen inhalation technology for energy, recovery, and longevity. Enquire about the H2 Revive device.',
 }
 
-const outcomesTabs = {
+const outcomesTabs: Record<string, { label: string; content: string }> = {
   energy: {
     label: 'Energy',
     content: "Molecular hydrogen has been studied for its potential effects on mitochondrial efficiency and cognitive function. Research suggests it may support mental clarity and sustained energy levels by addressing oxidative stress at the cellular level — without the stimulant effects of caffeine.",
@@ -24,10 +26,7 @@ const outcomesTabs = {
     label: 'Longevity',
     content: "Oxidative stress is one of the primary drivers of cellular ageing. Molecular hydrogen is a selective antioxidant — it targets only the most harmful free radicals, leaving beneficial reactive oxygen species intact. Research explores its potential role in supporting long-term cellular health.",
   },
-} as const
-
-type Persona = keyof typeof outcomesTabs
-const personaKeys: Persona[] = ['energy', 'performance', 'longevity']
+}
 
 const specRows: [string, string][] = [
   ['H₂ concentration', 'Up to 1,200 ppb'],
@@ -66,8 +65,7 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ searchParams }: ProductPageProps) {
-  const raw = searchParams.persona
-  const persona: Persona = personaKeys.includes(raw as Persona) ? (raw as Persona) : 'energy'
+  const persona = resolvePersonaServer(searchParams)
 
   const content = await getPageContent(
     'product',
@@ -84,7 +82,7 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
   const heroBody = (hero.body as string) ?? 'H₂ concentration up to 1,200 ppb. Session length 20–60 minutes. CE certified.'
   const heroCta = (hero.cta_text as string) ?? 'Enquire now'
 
-  const tabContent = (features.body as string) ?? outcomesTabs[persona].content
+  const tabContent = (features.body as string) ?? (persona ? outcomesTabs[persona].content : outcomesTabs['energy'].content)
 
   const ctaHeadline = (cta.headline as string) ?? 'Enquire about the device.'
   const ctaSubheading = (cta.subheading as string) ?? "We're taking enquiries ahead of our UK launch. Tell us about yourself and we'll be in touch."
@@ -106,7 +104,7 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
                 {heroHeadline}
               </h1>
               <p className="mb-6 font-sans text-base text-ink-light">{heroBody}</p>
-              <PersonaSelector current={persona} />
+              <PersonaSelector />
               <div className="mt-4">
                 <a
                   href="#enquiry"
@@ -127,7 +125,7 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
             What the research explores
           </p>
           <div className="mb-8 flex flex-wrap gap-2">
-            {personaKeys.map((key) => (
+            {PERSONAS.map((key) => (
               <Link
                 key={key}
                 href={`/product?persona=${key}`}
@@ -204,7 +202,7 @@ export default async function ProductPage({ searchParams }: ProductPageProps) {
               <p className="font-sans text-sm text-ink-light">{ctaSubheading}</p>
             </div>
             <div>
-              <EnquiryForm source="product" defaultPersona={persona} />
+              <EnquiryForm source="product" defaultPersona={persona ?? undefined} />
               <p className="mt-4 font-sans text-xs leading-relaxed text-ink-light/60">
                 These statements have not been evaluated by the MHRA. This product is not intended
                 to diagnose, treat, cure, or prevent any disease.
