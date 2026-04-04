@@ -239,7 +239,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             <div className="rounded-lg border border-ink-light/20 bg-white px-8 py-12 text-center">
               <p className="mb-2 font-display text-xl text-ink">More research coming.</p>
               <p className="mb-6 font-sans text-sm text-ink-mid">
-                We're curating the strongest studies for this category. In the meantime, the full database is available.
+                We&apos;re curating the strongest studies for this category. In the meantime, the full database is available.
               </p>
               <Link
                 href="/science"
