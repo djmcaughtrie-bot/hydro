@@ -62,6 +62,11 @@ export function EnquiryForm({
     capturedPersonaRef.current = resolvePersona()
   }, [])
 
+  // Sync defaultPersona into form state when parent resolves it from localStorage
+  useEffect(() => {
+    if (defaultPersona) setValue('persona', defaultPersona)
+  }, [defaultPersona, setValue])
+
   const selectedPersona = watch('persona')
 
   async function onSubmit(data: FormData) {

@@ -109,7 +109,7 @@ export default async function HomePage({ searchParams }: Props) {
                 {heroSecondaryCta && (
                   <Link
                     href={heroSecondaryUrl}
-                    className="inline-flex items-center rounded-pill border border-ink-mid/30 px-6 py-2.5 font-sans text-sm font-medium text-ink-mid transition-colors hover:border-teal/50 hover:text-teal"
+                    className="inline-flex items-center rounded-pill border border-ink-mid/50 px-6 py-2.5 font-sans text-sm font-medium text-ink-mid transition-colors hover:border-teal hover:text-teal"
                   >
                     {heroSecondaryCta}
                   </Link>

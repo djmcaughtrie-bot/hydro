@@ -8,31 +8,44 @@ interface PersonaCardsContent {
 
 interface Props { content?: PersonaCardsContent }
 
-const ICONS = { energy: '⚡', performance: '🏃', longevity: '🌿' }
+const PERSONAS = [
+  {
+    key:         'energy',
+    label:       'Energy',
+    accentClass: 'border-t-persona-energy',
+    iconBg:      'bg-persona-energy/10',
+    iconColor:   'text-persona-energy',
+    icon:        '⚡',
+    defaultCopy: 'I want more energy and mental clarity',
+    href:        '/product?persona=energy',
+  },
+  {
+    key:         'performance',
+    label:       'Performance',
+    accentClass: 'border-t-persona-performance',
+    iconBg:      'bg-persona-performance/10',
+    iconColor:   'text-persona-performance',
+    icon:        '↑',
+    defaultCopy: 'I train hard and want to recover better',
+    href:        '/product?persona=performance',
+  },
+  {
+    key:         'longevity',
+    label:       'Longevity',
+    accentClass: 'border-t-persona-longevity',
+    iconBg:      'bg-persona-longevity/10',
+    iconColor:   'text-persona-longevity',
+    icon:        '◇',
+    defaultCopy: "I'm investing in long-term health and longevity",
+    href:        '/product?persona=longevity',
+  },
+] as const
 
 export function PersonaCards({ content }: Props) {
-  const personas = [
-    {
-      key:         'energy',
-      icon:        ICONS.energy,
-      label:       'Energy',
-      description: content?.energy_copy ?? 'I want more energy and mental clarity',
-      href:        '/product?persona=energy',
-    },
-    {
-      key:         'performance',
-      icon:        ICONS.performance,
-      label:       'Performance',
-      description: content?.performance_copy ?? 'I train hard and want to recover better',
-      href:        '/product?persona=performance',
-    },
-    {
-      key:         'longevity',
-      icon:        ICONS.longevity,
-      label:       'Longevity',
-      description: content?.longevity_copy ?? "I'm investing in long-term health and longevity",
-      href:        '/product?persona=longevity',
-    },
+  const items = [
+    { ...PERSONAS[0], description: content?.energy_copy      ?? PERSONAS[0].defaultCopy },
+    { ...PERSONAS[1], description: content?.performance_copy ?? PERSONAS[1].defaultCopy },
+    { ...PERSONAS[2], description: content?.longevity_copy   ?? PERSONAS[2].defaultCopy },
   ]
 
   return (
@@ -42,13 +55,15 @@ export function PersonaCards({ content }: Props) {
           Find your story
         </p>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          {personas.map(({ key, icon, label, description, href }) => (
+          {items.map(({ key, icon, iconBg, iconColor, accentClass, label, description, href }) => (
             <Link
               key={key}
               href={href}
-              className="group flex flex-col items-center rounded-lg border border-ink-light/20 bg-white p-6 text-center shadow-subtle transition-colors hover:border-teal"
+              className={`group flex flex-col items-center rounded-lg border border-ink-light/20 border-t-4 bg-white p-6 text-center shadow-subtle transition-colors hover:border-teal hover:border-t-4 ${accentClass}`}
             >
-              <span className="mb-3 text-3xl" aria-hidden="true">{icon}</span>
+              <span className={`mb-3 flex h-10 w-10 items-center justify-center rounded-full font-sans text-lg font-bold ${iconBg} ${iconColor}`} aria-hidden="true">
+                {icon}
+              </span>
               <p className="mb-2 font-display text-lg text-ink">{label}</p>
               <p className="font-sans text-sm text-ink-light">{description}</p>
               <p className="mt-4 font-mono text-xs uppercase tracking-widest text-teal">

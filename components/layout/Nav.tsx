@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
 
 const navLinks = [
@@ -15,6 +16,12 @@ const navLinks = [
 
 export function Nav() {
   const [open, setOpen] = useState(false)
+  const pathname = usePathname()
+
+  function isActive(href: string) {
+    if (href === '/') return pathname === '/'
+    return pathname.startsWith(href)
+  }
 
   return (
     <nav className="sticky top-0 z-50 border-b border-ink-light/20 bg-cream">
@@ -40,7 +47,12 @@ export function Nav() {
                 ) : (
                   <Link
                     href={href}
-                    className="font-sans text-sm text-ink-mid transition-colors hover:text-ink"
+                    className={cn(
+                      'font-sans text-sm transition-colors hover:text-ink',
+                      isActive(href)
+                        ? 'border-b-2 border-teal pb-0.5 text-ink'
+                        : 'text-ink-mid'
+                    )}
                   >
                     {label}
                   </Link>
@@ -86,7 +98,10 @@ export function Nav() {
                   ) : (
                     <Link
                       href={href}
-                      className="font-sans text-sm text-ink-mid hover:text-ink"
+                      className={cn(
+                        'font-sans text-sm hover:text-ink',
+                        isActive(href) ? 'font-medium text-ink' : 'text-ink-mid'
+                      )}
                       onClick={() => setOpen(false)}
                     >
                       {label}

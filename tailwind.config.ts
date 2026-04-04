@@ -20,6 +20,11 @@ const config: Config = {
           light: '#8AA0A3',
         },
         cream: '#F7F5F0',
+        persona: {
+          energy:      '#7B5EA7',
+          performance: '#1565C0',
+          longevity:   '#2E7D5A',
+        },
       },
       fontFamily: {
         display: ['var(--font-dm-serif)', 'Georgia', 'serif'],

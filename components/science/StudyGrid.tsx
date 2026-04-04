@@ -55,7 +55,7 @@ export function StudyGrid({ studies, initialCategory }: StudyGridProps) {
                 : 'border border-ink-light/30 text-ink-mid hover:border-teal/50'
             )}
           >
-            {slug === 'all' ? 'All' : slug}
+            {slug === 'all' ? 'All' : slug.charAt(0).toUpperCase() + slug.slice(1)}
           </button>
         ))}
       </div>
