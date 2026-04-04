@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { StudyGrid } from '@/components/science/StudyGrid'
 import { getPageContent } from '@/lib/content'
+import { isPageHidden } from '@/lib/site-settings'
 import type { Study } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -15,6 +17,8 @@ export const metadata: Metadata = {
 }
 
 export default async function SciencePage() {
+  if (await isPageHidden('science')) redirect('/')
+
   const supabase = await createClient()
 
   const [{ data }, content] = await Promise.all([

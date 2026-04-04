@@ -6,6 +6,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { ArticleBody } from '@/components/journal/ArticleBody'
 import { ArticleCta } from '@/components/journal/ArticleCta'
 import { isPageHidden } from '@/lib/site-settings'
+import { redirect } from 'next/navigation'
 import type { Post } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -52,7 +53,7 @@ export default async function PostPage({ params, searchParams }: Props) {
   const previewToken = searchParams.preview
 
   // Respect page-level hide toggle (preview token bypasses it)
-  if (!previewToken && await isPageHidden('journal')) notFound()
+  if (!previewToken && await isPageHidden('journal')) redirect('/')
 
   let post: Post | null = null
 

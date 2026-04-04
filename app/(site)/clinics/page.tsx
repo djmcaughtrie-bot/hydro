@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { getTestimonials } from '@/lib/testimonials'
 import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
+import { isPageHidden } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'For Clinics & Practitioners',
@@ -10,6 +12,8 @@ export const metadata: Metadata = {
 }
 
 export default async function ClinicsPage() {
+  if (await isPageHidden('clinics')) redirect('/')
+
   const testimonials = await getTestimonials('clinics', 'clinic')
 
   return (

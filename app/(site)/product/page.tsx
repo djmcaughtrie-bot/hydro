@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { getPageContent } from '@/lib/content'
+import { isPageHidden } from '@/lib/site-settings'
 
 export const dynamic = 'force-dynamic'
 import { getTestimonials } from '@/lib/testimonials'
@@ -11,6 +13,8 @@ export const metadata: Metadata = {
 }
 
 export default async function ProductPage() {
+  if (await isPageHidden('product')) redirect('/')
+
   const [content, testimonials] = await Promise.all([
     getPageContent(
       'product',

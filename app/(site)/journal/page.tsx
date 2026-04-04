@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PostCard } from '@/components/journal/PostCard'
 import { isPageHidden } from '@/lib/site-settings'
@@ -32,7 +32,7 @@ interface Props {
 }
 
 export default async function JournalPage({ searchParams }: Props) {
-  if (await isPageHidden('journal')) notFound()
+  if (await isPageHidden('journal')) redirect('/')
 
   const supabase = await createClient()
 

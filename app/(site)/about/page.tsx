@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { getPageContent } from '@/lib/content'
+import { isPageHidden } from '@/lib/site-settings'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +27,8 @@ const values = [
 ]
 
 export default async function AboutPage() {
+  if (await isPageHidden('about')) redirect('/')
+
   const content = await getPageContent('about', ['hero', 'ceo-story'], null)
 
   const hero = content['hero'] ?? {}

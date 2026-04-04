@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import { redirect } from 'next/navigation'
 import { Accordion } from '@/components/ui/Accordion'
 import { getPageContent } from '@/lib/content'
+import { isPageHidden } from '@/lib/site-settings'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,6 +55,8 @@ const FALLBACK_FAQS = [
 ]
 
 export default async function FAQPage() {
+  if (await isPageHidden('faq')) redirect('/')
+
   const content = await getPageContent('faq', ['hero', 'item'], null)
   const hero = content['hero'] ?? {}
   const faqSection = content['item'] ?? {}
