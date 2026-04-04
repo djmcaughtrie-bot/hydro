@@ -129,9 +129,10 @@ export async function checkCompliance(content: string): Promise<ComplianceResult
       messages: [{ role: 'user', content }],
     })
 
-    const text = msg.content[0].type === 'text' ? msg.content[0].text : null
-    if (!text) throw new Error('Empty response from compliance check')
+    const raw = msg.content[0].type === 'text' ? msg.content[0].text : null
+    if (!raw) throw new Error('Empty response from compliance check')
 
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
     const parsed = JSON.parse(text) as {
       compliant: boolean
       violations: ComplianceViolation[]

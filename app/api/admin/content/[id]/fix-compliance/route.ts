@@ -5,12 +5,16 @@ import type { ComplianceViolation } from '@/lib/compliance'
 
 const SYSTEM_PROMPT = `You are a UK advertising compliance editor for H2 Revive, a molecular hydrogen inhalation wellness brand.
 
-You will be given copy that has compliance violations and a list of what the violations are. Your job is to fix ONLY the flagged phrases, preserving everything else exactly. Do not rewrite, expand, or improve content beyond what is needed to resolve the violations.
+You will be given a JSON object of copy fields and a list of compliance violations. Fix ONLY the flagged phrases, leaving everything else character-for-character identical. Do not rewrite, expand, or improve anything beyond resolving the violations.
 
 ALWAYS USE: "may support", "research suggests", "some users report", "studies explore", "we believe"
 NEVER USE: "treats", "cures", "proven to", "guaranteed", "clinical grade", "medical device", "therapeutic treatment"
 
-Respond with valid JSON only matching the exact same structure as the input. No markdown, no preamble.`
+OUTPUT RULES — these are absolute:
+- Output the corrected JSON object and nothing else
+- No explanation, no preamble, no markdown code fences
+- The JSON must have exactly the same keys as the input
+- First character of your response must be {`
 
 export async function POST(
   request: Request,
@@ -70,7 +74,17 @@ Return the corrected JSON object with the same keys. Fix only the flagged phrase
     if (!raw) return Response.json({ error: 'No response from model' }, { status: 500 })
 
     const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
-    const fixed = JSON.parse(text) as Record<string, unknown>
+
+    let fixed: Record<string, unknown>
+    try {
+      fixed = JSON.parse(text) as Record<string, unknown>
+    } catch {
+      // Model returned non-JSON — surface the raw response to help debug
+      return Response.json(
+        { error: `Model returned non-JSON response: ${text.slice(0, 200)}` },
+        { status: 500 }
+      )
+    }
 
     const { error: updateError } = await adminClient
       .from('content_items')
