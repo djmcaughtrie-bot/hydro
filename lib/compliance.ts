@@ -123,7 +123,7 @@ export async function checkCompliance(content: string): Promise<ComplianceResult
   try {
     const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5-20251001',
       max_tokens: 512,
       system: COMPLIANCE_SYSTEM_PROMPT,
       messages: [{ role: 'user', content }],

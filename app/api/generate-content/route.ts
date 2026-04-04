@@ -58,7 +58,7 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
 
   async function generate(): Promise<Record<string, unknown> | null> {
     const msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5-20251001',
       max_tokens: 1024,
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: generation_prompt }],
