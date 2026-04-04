@@ -14,6 +14,8 @@ const navItems = [
   { label: 'Leads', href: '/admin/leads' },
   { label: 'Science', href: '/admin/science' },
   { label: 'Content', href: '/admin/content' },
+  { label: 'Testimonials', href: '/admin/testimonials' },
+  { label: 'Competitions', href: '/admin/competitions' },
   { label: 'Settings', href: '/admin/settings' },
 ]
 

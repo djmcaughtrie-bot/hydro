@@ -1,7 +1,9 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { CompetitionEntryForm } from '@/components/forms/CompetitionEntryForm'
+import { getFeatureFlag, SETTINGS_KEYS } from '@/lib/site-settings'
 
 export const metadata: Metadata = {
   title: 'Win an H2 Revive Device | H2 Revive',
@@ -9,6 +11,9 @@ export const metadata: Metadata = {
 }
 
 export default async function WinPage() {
+  const winEnabled = await getFeatureFlag(SETTINGS_KEYS.WIN_PAGE_ENABLED)
+  if (!winEnabled) redirect('/')
+
   const supabase = await createClient()
 
   const { data: competition } = await supabase
