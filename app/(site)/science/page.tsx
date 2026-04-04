@@ -69,15 +69,15 @@ export default async function SciencePage() {
           <p className="mt-4 max-w-xl font-sans text-base text-ink-light">{heroBody}</p>
           <div className="mt-8 flex flex-wrap gap-8">
             <div>
-              <div className="font-mono text-3xl text-teal">{studies.length}</div>
+              <div className="font-mono text-3xl text-teal">{(stats.stat1_number as string) ?? studies.length}</div>
               <div className="font-mono text-xs text-ink-light">{(stats.stat1_label as string) ?? 'studies'}</div>
             </div>
             <div>
-              <div className="font-mono text-3xl text-teal">{humanTrials}</div>
+              <div className="font-mono text-3xl text-teal">{(stats.stat2_number as string) ?? humanTrials}</div>
               <div className="font-mono text-xs text-ink-light">{(stats.stat2_label as string) ?? 'human trials'}</div>
             </div>
             <div>
-              <div className="font-mono text-3xl text-teal">{categorySet.size}</div>
+              <div className="font-mono text-3xl text-teal">{(stats.stat3_number as string) ?? categorySet.size}</div>
               <div className="font-mono text-xs text-ink-light">{(stats.stat3_label as string) ?? 'categories'}</div>
             </div>
           </div>

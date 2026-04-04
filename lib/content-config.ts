@@ -173,9 +173,12 @@ export const CONTENT_CONFIG = {
         label: 'Stats bar',
         contentType: 'body',
         fields: {
-          stat1_label: { label: 'Stat 1 label', hint: 'e.g. peer-reviewed studies', multiline: false, required: false },
-          stat2_label: { label: 'Stat 2 label', hint: 'e.g. human trials',          multiline: false, required: false },
-          stat3_label: { label: 'Stat 3 label', hint: 'e.g. research categories',   multiline: false, required: false },
+          stat1_number: { label: 'Stat 1 number', hint: 'overrides DB count — e.g. 1,000+', multiline: false, required: false },
+          stat1_label:  { label: 'Stat 1 label',  hint: 'e.g. peer-reviewed studies',       multiline: false, required: false },
+          stat2_number: { label: 'Stat 2 number', hint: 'overrides DB count — e.g. 70+',    multiline: false, required: false },
+          stat2_label:  { label: 'Stat 2 label',  hint: 'e.g. human trials',                multiline: false, required: false },
+          stat3_number: { label: 'Stat 3 number', hint: 'overrides DB count — e.g. 6',      multiline: false, required: false },
+          stat3_label:  { label: 'Stat 3 label',  hint: 'e.g. research categories',         multiline: false, required: false },
         },
       },
       mechanism: {

@@ -45,6 +45,30 @@ export interface MediaItem {
   uploaded_at: string
 }
 
+export interface Post {
+  id: string
+  created_at: string
+  updated_at: string
+  title: string
+  slug: string
+  excerpt: string | null
+  content: string
+  persona_tags: string[]
+  category: string | null
+  mid_cta_headline: string | null
+  mid_cta_body: string | null
+  mid_cta_label: string | null
+  mid_cta_url: string | null
+  bottom_cta_headline: string | null
+  bottom_cta_body: string | null
+  bottom_cta_label: string | null
+  bottom_cta_url: string | null
+  is_published: boolean
+  published_at: string | null
+  seo_title: string | null
+  seo_description: string | null
+}
+
 export interface Testimonial {
   id: string
   created_at: string

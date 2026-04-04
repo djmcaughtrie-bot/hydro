@@ -15,6 +15,7 @@ const navItems = [
   { label: 'Pages', href: '/admin/pages' },
   { label: 'Science', href: '/admin/science' },
   { label: 'Content', href: '/admin/content' },
+  { label: 'Journal', href: '/admin/posts' },
   { label: 'Testimonials', href: '/admin/testimonials' },
   { label: 'Competitions', href: '/admin/competitions' },
   { label: 'Settings', href: '/admin/settings' },
