@@ -48,18 +48,19 @@ export interface MediaItem {
 export interface Testimonial {
   id: string
   created_at: string
-  customer_name: string
-  customer_context: string | null
+  updated_at: string
+  name: string
+  location: string | null
   persona: string
-  quote: string
-  short_quote: string | null
   format: 'written' | 'video'
+  quote_short: string | null
+  quote_full: string
   video_url: string | null
-  thumbnail_url: string | null
-  placement: string[] | null
-  is_published: boolean
+  source: string | null
+  rating: number | null
   compliance_approved: boolean
   consent_on_file: boolean
-  source_page: string | null
-  collected_date: string | null
+  is_published: boolean
+  published_at: string | null
+  placement: string[] | null
 }

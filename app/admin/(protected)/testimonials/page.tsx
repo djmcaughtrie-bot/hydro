@@ -57,9 +57,9 @@ export default async function TestimonialsPage() {
               testimonials.map((t) => (
                 <tr key={t.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    <p className="font-sans text-sm font-medium text-ink">{t.customer_name}</p>
-                    {t.customer_context && (
-                      <p className="font-sans text-xs text-ink-light">{t.customer_context}</p>
+                    <p className="font-sans text-sm font-medium text-ink">{t.name}</p>
+                    {t.location && (
+                      <p className="font-sans text-xs text-ink-light">{t.location}</p>
                     )}
                   </td>
                   <td className="px-4 py-3">

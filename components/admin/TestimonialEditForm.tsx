@@ -15,12 +15,7 @@ const PLACEMENT_OPTIONS = [
   { value: 'clinics',          label: 'Clinics' },
 ]
 
-const PERSONA_OPTIONS = [
-  { value: 'energy',      label: 'Energy' },
-  { value: 'performance', label: 'Performance' },
-  { value: 'longevity',   label: 'Longevity' },
-  { value: 'clinic',      label: 'Clinic' },
-]
+const PERSONA_OPTIONS = ['energy', 'performance', 'longevity', 'clinic', 'general']
 
 interface Props {
   testimonial?: Testimonial
@@ -30,13 +25,15 @@ export function TestimonialEditForm({ testimonial }: Props) {
   const router = useRouter()
   const isNew = !testimonial
 
-  const [customerName,       setCustomerName]       = useState(testimonial?.customer_name ?? '')
-  const [customerContext,    setCustomerContext]    = useState(testimonial?.customer_context ?? '')
+  const [name,               setName]               = useState(testimonial?.name ?? '')
+  const [location,           setLocation]           = useState(testimonial?.location ?? '')
   const [persona,            setPersona]            = useState(testimonial?.persona ?? 'energy')
-  const [quote,              setQuote]              = useState(testimonial?.quote ?? '')
-  const [shortQuote,         setShortQuote]         = useState(testimonial?.short_quote ?? '')
+  const [quoteFull,          setQuoteFull]          = useState(testimonial?.quote_full ?? '')
+  const [quoteShort,         setQuoteShort]         = useState(testimonial?.quote_short ?? '')
   const [format,             setFormat]             = useState<'written' | 'video'>(testimonial?.format ?? 'written')
   const [videoUrl,           setVideoUrl]           = useState(testimonial?.video_url ?? '')
+  const [source,             setSource]             = useState(testimonial?.source ?? '')
+  const [rating,             setRating]             = useState<string>(testimonial?.rating != null ? String(testimonial.rating) : '')
   const [placement,          setPlacement]          = useState<string[]>(testimonial?.placement ?? [])
   const [complianceApproved, setComplianceApproved] = useState(testimonial?.compliance_approved ?? false)
   const [consentOnFile,      setConsentOnFile]      = useState(testimonial?.consent_on_file ?? false)
@@ -56,13 +53,15 @@ export function TestimonialEditForm({ testimonial }: Props) {
     setSaving(true)
     setError('')
     const payload = {
-      customer_name:       customerName,
-      customer_context:    customerContext || null,
+      name,
+      location:            location || null,
       persona,
-      quote,
-      short_quote:         shortQuote || null,
+      quote_full:          quoteFull,
+      quote_short:         quoteShort || null,
       format,
       video_url:           videoUrl || null,
+      source:              source || null,
+      rating:              rating ? Number(rating) : null,
       placement,
       compliance_approved: complianceApproved,
       consent_on_file:     consentOnFile,
@@ -115,7 +114,7 @@ export function TestimonialEditForm({ testimonial }: Props) {
             ← All testimonials
           </Link>
           <h1 className="mt-2 font-display text-2xl text-ink">
-            {isNew ? 'New testimonial' : testimonial.customer_name}
+            {isNew ? 'New testimonial' : testimonial.name}
           </h1>
         </div>
         <div className="flex gap-2">
@@ -152,29 +151,29 @@ export function TestimonialEditForm({ testimonial }: Props) {
 
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1fr_280px]">
         <div className="space-y-5 max-w-2xl">
-          {/* Customer name */}
+          {/* Name */}
           <div>
             <label className="mb-1 block font-sans text-sm font-medium text-ink">
-              Customer name <span className="text-red-500">*</span>
+              Name <span className="text-red-500">*</span>
             </label>
             <p className="mb-1 font-sans text-xs text-ink-light">First name + surname initial: &ldquo;Sarah M.&rdquo;</p>
             <input
               type="text"
-              value={customerName}
-              onChange={e => setCustomerName(e.target.value)}
+              value={name}
+              onChange={e => setName(e.target.value)}
               placeholder="Sarah M."
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
             />
           </div>
 
-          {/* Customer context */}
+          {/* Location */}
           <div>
-            <label className="mb-1 block font-sans text-sm font-medium text-ink">Customer context</label>
+            <label className="mb-1 block font-sans text-sm font-medium text-ink">Location</label>
             <input
               type="text"
-              value={customerContext}
-              onChange={e => setCustomerContext(e.target.value)}
-              placeholder="Marketing Manager, Manchester"
+              value={location}
+              onChange={e => setLocation(e.target.value)}
+              placeholder="Manchester, UK"
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
             />
           </div>
@@ -188,7 +187,7 @@ export function TestimonialEditForm({ testimonial }: Props) {
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
             >
               {PERSONA_OPTIONS.map(p => (
-                <option key={p.value} value={p.value}>{p.label}</option>
+                <option key={p} value={p} className="capitalize">{p.charAt(0).toUpperCase() + p.slice(1)}</option>
               ))}
             </select>
           </div>
@@ -200,8 +199,8 @@ export function TestimonialEditForm({ testimonial }: Props) {
             </label>
             <textarea
               rows={4}
-              value={quote}
-              onChange={e => setQuote(e.target.value)}
+              value={quoteFull}
+              onChange={e => setQuoteFull(e.target.value)}
               placeholder="The customer's full testimonial text, compliance-reviewed."
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
             />
@@ -213,8 +212,36 @@ export function TestimonialEditForm({ testimonial }: Props) {
             <p className="mb-1 font-sans text-xs text-ink-light">1-sentence version for tight placements</p>
             <input
               type="text"
-              value={shortQuote}
-              onChange={e => setShortQuote(e.target.value)}
+              value={quoteShort}
+              onChange={e => setQuoteShort(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
+            />
+          </div>
+
+          {/* Rating */}
+          <div>
+            <label className="mb-1 block font-sans text-sm font-medium text-ink">Rating</label>
+            <select
+              value={rating}
+              onChange={e => setRating(e.target.value)}
+              className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
+            >
+              <option value="">No rating</option>
+              {[1, 2, 3, 4, 5].map(n => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Source */}
+          <div>
+            <label className="mb-1 block font-sans text-sm font-medium text-ink">Source</label>
+            <p className="mb-1 font-sans text-xs text-ink-light">Where this testimonial originated, e.g. email, Trustpilot</p>
+            <input
+              type="text"
+              value={source}
+              onChange={e => setSource(e.target.value)}
+              placeholder="email"
               className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
             />
           </div>
