@@ -7,6 +7,7 @@ import { StudyGrid } from '@/components/science/StudyGrid'
 import { getPageContent } from '@/lib/content'
 import { isPageHidden } from '@/lib/site-settings'
 import { EmailCapture } from '@/components/forms/EmailCapture'
+import { resolvePersonaServer, personaHref } from '@/lib/persona'
 import type { Study } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -17,7 +18,12 @@ export const metadata: Metadata = {
     '50+ peer-reviewed studies on molecular hydrogen — summarised in plain English. Research on energy, recovery, longevity, inflammation, safety, and respiratory health.',
 }
 
-export default async function SciencePage() {
+interface Props {
+  searchParams: { persona?: string }
+}
+
+export default async function SciencePage({ searchParams }: Props) {
+  const persona = resolvePersonaServer(searchParams)
   if (await isPageHidden('science')) redirect('/')
 
   const supabase = await createClient()
@@ -58,7 +64,7 @@ export default async function SciencePage() {
   // CTA
   const ctaHeadline = (cta.headline as string) || 'Ready to try it?'
   const ctaText     = (cta.cta_text as string) || 'Enquire about the device'
-  const ctaUrl      = (cta.cta_url  as string) || '/product'
+  const ctaUrl      = personaHref((cta.cta_url as string) || '/product', persona)
 
   return (
     <>

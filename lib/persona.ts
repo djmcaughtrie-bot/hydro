@@ -30,3 +30,11 @@ export function setStoredPersona(persona: Persona): void {
     localStorage.setItem(STORAGE_KEY, persona)
   }
 }
+
+// Appends ?persona=[value] to a path when a persona is known.
+// Use on all internal links between /product, /science, and /science/* pages.
+export function personaHref(path: string, persona: Persona | null | undefined): string {
+  if (!persona) return path
+  const separator = path.includes('?') ? '&' : '?'
+  return `${path}${separator}persona=${persona}`
+}

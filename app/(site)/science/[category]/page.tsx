@@ -7,6 +7,7 @@ import { getTestimonials } from '@/lib/testimonials'
 import { StudyCard } from '@/components/science/StudyCard'
 import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
 import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
+import { resolvePersonaServer, personaHref } from '@/lib/persona'
 import type { Study } from '@/lib/types'
 
 const VALID_CATEGORIES = [
@@ -126,6 +127,7 @@ const categoryMeta: Record<
 
 interface Props {
   params: Promise<{ category: string }>
+  searchParams: { persona?: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -140,7 +142,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function CategoryPage({ params }: Props) {
+export default async function CategoryPage({ params, searchParams }: Props) {
   const { category } = await params
 
   if (!VALID_CATEGORIES.includes(category as Category)) {
@@ -149,6 +151,10 @@ export default async function CategoryPage({ params }: Props) {
 
   const slug = category as Category
   const meta = categoryMeta[slug]
+
+  // URL persona takes precedence; fall back to category's mapped persona
+  const urlPersona = resolvePersonaServer(searchParams)
+  const activePersona = urlPersona ?? meta.persona ?? null
 
   const supabase = await createClient()
   const studiesPromise = supabase
@@ -165,7 +171,7 @@ export default async function CategoryPage({ params }: Props) {
   const [{ data }, testimonials] = await Promise.all([studiesPromise, testimonialsPromise])
 
   const studies: Study[] = data ?? []
-  const productHref = meta.persona ? `/product?persona=${meta.persona}` : '/product'
+  const productHref = personaHref('/product', activePersona)
 
   return (
     <>
@@ -173,7 +179,7 @@ export default async function CategoryPage({ params }: Props) {
       <section className="bg-ink py-16">
         <div className="mx-auto max-w-6xl px-6">
           <Link
-            href="/science"
+            href={personaHref('/science', activePersona)}
             className="mb-6 inline-block font-mono text-xs text-teal transition-colors hover:text-teal-dark"
           >
             ← All research
