@@ -40,14 +40,11 @@ export function LeadMagnetForm({ persona, onSuccess }: Props) {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: { marketing_consent: false },
   })
-
-  const consentChecked = watch('marketing_consent')
 
   const LEAD_MAGNET_KEYS: Record<Persona, string> = {
     energy:      'cellular-energy-guide',

@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { LeadMagnetForm } from '@/components/forms/LeadMagnetForm'
 import type { Persona } from '@/lib/persona'
-import { PERSONAS } from '@/lib/persona'
 
 const CARDS: { persona: Persona; title: string; description: string; badge: string }[] = [
   {

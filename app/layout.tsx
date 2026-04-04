@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { DM_Serif_Display, DM_Sans, DM_Mono } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { TrackingPixels } from '@/components/analytics/TrackingPixels'
 
@@ -42,10 +43,10 @@ export default function RootLayout({
     <html lang="en">
       <head>
         {process.env.NEXT_PUBLIC_COOKIEYES_ID && (
-          <script
+          <Script
             id="cookieyes"
-            type="text/javascript"
             src={`https://cdn-cookieyes.com/client_data/${process.env.NEXT_PUBLIC_COOKIEYES_ID}/script.js`}
+            strategy="beforeInteractive"
           />
         )}
       </head>
