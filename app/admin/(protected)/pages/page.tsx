@@ -5,8 +5,6 @@ import { CONTENT_CONFIG } from '@/lib/content-config'
 
 export const metadata: Metadata = { title: 'Pages' }
 
-const STATUS_ORDER = ['needs_review', 'draft', 'published'] as const
-
 export default async function PagesListPage() {
   const adminClient = createAdminClient()
 
@@ -40,8 +38,6 @@ export default async function PagesListPage() {
           const publishedCount = pageCounts['published'] ?? 0
           const draftCount = pageCounts['draft'] ?? 0
           const reviewCount = pageCounts['needs_review'] ?? 0
-          const totalFilled = publishedCount + draftCount + reviewCount
-
           return (
             <Link
               key={pageKey}
