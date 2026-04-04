@@ -49,6 +49,7 @@ const OUTCOMES_LABELS: Record<Persona, string> = {
 }
 
 const specRows: [string, string][] = [
+  ['Flow rate', '600ml/min'],
   ['H\u2082 concentration', 'Up to 1,200 ppb'],
   ['H\u2082 purity', '\u226599.99%'],
   ['Session length', '20\u201360 minutes'],
