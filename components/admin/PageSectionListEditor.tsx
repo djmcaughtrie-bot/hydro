@@ -127,21 +127,20 @@ export function PageSectionListEditor({ page, sectionKey, sectionConfig, existin
     setSaveError('')
     setPublishError('')
 
-    let resolvedId = itemId
-    if (!resolvedId) {
-      setSaving(true)
-      try {
-        const id = await saveToServer(null)
-        if (!id) return
-        resolvedId = id
-        setItemId(id)
-        setSavedAt(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))
-      } catch {
-        setSaveError('Network error. Please try again.')
-        return
-      } finally {
-        setSaving(false)
-      }
+    // Always save current values first
+    setSaving(true)
+    let resolvedId: string | null = null
+    try {
+      const id = await saveToServer(itemId)
+      if (!id) return
+      resolvedId = id
+      setItemId(id)
+      setSavedAt(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))
+    } catch {
+      setSaveError('Network error. Please try again.')
+      return
+    } finally {
+      setSaving(false)
     }
 
     setPublishing(true)

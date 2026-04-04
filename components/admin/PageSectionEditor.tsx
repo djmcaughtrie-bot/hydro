@@ -131,12 +131,28 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
     setViolations([])
     setFieldErrors({})
 
-    // If no item exists yet, create it first, capturing the new id directly
+    // Always save current field values first, then publish
     let resolvedId = itemId
-    if (!resolvedId) {
-      setSaving(true)
-      try {
-        const content_json = { ...(existingItem?.content_json ?? {}), ...fields, ...mediaFields }
+    setSaving(true)
+    try {
+      const content_json = { ...(existingItem?.content_json ?? {}), ...fields, ...mediaFields }
+      if (resolvedId) {
+        const res = await fetch(`/api/admin/content/${resolvedId}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content_json }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          if (res.status === 422 && data.violations) {
+            applyViolations(data.violations as ComplianceViolation[])
+            setSaveError('Compliance violations must be resolved before publishing.')
+          } else {
+            setSaveError(data.error ?? 'Save failed')
+          }
+          return
+        }
+      } else {
         const res = await fetch('/api/admin/content', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -149,13 +165,13 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
         }
         resolvedId = data.id as string
         setItemId(resolvedId)
-        setSavedAt(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))
-      } catch {
-        setSaveError('Network error. Please try again.')
-        return
-      } finally {
-        setSaving(false)
       }
+      setSavedAt(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))
+    } catch {
+      setSaveError('Network error. Please try again.')
+      return
+    } finally {
+      setSaving(false)
     }
 
     setPublishing(true)
