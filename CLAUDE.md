@@ -83,7 +83,7 @@ H2 Revive is the UK's dedicated hydrogen inhalation wellness brand. The site sel
 | Hosting | Vercel |
 | Forms | React Hook Form + Zod |
 | Email | Resend |
-| Content generation | Anthropic API (`claude-sonnet-4-5-20251001`) |
+| Content generation | Anthropic API (`claude-sonnet-4-6`) |
 | Analytics | Vercel Analytics |
 
 ---
@@ -627,7 +627,7 @@ export async function checkCompliance(content: string): Promise<ComplianceResult
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-5-20251001',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1024,
       system: COMPLIANCE_SYSTEM_PROMPT,
       messages: [{ role: 'user', content: `Review this copy:\n\n${content}` }],
