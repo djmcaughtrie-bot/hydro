@@ -1,6 +1,17 @@
+import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { checkCompliance } from '@/lib/compliance'
+
+const PAGE_PATHS: Record<string, string> = {
+  homepage: '/',
+  product:  '/product',
+  about:    '/about',
+  science:  '/science',
+  clinics:  '/clinics',
+  faq:      '/faq',
+  start:    '/start',
+}
 
 export async function POST(
   _request: Request,
@@ -15,7 +26,7 @@ export async function POST(
 
   const { data: item, error: fetchError } = await adminClient
     .from('content_items')
-    .select('id, content_json')
+    .select('id, page, content_json')
     .eq('id', id)
     .single()
 
@@ -36,5 +47,9 @@ export async function POST(
     .eq('id', id)
 
   if (updateError) return Response.json({ error: updateError.message }, { status: 500 })
+
+  const path = PAGE_PATHS[item.page] ?? '/'
+  revalidatePath(path)
+
   return Response.json({ ok: true })
 }
