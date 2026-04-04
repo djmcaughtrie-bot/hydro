@@ -7,6 +7,7 @@ const LIVE_ROUTES = new Set([
   '/faq',
   '/about',
   '/product',
+  '/clinics',
   '/science',
   '/science/energy',
   '/science/recovery',
@@ -14,6 +15,10 @@ const LIVE_ROUTES = new Set([
   '/science/safety',
   '/science/inflammation',
   '/science/respiratory',
+  '/win',
+  '/win/terms',
+  '/get-the-research',
+  '/confirm',
 ])
 
 export function middleware(request: NextRequest) {
