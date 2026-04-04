@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Suspense } from 'react'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { LeadStatusBadge } from '@/components/admin/LeadStatusBadge'
 import { LeadsFilter } from '@/components/admin/LeadsFilter'
@@ -48,9 +47,7 @@ export default async function LeadsPage({ searchParams }: Props) {
       </div>
 
       <div className="mb-6">
-        <Suspense fallback={<div className="h-9" />}>
-          <LeadsFilter />
-        </Suspense>
+        <LeadsFilter activeStatus={status} />
       </div>
 
       <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">

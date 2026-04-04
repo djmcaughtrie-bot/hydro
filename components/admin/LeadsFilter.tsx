@@ -1,14 +1,15 @@
 'use client'
 
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import { cn } from '@/lib/cn'
 
 const STATUSES = ['all', 'new', 'contacted', 'converted', 'closed'] as const
 
-export function LeadsFilter() {
-  const searchParams = useSearchParams()
+interface Props { activeStatus?: string }
+
+export function LeadsFilter({ activeStatus }: Props) {
   const router = useRouter()
-  const active = searchParams.get('status') ?? 'all'
+  const active = activeStatus ?? 'all'
 
   function handleClick(status: string) {
     if (status === 'all') {

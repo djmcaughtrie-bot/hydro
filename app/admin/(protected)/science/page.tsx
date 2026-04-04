@@ -1,7 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { StudiesList } from '@/components/admin/StudiesList'
+
+const StudiesList = dynamic(
+  () => import('@/components/admin/StudiesList').then(m => ({ default: m.StudiesList })),
+  { ssr: false, loading: () => <p className="font-sans text-sm text-ink-light">Loading studies…</p> }
+)
 
 export const metadata: Metadata = { title: 'Studies | H2 Admin' }
 
