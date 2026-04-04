@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { ArticleCta } from './ArticleCta'
 import type { Post } from '@/lib/types'
 
@@ -6,7 +7,7 @@ interface Props {
 }
 
 // Simple inline parser: supports **bold** and [text](url)
-function parseInline(text: string): React.ReactNode {
+function parseInline(text: string): ReactNode {
   const parts = text.split(/(\*\*.+?\*\*|\[.+?\]\(.+?\))/g)
   return parts.map((part, i) => {
     const bold = part.match(/^\*\*(.+?)\*\*$/)
@@ -23,7 +24,7 @@ function parseInline(text: string): React.ReactNode {
 }
 
 // Parse a single block into a React element
-function renderBlock(block: string, index: number): React.ReactNode {
+function renderBlock(block: string, index: number): ReactNode {
   const trimmed = block.trim()
   if (!trimmed) return null
 
@@ -61,7 +62,7 @@ export function ArticleBody({ post }: Props) {
   // Insert mid-CTA after the 2nd paragraph (index 1, 0-based)
   const MID_CTA_AFTER = 1
 
-  const elements: React.ReactNode[] = []
+  const elements: ReactNode[] = []
   let paragraphCount = 0
 
   for (let i = 0; i < blocks.length; i++) {
