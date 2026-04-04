@@ -43,6 +43,10 @@ const HARD_VIOLATIONS: { pattern: RegExp; reason: string }[] = [
 
 const COMPLIANCE_SYSTEM_PROMPT = `You are a UK advertising compliance expert reviewing copy for H2 Revive, a molecular hydrogen inhalation wellness brand. Identify ASA/CAP and MHRA violations — specifically unsubstantiated health claims.
 
+IMPORTANT: You are only checking for advertising compliance violations. You are NOT a general content judge.
+- If the text contains no health claims and no product claims, return compliant: true with an empty violations array. Do not flag it for being "off-topic" or "not advertising copy" — that is not a compliance violation.
+- Test text, placeholder text, or unrelated text has no violations. Return compliant: true.
+
 CONTEXT — understand before reviewing:
 - "not intended to diagnose, treat, cure, or prevent any disease" is the REQUIRED MHRA disclaimer. Always compliant. Never flag it.
 - "clinical evidence", "clinical research", "clinical trial" are neutral study descriptors. Fine.
@@ -65,6 +69,7 @@ DO NOT FLAG:
 - Hedged language ("may support", "research suggests", "some users report")
 - Biological descriptions not presented as product benefits
 - "Clinical" in research/study contexts
+- Text that contains no health or product claims whatsoever
 
 Respond with JSON only:
 {
