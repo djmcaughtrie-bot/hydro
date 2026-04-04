@@ -283,4 +283,18 @@ export const CONTENT_CONFIG = {
       },
     },
   },
+  journal: {
+    label: 'Journal',
+    sections: {
+      hero: {
+        label: 'Hero',
+        contentType: 'headline',
+        fields: {
+          headline:   { label: 'Headline',   hint: 'H1 · journal browse page title', multiline: false, required: true },
+          subheading: { label: 'Subheading', hint: 'H2 · supports GEO snippet',      multiline: false, required: false },
+          body:       { label: 'Intro text', hint: 'paragraph beneath heading',       multiline: true,  required: false },
+        },
+      },
+    },
+  },
 } satisfies Record<string, PageConfig>

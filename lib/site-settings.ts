@@ -2,9 +2,16 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 // Feature flag keys used across the app
 export const SETTINGS_KEYS = {
-  WIN_PAGE_ENABLED: 'page_win_enabled',
+  WIN_PAGE_ENABLED:     'page_win_enabled',
   TESTIMONIALS_ENABLED: 'feature_testimonials_enabled',
   LEAD_MAGNETS_ENABLED: 'feature_lead_magnets_enabled',
+  PAGE_HIDDEN_HOMEPAGE: 'page_hidden_homepage',
+  PAGE_HIDDEN_PRODUCT:  'page_hidden_product',
+  PAGE_HIDDEN_SCIENCE:  'page_hidden_science',
+  PAGE_HIDDEN_ABOUT:    'page_hidden_about',
+  PAGE_HIDDEN_CLINICS:  'page_hidden_clinics',
+  PAGE_HIDDEN_FAQ:      'page_hidden_faq',
+  PAGE_HIDDEN_JOURNAL:  'page_hidden_journal',
 } as const
 
 export type SettingKey = typeof SETTINGS_KEYS[keyof typeof SETTINGS_KEYS]
@@ -33,4 +40,11 @@ export async function setSetting(key: string, value: string): Promise<void> {
   await supabase
     .from('site_settings')
     .upsert({ key, value }, { onConflict: 'key' })
+}
+
+// Returns true if the given content page key is currently hidden from visitors.
+// Defaults to false (visible) if no setting exists.
+export async function isPageHidden(pageKey: string): Promise<boolean> {
+  const value = await getSetting(`page_hidden_${pageKey}`)
+  return value === 'true'
 }

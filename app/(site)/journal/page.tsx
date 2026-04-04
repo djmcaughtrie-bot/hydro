@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
+import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { PostCard } from '@/components/journal/PostCard'
+import { isPageHidden } from '@/lib/site-settings'
 import type { Post } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -30,6 +32,8 @@ interface Props {
 }
 
 export default async function JournalPage({ searchParams }: Props) {
+  if (await isPageHidden('journal')) notFound()
+
   const supabase = await createClient()
 
   const activeCategory = searchParams.category ?? ''

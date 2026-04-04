@@ -34,6 +34,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
+  // Allow journal article slugs (dynamic routes under /journal/*)
+  if (pathname.startsWith('/journal')) {
+    return NextResponse.next()
+  }
+
   if (!LIVE_ROUTES.has(pathname)) {
     const url = request.nextUrl.clone()
     url.pathname = '/'

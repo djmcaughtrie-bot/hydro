@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { ArticleBody } from '@/components/journal/ArticleBody'
 import { ArticleCta } from '@/components/journal/ArticleCta'
+import { isPageHidden } from '@/lib/site-settings'
 import type { Post } from '@/lib/types'
 
 export const dynamic = 'force-dynamic'
@@ -49,6 +50,9 @@ const CATEGORY_LABELS: Record<string, string> = {
 export default async function PostPage({ params, searchParams }: Props) {
   const { slug } = await params
   const previewToken = searchParams.preview
+
+  // Respect page-level hide toggle (preview token bypasses it)
+  if (!previewToken && await isPageHidden('journal')) notFound()
 
   let post: Post | null = null
 
