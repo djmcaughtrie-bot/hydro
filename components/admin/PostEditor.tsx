@@ -3,8 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Post } from '@/lib/types'
+import { ImageLibraryPicker } from './ImageLibraryPicker'
+import type { MediaItem } from '@/lib/types'
 
-type PostInput = Omit<Post, 'id' | 'created_at' | 'updated_at' | 'is_published' | 'published_at'>
+type PostInput = Omit<Post, 'id' | 'created_at' | 'updated_at' | 'is_published' | 'published_at' | 'preview_token'>
 
 interface Props {
   post?: Post  // undefined = new post
@@ -50,6 +52,20 @@ export function PostEditor({ post }: Props) {
   const [bottomCtaLabel, setBottomCtaLabel]       = useState(post?.bottom_cta_label ?? '')
   const [bottomCtaUrl, setBottomCtaUrl]           = useState(post?.bottom_cta_url ?? '')
 
+  // Image
+  const [featuredImageUrl, setFeaturedImageUrl] = useState(post?.featured_image_url ?? '')
+  const [featuredImageAlt, setFeaturedImageAlt] = useState(post?.featured_image_alt ?? '')
+  const [showLibrary, setShowLibrary] = useState(false)
+
+  // Scheduler — store as local datetime string for the input
+  const [scheduledFor, setScheduledFor] = useState<string>(() => {
+    if (!post?.scheduled_for) return ''
+    // Convert UTC ISO to local datetime-local format
+    const d = new Date(post.scheduled_for)
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  })
+
   const [saving, setSaving]       = useState(false)
   const [publishing, setPublishing] = useState(false)
   const [unpublishing, setUnpublishing] = useState(false)
@@ -75,6 +91,9 @@ export function PostEditor({ post }: Props) {
       content,
       persona_tags: personaTags,
       category: category || null,
+      featured_image_url: featuredImageUrl || null,
+      featured_image_alt: featuredImageAlt || null,
+      scheduled_for: scheduledFor ? new Date(scheduledFor).toISOString() : null,
       mid_cta_headline: midCtaHeadline || null,
       mid_cta_body: midCtaBody || null,
       mid_cta_label: midCtaLabel || null,
@@ -206,6 +225,48 @@ export function PostEditor({ post }: Props) {
         </div>
       </div>
 
+      {/* Featured image */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <h2 className="mb-4 font-sans text-sm font-semibold text-ink">Featured image</h2>
+        {featuredImageUrl && (
+          <div className="mb-4 relative">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={featuredImageUrl} alt={featuredImageAlt || 'Featured image'} className="h-48 w-full rounded-lg object-cover" />
+            <button
+              type="button"
+              onClick={() => { setFeaturedImageUrl(''); setFeaturedImageAlt('') }}
+              className="absolute right-2 top-2 rounded bg-ink/60 px-2 py-1 font-mono text-xs text-white hover:bg-ink"
+            >
+              Remove
+            </button>
+          </div>
+        )}
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => setShowLibrary(true)}
+            className="rounded-lg border border-gray-200 px-4 py-2 font-sans text-sm text-ink-mid transition-colors hover:border-teal/50 hover:text-teal"
+          >
+            {featuredImageUrl ? 'Change image' : '+ Pick from library'}
+          </button>
+        </div>
+        {featuredImageUrl && (
+          <div className="mt-3">
+            <label className={labelClass}>Alt text <span className={hintClass}>describe the image for screen readers and SEO</span></label>
+            <input type="text" value={featuredImageAlt} onChange={e => setFeaturedImageAlt(e.target.value)} className={inputClass} placeholder="e.g. Hydrogen inhalation device in use" />
+          </div>
+        )}
+        {showLibrary && (
+          <ImageLibraryPicker
+            onSelect={(item: MediaItem) => {
+              setFeaturedImageUrl(item.url)
+              setShowLibrary(false)
+            }}
+            onClose={() => setShowLibrary(false)}
+          />
+        )}
+      </div>
+
       {/* Content */}
       <div className="rounded-xl border border-gray-200 bg-white p-6">
         <h2 className="mb-1 font-sans text-sm font-semibold text-ink">Content</h2>
@@ -271,6 +332,45 @@ export function PostEditor({ post }: Props) {
             <input type="text" value={bottomCtaUrl} onChange={e => setBottomCtaUrl(e.target.value)} className={inputClass} placeholder="/product" />
           </div>
         </div>
+      </div>
+
+      {/* Scheduler */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <h2 className="mb-1 font-sans text-sm font-semibold text-ink">Schedule</h2>
+        <p className="mb-4 font-mono text-xs text-ink-light">
+          Leave blank to publish manually. Set a date/time to auto-publish — the post URL is available for preview immediately.
+        </p>
+        <div className="flex items-center gap-4">
+          <input
+            type="datetime-local"
+            value={scheduledFor}
+            onChange={e => setScheduledFor(e.target.value)}
+            className={`${inputClass} max-w-xs`}
+          />
+          {scheduledFor && (
+            <button type="button" onClick={() => setScheduledFor('')} className="font-mono text-xs text-ink-light hover:text-ink">
+              Clear
+            </button>
+          )}
+        </div>
+        {isEdit && post?.preview_token && (
+          <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50 px-4 py-3">
+            <p className="mb-1 font-mono text-xs font-medium text-ink-light">Preview URL (works before publication)</p>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 truncate font-mono text-xs text-ink">
+                /journal/{post.slug}?preview={post.preview_token}
+              </code>
+              <a
+                href={`/journal/${post.slug}?preview=${post.preview_token}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 font-mono text-xs text-teal hover:text-teal-dark"
+              >
+                Open →
+              </a>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* SEO */}

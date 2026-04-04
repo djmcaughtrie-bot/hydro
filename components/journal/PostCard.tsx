@@ -27,8 +27,17 @@ export function PostCard({ post }: Props) {
   return (
     <Link
       href={`/journal/${post.slug}`}
-      className="group flex flex-col rounded-lg border border-ink-light/20 bg-white p-6 shadow-subtle transition-colors hover:border-teal/40"
+      className="group flex flex-col rounded-lg border border-ink-light/20 bg-white shadow-subtle transition-colors hover:border-teal/40 overflow-hidden"
     >
+      {post.featured_image_url && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={post.featured_image_url}
+          alt={post.featured_image_alt ?? post.title}
+          className="h-44 w-full object-cover"
+        />
+      )}
+      <div className={`flex flex-col flex-1 ${post.featured_image_url ? 'p-5' : 'p-6'}`}>
       <div className="mb-3 flex flex-wrap items-center gap-2">
         {post.category && (
           <span className="rounded px-2 py-0.5 font-mono text-xs font-medium bg-gray-100 text-ink-mid">
@@ -57,6 +66,7 @@ export function PostCard({ post }: Props) {
         <span className="font-mono text-xs uppercase tracking-widest text-teal">
           Read &rarr;
         </span>
+      </div>
       </div>
     </Link>
   )

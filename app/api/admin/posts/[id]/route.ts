@@ -4,6 +4,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 
 const ALLOWED_FIELDS = [
   'title', 'slug', 'excerpt', 'content', 'persona_tags', 'category',
+  'featured_image_url', 'featured_image_alt', 'scheduled_for',
   'mid_cta_headline', 'mid_cta_body', 'mid_cta_label', 'mid_cta_url',
   'bottom_cta_headline', 'bottom_cta_body', 'bottom_cta_label', 'bottom_cta_url',
   'seo_title', 'seo_description',

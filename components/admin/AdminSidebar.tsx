@@ -10,7 +10,6 @@ interface AdminSidebarProps {
 }
 
 const navItems = [
-  { label: 'Dashboard', href: '/admin' },
   { label: 'Leads', href: '/admin/leads' },
   { label: 'Pages', href: '/admin/pages' },
   { label: 'Science', href: '/admin/science' },

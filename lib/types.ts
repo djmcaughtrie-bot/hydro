@@ -63,6 +63,10 @@ export interface Post {
   bottom_cta_body: string | null
   bottom_cta_label: string | null
   bottom_cta_url: string | null
+  featured_image_url: string | null
+  featured_image_alt: string | null
+  scheduled_for: string | null
+  preview_token: string
   is_published: boolean
   published_at: string | null
   seo_title: string | null

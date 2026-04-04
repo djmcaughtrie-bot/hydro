@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { ArticleBody } from '@/components/journal/ArticleBody'
 import { ArticleCta } from '@/components/journal/ArticleCta'
 import type { Post } from '@/lib/types'
@@ -10,6 +11,7 @@ export const dynamic = 'force-dynamic'
 
 interface Props {
   params: Promise<{ slug: string }>
+  searchParams: { preview?: string }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -44,19 +46,34 @@ const CATEGORY_LABELS: Record<string, string> = {
   general:   'General',
 }
 
-export default async function PostPage({ params }: Props) {
+export default async function PostPage({ params, searchParams }: Props) {
   const { slug } = await params
-  const supabase = await createClient()
+  const previewToken = searchParams.preview
 
-  const { data } = await supabase
-    .from('posts')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
+  let post: Post | null = null
 
-  if (!data) notFound()
-  const post = data as Post
+  if (previewToken) {
+    // Preview mode: fetch by slug + preview_token regardless of published state
+    const adminClient = createAdminClient()
+    const { data } = await adminClient
+      .from('posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('preview_token', previewToken)
+      .single()
+    post = (data as Post) ?? null
+  } else {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_published', true)
+      .single()
+    post = (data as Post) ?? null
+  }
+
+  if (!post) notFound()
 
   const date = post.published_at
     ? new Date(post.published_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -85,6 +102,15 @@ export default async function PostPage({ params }: Props) {
       />
 
       <div className="bg-cream min-h-screen">
+        {/* Preview banner */}
+        {previewToken && (
+          <div className="bg-amber-400 px-6 py-2 text-center">
+            <p className="font-mono text-xs font-semibold text-amber-900">
+              Preview — this post is not yet published
+            </p>
+          </div>
+        )}
+
         {/* Article header */}
         <section className="bg-ink py-16">
           <div className="mx-auto max-w-3xl px-6">
@@ -121,6 +147,19 @@ export default async function PostPage({ params }: Props) {
             )}
           </div>
         </section>
+
+        {/* Featured image */}
+        {post.featured_image_url && (
+          <div className="mx-auto max-w-3xl px-6 pt-10">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.featured_image_url}
+              alt={post.featured_image_alt ?? post.title}
+              className="w-full rounded-xl object-cover"
+              style={{ maxHeight: '480px' }}
+            />
+          </div>
+        )}
 
         {/* Article body */}
         <article className="mx-auto max-w-3xl px-6 py-12">
