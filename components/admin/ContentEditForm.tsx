@@ -66,8 +66,11 @@ export function ContentEditForm({ item }: Props) {
       if (!res.ok) {
         if (res.status === 422 && data.violations) {
           const errs: Record<string, string> = {}
-          for (const v of data.violations as { field: string; word: string }[]) {
-            errs[v.field] = `Contains prohibited word: "${v.word}"`
+          for (const v of data.violations as { text: string; reason: string }[]) {
+            const key = Object.keys(fields).find(k =>
+              v.text && fields[k].toLowerCase().includes(v.text.toLowerCase())
+            ) ?? '_general'
+            errs[key] = v.reason || `Compliance violation: "${v.text}"`
           }
           setFieldErrors(errs)
         } else {
@@ -91,8 +94,11 @@ export function ContentEditForm({ item }: Props) {
       if (!res.ok) {
         if (res.status === 422 && data.violations) {
           const errs: Record<string, string> = {}
-          for (const v of data.violations as { field: string; word: string }[]) {
-            errs[v.field] = `Contains prohibited word: "${v.word}"`
+          for (const v of data.violations as { text: string; reason: string }[]) {
+            const key = Object.keys(fields).find(k =>
+              v.text && fields[k].toLowerCase().includes(v.text.toLowerCase())
+            ) ?? '_general'
+            errs[key] = v.reason || `Compliance violation: "${v.text}"`
           }
           setFieldErrors(errs)
           setPublishError('Compliance violations must be resolved before publishing.')

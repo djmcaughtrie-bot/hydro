@@ -77,16 +77,22 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
     let complianceResult: import('@/lib/compliance').ComplianceResult = { compliant: false, violations: [], stage: 'hard' }
     let attempts = 0
 
+    let generated = false
     while (attempts < 3) {
-      const generated = await generate()
+      const result = await generate()
       attempts++
-      if (!generated) continue
-      content = generated
+      if (!result) continue
+      generated = true
+      content = result
       const textContent = Object.values(content)
         .filter((v): v is string => typeof v === 'string')
         .join('\n')
       complianceResult = await checkCompliance(textContent)
       if (complianceResult.compliant) break
+    }
+
+    if (!generated) {
+      return Response.json({ error: 'Content generation failed — model returned no parseable JSON after 3 attempts' }, { status: 500 })
     }
 
     const status = complianceResult.compliant ? 'draft' : 'needs_review'
