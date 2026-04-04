@@ -44,3 +44,22 @@ export interface MediaItem {
   media_type: 'image' | 'video-ambient' | 'video-content'
   uploaded_at: string
 }
+
+export interface Testimonial {
+  id: string
+  created_at: string
+  customer_name: string
+  customer_context: string | null
+  persona: string
+  quote: string
+  short_quote: string | null
+  format: 'written' | 'video'
+  video_url: string | null
+  thumbnail_url: string | null
+  placement: string[] | null
+  is_published: boolean
+  compliance_approved: boolean
+  consent_on_file: boolean
+  source_page: string | null
+  collected_date: string | null
+}
