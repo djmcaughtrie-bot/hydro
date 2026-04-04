@@ -63,8 +63,10 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
       system: SYSTEM_PROMPT,
       messages: [{ role: 'user', content: generation_prompt }],
     })
-    const text = msg.content[0].type === 'text' ? msg.content[0].text : null
-    if (!text) return null
+    const raw = msg.content[0].type === 'text' ? msg.content[0].text : null
+    if (!raw) return null
+    // Strip markdown code fences if model wraps response despite instructions
+    const text = raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
     try {
       return JSON.parse(text) as Record<string, unknown>
     } catch {
