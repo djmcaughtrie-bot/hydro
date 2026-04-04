@@ -1,12 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/cn'
+import { getUTMParamsWithFallback } from '@/lib/utm'
+import { resolvePersona } from '@/lib/persona'
+import type { UTMParams } from '@/lib/utm'
+import type { Persona } from '@/lib/persona'
 
 const schema = z.object({
   email: z.string().email({ message: 'Please enter a valid email address' }),
@@ -24,6 +28,8 @@ const personas = [
 export function WaitlistForm() {
   const [submitted, setSubmitted] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+  const utmRef = useRef<UTMParams>({})
+  const capturedPersonaRef = useRef<Persona | null>(null)
 
   const {
     register,
@@ -32,6 +38,11 @@ export function WaitlistForm() {
     setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormData>({ resolver: zodResolver(schema) })
+
+  useEffect(() => {
+    utmRef.current = getUTMParamsWithFallback()
+    capturedPersonaRef.current = resolvePersona()
+  }, [])
 
   const selectedPersona = watch('persona')
 
@@ -43,6 +54,8 @@ export function WaitlistForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
+          ...utmRef.current,
+          persona: data.persona ?? capturedPersonaRef.current ?? undefined,
           enquiry_type: 'waitlist',
           source_page: '/start',
         }),

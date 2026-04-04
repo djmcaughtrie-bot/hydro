@@ -1,12 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { cn } from '@/lib/cn'
+import { getUTMParamsWithFallback } from '@/lib/utm'
+import { resolvePersona } from '@/lib/persona'
+import type { UTMParams } from '@/lib/utm'
+import type { Persona } from '@/lib/persona'
 
 const schema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -39,6 +43,8 @@ export function EnquiryForm({
 }: EnquiryFormProps) {
   const [submitted, setSubmitted] = useState(false)
   const [serverError, setServerError] = useState<string | null>(null)
+  const utmRef = useRef<UTMParams>({})
+  const capturedPersonaRef = useRef<Persona | null>(null)
 
   const {
     register,
@@ -51,25 +57,23 @@ export function EnquiryForm({
     defaultValues: { persona: defaultPersona },
   })
 
+  useEffect(() => {
+    utmRef.current = getUTMParamsWithFallback()
+    capturedPersonaRef.current = resolvePersona()
+  }, [])
+
   const selectedPersona = watch('persona')
 
   async function onSubmit(data: FormData) {
     setServerError(null)
-    const utmParams: Record<string, string> = {}
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search)
-      for (const key of ['utm_source', 'utm_medium', 'utm_campaign']) {
-        const val = params.get(key)
-        if (val) utmParams[key] = val
-      }
-    }
     try {
       const res = await fetch('/api/enquiry', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...data,
-          ...utmParams,
+          ...utmRef.current,
+          persona: data.persona ?? capturedPersonaRef.current ?? undefined,
           enquiry_type: 'product',
           source_page: source,
         }),
