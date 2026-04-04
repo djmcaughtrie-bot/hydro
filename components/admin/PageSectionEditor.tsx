@@ -17,6 +17,8 @@ interface Props {
   sectionKey: string
   sectionConfig: SectionConfig
   existingItem: ExistingItem | null
+  persona?: string | null   // null = general, string = persona key
+  embedded?: boolean        // true = rendered inside PersonaTabs, suppress outer card chrome
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -32,8 +34,8 @@ const STATUS_LABELS: Record<string, string> = {
   empty:        '— Empty',
 }
 
-export function PageSectionEditor({ page, sectionKey, sectionConfig, existingItem }: Props) {
-  const [open, setOpen] = useState(!existingItem || existingItem.status !== 'published')
+export function PageSectionEditor({ page, sectionKey, sectionConfig, existingItem, persona = null, embedded = false }: Props) {
+  const [open, setOpen] = useState(embedded || !existingItem || existingItem.status !== 'published')
   const [mediaFields, setMediaFields] = useState<Record<string, unknown>>({})
 
   const [itemId, setItemId] = useState<string | null>(existingItem?.id ?? null)
@@ -50,7 +52,7 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
   const [publishing, setPublishing] = useState(false)
   const [generating, setGenerating] = useState(false)
   const [showGenerate, setShowGenerate] = useState(false)
-  const [persona, setPersona] = useState<string>('')
+  const [generatePersona, setGeneratePersona] = useState<string>(persona ?? '')
   const [additionalContext, setAdditionalContext] = useState('')
 
   const [saveError, setSaveError] = useState('')
@@ -104,7 +106,7 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
         const res = await fetch('/api/admin/content', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ page, section: sectionKey, content_json }),
+          body: JSON.stringify({ page, section: sectionKey, persona: persona ?? null, content_json }),
         })
         const data = await res.json()
         if (!res.ok) {
@@ -167,7 +169,7 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
         body: JSON.stringify({
           page,
           section: sectionKey,
-          persona: persona || null,
+          persona: generatePersona || null,
           additional_context: additionalContext,
         }),
       })
@@ -201,9 +203,187 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
     }
   }
 
+  const body = (
+    <div className="space-y-4">
+      {/* Fields */}
+      {Object.entries(sectionConfig.fields).map(([key, meta]) => (
+        <div key={key}>
+          <div className="mb-1 flex items-center justify-between">
+            <label htmlFor={`${sectionKey}-${persona ?? 'g'}-${key}`} className="font-sans text-sm font-medium text-ink">
+              {meta.label}
+              {meta.required && <span className="ml-0.5 text-red-500">*</span>}
+            </label>
+            <span className="font-mono text-xs text-ink-light">{meta.hint}</span>
+          </div>
+          {meta.multiline ? (
+            <textarea
+              id={`${sectionKey}-${persona ?? 'g'}-${key}`}
+              rows={4}
+              value={fields[key] ?? ''}
+              onChange={e => setFields(prev => ({ ...prev, [key]: e.target.value }))}
+              className={`w-full rounded-lg border px-3 py-2 font-sans text-sm text-ink ${
+                fieldErrors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
+              }`}
+            />
+          ) : (
+            <input
+              id={`${sectionKey}-${persona ?? 'g'}-${key}`}
+              type="text"
+              value={fields[key] ?? ''}
+              onChange={e => setFields(prev => ({ ...prev, [key]: e.target.value }))}
+              className={`w-full rounded-lg border px-3 py-2 font-sans text-sm text-ink ${
+                fieldErrors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
+              }`}
+            />
+          )}
+          {fieldErrors[key] && (
+            <p className="mt-1 font-sans text-xs text-red-500">{fieldErrors[key]}</p>
+          )}
+        </div>
+      ))}
+
+      {/* Image upload */}
+      {sectionConfig.imageGuidelines && (
+        <div className="mt-5 border-t border-gray-100 pt-5">
+          <ImagePanel
+            contentJson={{ ...(existingItem?.content_json ?? {}), ...mediaFields }}
+            imageGuidelines={sectionConfig.imageGuidelines}
+            onChange={(updates) => setMediaFields(prev => ({ ...prev, ...updates }))}
+          />
+        </div>
+      )}
+
+      {/* Violations panel */}
+      {violations.length > 0 && (
+        <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
+          <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-wider text-amber-800">
+            ⚠ Compliance violations
+          </p>
+          <div className="space-y-2">
+            {violations.map((v, i) => (
+              <div key={i} className="rounded border border-amber-200 bg-white p-3">
+                <p className="font-mono text-xs text-red-600">&ldquo;{v.text}&rdquo;</p>
+                <p className="mt-1 font-sans text-xs text-ink-mid">{v.reason}</p>
+                {v.suggestion && (
+                  <p className="mt-1 font-sans text-xs text-teal-dark">→ {v.suggestion}</p>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Errors */}
+      {saveError && <p className="mt-3 font-sans text-xs text-red-500">{saveError}</p>}
+      {publishError && <p className="mt-3 font-sans text-xs text-red-500">{publishError}</p>}
+
+      {/* Actions */}
+      <div className="mt-5 flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving}
+          className="rounded-lg border border-gray-200 px-4 py-2 font-sans text-sm font-medium text-ink transition-colors hover:border-teal/50 disabled:opacity-50"
+        >
+          {saving ? 'Saving…' : 'Save draft'}
+        </button>
+        <button
+          type="button"
+          onClick={handlePublish}
+          disabled={publishing}
+          className="rounded-lg bg-teal px-4 py-2 font-sans text-sm font-medium text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
+        >
+          {publishing ? 'Publishing…' : '✓ Publish'}
+        </button>
+        <button
+          type="button"
+          onClick={() => { setShowGenerate(g => !g); setGenerateError('') }}
+          className="ml-auto rounded-lg border border-teal/30 px-4 py-2 font-sans text-sm font-medium text-teal transition-colors hover:bg-teal/5"
+        >
+          ✦ Generate with AI
+        </button>
+      </div>
+
+      {/* AI generate panel */}
+      {showGenerate && (
+        <div className="mt-4 rounded-lg border border-teal-light bg-teal-light/30 p-4">
+          <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-wider text-teal-dark">
+            Generate with AI
+          </p>
+          <div className="flex flex-wrap gap-3">
+            {!persona && (
+              <div className="flex-1 min-w-[160px]">
+                <label className="mb-1 block font-sans text-xs font-medium text-ink">
+                  Persona <span className="text-ink-light">(optional)</span>
+                </label>
+                <select
+                  value={generatePersona}
+                  onChange={e => setGeneratePersona(e.target.value)}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
+                >
+                  <option value="">General</option>
+                  <option value="energy">Energy</option>
+                  <option value="performance">Performance</option>
+                  <option value="longevity">Longevity</option>
+                </select>
+              </div>
+            )}
+            <div className="flex-[2] min-w-[200px]">
+              <label className="mb-1 block font-sans text-xs font-medium text-ink">
+                Additional context <span className="text-ink-light">(optional)</span>
+              </label>
+              <input
+                type="text"
+                value={additionalContext}
+                onChange={e => setAdditionalContext(e.target.value)}
+                placeholder="e.g. focus on the science angle"
+                className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
+              />
+            </div>
+          </div>
+          {generateError && (
+            <p className="mt-2 font-sans text-xs text-red-500">{generateError}</p>
+          )}
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={handleGenerate}
+              disabled={generating}
+              className="rounded-lg bg-teal px-4 py-2 font-sans text-sm font-medium text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
+            >
+              {generating ? 'Generating…' : 'Generate'}
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowGenerate(false)}
+              className="rounded-lg border border-gray-200 px-4 py-2 font-sans text-sm text-ink-light hover:text-ink"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
+  if (embedded) {
+    return (
+      <div>
+        <div className="mb-4 flex items-center gap-3">
+          <span className={`rounded px-2 py-0.5 font-mono text-xs font-medium ${STATUS_STYLES[status] ?? STATUS_STYLES.empty}`}>
+            {STATUS_LABELS[status] ?? STATUS_LABELS.empty}
+          </span>
+          {savedAt && status !== 'published' && (
+            <span className="font-mono text-xs text-ink-light">saved {savedAt}</span>
+          )}
+        </div>
+        {body}
+      </div>
+    )
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
-      {/* Section header */}
       <button
         type="button"
         onClick={() => setOpen(o => !o)}
@@ -220,169 +400,7 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
         </div>
         <span className="font-mono text-xs text-ink-light">{open ? '▲' : '▼'}</span>
       </button>
-
-      {open && (
-        <div className="border-t border-gray-100 px-5 py-5">
-          {/* Fields */}
-          <div className="space-y-4">
-            {Object.entries(sectionConfig.fields).map(([key, meta]) => (
-              <div key={key}>
-                <div className="mb-1 flex items-center justify-between">
-                  <label htmlFor={`${sectionKey}-${key}`} className="font-sans text-sm font-medium text-ink">
-                    {meta.label}
-                    {meta.required && <span className="ml-0.5 text-red-500">*</span>}
-                  </label>
-                  <span className="font-mono text-xs text-ink-light">{meta.hint}</span>
-                </div>
-                {meta.multiline ? (
-                  <textarea
-                    id={`${sectionKey}-${key}`}
-                    rows={4}
-                    value={fields[key] ?? ''}
-                    onChange={e => setFields(prev => ({ ...prev, [key]: e.target.value }))}
-                    className={`w-full rounded-lg border px-3 py-2 font-sans text-sm text-ink ${
-                      fieldErrors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
-                    }`}
-                  />
-                ) : (
-                  <input
-                    id={`${sectionKey}-${key}`}
-                    type="text"
-                    value={fields[key] ?? ''}
-                    onChange={e => setFields(prev => ({ ...prev, [key]: e.target.value }))}
-                    className={`w-full rounded-lg border px-3 py-2 font-sans text-sm text-ink ${
-                      fieldErrors[key] ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'
-                    }`}
-                  />
-                )}
-                {fieldErrors[key] && (
-                  <p className="mt-1 font-sans text-xs text-red-500">{fieldErrors[key]}</p>
-                )}
-              </div>
-            ))}
-          </div>
-
-          {/* Image upload */}
-          {sectionConfig.imageGuidelines && (
-            <div className="mt-5 border-t border-gray-100 pt-5">
-              <ImagePanel
-                contentJson={{ ...(existingItem?.content_json ?? {}), ...mediaFields }}
-                imageGuidelines={sectionConfig.imageGuidelines}
-                onChange={(updates) => setMediaFields(prev => ({ ...prev, ...updates }))}
-              />
-            </div>
-          )}
-
-          {/* Violations panel */}
-          {violations.length > 0 && (
-            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-4">
-              <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-wider text-amber-800">
-                ⚠ Compliance violations
-              </p>
-              <div className="space-y-2">
-                {violations.map((v, i) => (
-                  <div key={i} className="rounded border border-amber-200 bg-white p-3">
-                    <p className="font-mono text-xs text-red-600">&ldquo;{v.text}&rdquo;</p>
-                    <p className="mt-1 font-sans text-xs text-ink-mid">{v.reason}</p>
-                    {v.suggestion && (
-                      <p className="mt-1 font-sans text-xs text-teal-dark">→ {v.suggestion}</p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Errors */}
-          {saveError && <p className="mt-3 font-sans text-xs text-red-500">{saveError}</p>}
-          {publishError && <p className="mt-3 font-sans text-xs text-red-500">{publishError}</p>}
-
-          {/* Actions */}
-          <div className="mt-5 flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={handleSave}
-              disabled={saving}
-              className="rounded-lg border border-gray-200 px-4 py-2 font-sans text-sm font-medium text-ink transition-colors hover:border-teal/50 disabled:opacity-50"
-            >
-              {saving ? 'Saving…' : 'Save draft'}
-            </button>
-            <button
-              type="button"
-              onClick={handlePublish}
-              disabled={publishing}
-              className="rounded-lg bg-teal px-4 py-2 font-sans text-sm font-medium text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
-            >
-              {publishing ? 'Publishing…' : '✓ Publish'}
-            </button>
-            <button
-              type="button"
-              onClick={() => { setShowGenerate(g => !g); setGenerateError('') }}
-              className="ml-auto rounded-lg border border-teal/30 px-4 py-2 font-sans text-sm font-medium text-teal transition-colors hover:bg-teal/5"
-            >
-              ✦ Generate with AI
-            </button>
-          </div>
-
-          {/* AI generate panel */}
-          {showGenerate && (
-            <div className="mt-4 rounded-lg border border-teal-light bg-teal-light/30 p-4">
-              <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-wider text-teal-dark">
-                Generate with AI
-              </p>
-              <div className="flex flex-wrap gap-3">
-                <div className="flex-1 min-w-[160px]">
-                  <label className="mb-1 block font-sans text-xs font-medium text-ink">
-                    Persona <span className="text-ink-light">(optional)</span>
-                  </label>
-                  <select
-                    value={persona}
-                    onChange={e => setPersona(e.target.value)}
-                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
-                  >
-                    <option value="">General</option>
-                    <option value="energy">Energy</option>
-                    <option value="performance">Performance</option>
-                    <option value="longevity">Longevity</option>
-                  </select>
-                </div>
-                <div className="flex-[2] min-w-[200px]">
-                  <label className="mb-1 block font-sans text-xs font-medium text-ink">
-                    Additional context <span className="text-ink-light">(optional)</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={additionalContext}
-                    onChange={e => setAdditionalContext(e.target.value)}
-                    placeholder="e.g. focus on the science angle"
-                    className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-ink"
-                  />
-                </div>
-              </div>
-              {generateError && (
-                <p className="mt-2 font-sans text-xs text-red-500">{generateError}</p>
-              )}
-              <div className="mt-3 flex gap-2">
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={generating}
-                  className="rounded-lg bg-teal px-4 py-2 font-sans text-sm font-medium text-white transition-colors hover:bg-teal-dark disabled:opacity-50"
-                >
-                  {generating ? 'Generating…' : 'Generate'}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowGenerate(false)}
-                  className="rounded-lg border border-gray-200 px-4 py-2 font-sans text-sm text-ink-light hover:text-ink"
-                >
-                  Cancel
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {open && <div className="border-t border-gray-100 px-5 py-5">{body}</div>}
     </div>
   )
 }

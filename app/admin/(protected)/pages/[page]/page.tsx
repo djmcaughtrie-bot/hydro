@@ -4,7 +4,10 @@ import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { CONTENT_CONFIG } from '@/lib/content-config'
 import type { SectionConfig } from '@/lib/content-config'
-import { PageSectionEditor } from '@/components/admin/PageSectionEditor'
+import { PageSectionPersonaTabs } from '@/components/admin/PageSectionPersonaTabs'
+
+// Pages where persona variants are useful
+const PERSONA_PAGES = new Set(['product', 'homepage', 'about', 'clinics', 'science', 'faq'])
 
 interface Props {
   params: Promise<{ page: string }>
@@ -16,30 +19,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: pageConfig ? `${pageConfig.label} — Pages` : 'Page editor' }
 }
 
+export type SectionItem = {
+  id: string
+  content_json: Record<string, unknown>
+  status: string
+  updated_at: string
+}
+
+// persona key used internally — null persona stored as 'general'
+export type PersonaKey = 'general' | 'energy' | 'performance' | 'longevity'
+
 export default async function PageEditorPage({ params }: Props) {
   const { page: pageKey } = await params
   const pageConfig = CONTENT_CONFIG[pageKey as keyof typeof CONTENT_CONFIG]
   if (!pageConfig) notFound()
 
+  const supportsPersonas = PERSONA_PAGES.has(pageKey)
   const adminClient = createAdminClient()
 
-  // Fetch all general (persona=null) content_items for this page
+  // Fetch all content_items for this page across all personas
   const { data: items } = await adminClient
     .from('content_items')
     .select('id, section, persona, content_json, status, updated_at')
     .eq('page', pageKey)
-    .is('persona', null)
 
-  // Map section key → content_item
-  const itemsBySection: Record<string, {
-    id: string
-    content_json: Record<string, unknown>
-    status: string
-    updated_at: string
-  }> = {}
+  // Map: section → persona → item
+  const itemsBySection: Record<string, Record<PersonaKey, SectionItem | null>> = {}
 
   for (const item of items ?? []) {
-    itemsBySection[item.section] = {
+    const personaKey: PersonaKey = (item.persona as PersonaKey) ?? 'general'
+    itemsBySection[item.section] ??= { general: null, energy: null, performance: null, longevity: null }
+    itemsBySection[item.section][personaKey] = {
       id: item.id,
       content_json: item.content_json as Record<string, unknown>,
       status: item.status,
@@ -63,12 +73,13 @@ export default async function PageEditorPage({ params }: Props) {
 
       <div className="space-y-4">
         {sections.map(([sectionKey, sectionConfig]) => (
-          <PageSectionEditor
+          <PageSectionPersonaTabs
             key={sectionKey}
             page={pageKey}
             sectionKey={sectionKey}
             sectionConfig={sectionConfig}
-            existingItem={itemsBySection[sectionKey] ?? null}
+            items={itemsBySection[sectionKey] ?? { general: null, energy: null, performance: null, longevity: null }}
+            supportsPersonas={supportsPersonas}
           />
         ))}
       </div>
