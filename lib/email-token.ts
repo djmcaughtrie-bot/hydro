@@ -17,7 +17,10 @@ export function verifyConfirmToken(token: string): { email: string; signupId: st
     const [encodedPayload, signature] = token.split('.')
     if (!encodedPayload || !signature) return null
     const payload = Buffer.from(encodedPayload, 'base64url').toString('utf8')
-    const [email, signupId] = payload.split(':')
+    const colonIndex = payload.indexOf(':')
+    if (colonIndex === -1) return null
+    const email = payload.slice(0, colonIndex)
+    const signupId = payload.slice(colonIndex + 1)
     if (!email || !signupId) return null
     const expected = createHmac('sha256', getSecret()).update(payload).digest('hex')
     // Constant-time comparison

@@ -1,29 +1,42 @@
+import { z } from 'zod'
 import { createAdminClient } from '@/lib/supabase/admin'
+
+const schema = z.object({
+  email: z.string().email(),
+  name: z.string().optional(),
+  persona: z.string().optional(),
+  lead_magnet: z.string().optional(),
+  marketing_consent: z.boolean().default(false),
+  consent_timestamp: z.string().optional(),
+  utm_source: z.string().optional(),
+  utm_medium: z.string().optional(),
+  utm_campaign: z.string().optional(),
+  utm_content: z.string().optional(),
+  utm_term: z.string().optional(),
+})
 
 export async function POST(request: Request) {
   try {
-    const body = await request.json()
-    const { email, name, persona, lead_magnet, marketing_consent, consent_timestamp,
-            utm_source, utm_medium, utm_campaign, utm_content, utm_term } = body
-
-    if (!email || typeof email !== 'string' || !email.includes('@')) {
-      return Response.json({ error: 'Valid email required' }, { status: 400 })
+    const parsed = schema.safeParse(await request.json())
+    if (!parsed.success) {
+      return Response.json({ error: 'Invalid request' }, { status: 400 })
     }
+    const body = parsed.data
 
     const adminClient = createAdminClient()
     const { data, error } = await adminClient.from('email_signups').insert({
-      email: email.trim().toLowerCase(),
-      name: name ? String(name).slice(0, 100) : null,
-      persona: persona ?? null,
+      email: body.email.trim().toLowerCase(),
+      name: body.name ? String(body.name).slice(0, 100) : null,
+      persona: body.persona ?? null,
       source: 'lead-magnet',
-      lead_magnet: lead_magnet ?? null,
-      marketing_consent: marketing_consent === true,
-      consent_timestamp: marketing_consent === true ? (consent_timestamp ?? new Date().toISOString()) : null,
-      utm_source: utm_source ?? null,
-      utm_medium: utm_medium ?? null,
-      utm_campaign: utm_campaign ?? null,
-      utm_content: utm_content ?? null,
-      utm_term: utm_term ?? null,
+      lead_magnet: body.lead_magnet ?? null,
+      marketing_consent: body.marketing_consent === true,
+      consent_timestamp: body.marketing_consent === true ? (body.consent_timestamp ?? new Date().toISOString()) : null,
+      utm_source: body.utm_source ?? null,
+      utm_medium: body.utm_medium ?? null,
+      utm_campaign: body.utm_campaign ?? null,
+      utm_content: body.utm_content ?? null,
+      utm_term: body.utm_term ?? null,
     }).select('id').single()
 
     if (error) return Response.json({ error: error.message }, { status: 500 })
@@ -37,9 +50,9 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         type: 'lead-magnet',
-        email: email.trim().toLowerCase(),
-        name: name ? String(name).slice(0, 100) : undefined,
-        persona: persona ?? undefined,
+        email: body.email.trim().toLowerCase(),
+        name: body.name ? String(body.name).slice(0, 100) : undefined,
+        persona: body.persona ?? undefined,
         signup_id: data?.id,
       }),
     }).catch(err => console.error('[email-signup] trigger-sequence failed:', err))
