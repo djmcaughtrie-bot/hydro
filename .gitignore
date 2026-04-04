@@ -32,6 +32,9 @@ yarn-error.log*
 # superpowers
 .superpowers/
 
+# git worktrees
+.worktrees/
+
 # vercel
 .vercel
 
