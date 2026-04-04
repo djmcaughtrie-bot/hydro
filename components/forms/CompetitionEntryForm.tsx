@@ -17,7 +17,7 @@ const schema = z.object({
 
 type FormData = z.infer<typeof schema>
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error' | 'already_entered'
+type FormState = 'idle' | 'submitting' | 'success' | 'error' | 'already_entered' | 'closed'
 
 interface CompetitionEntryFormProps {
   competitionId: string
@@ -64,6 +64,11 @@ export function CompetitionEntryForm({ competitionId, prize }: CompetitionEntryF
       }
 
       if (!res.ok) {
+        const data = await res.json().catch(() => null)
+        if (data?.error === 'competition_not_active') {
+          setFormState('closed')
+          return
+        }
         setFormState('error')
         setServerError('Something went wrong. Please try again.')
         return
@@ -95,6 +100,14 @@ export function CompetitionEntryForm({ competitionId, prize }: CompetitionEntryF
         <p className="mt-3 font-sans text-sm text-ink-mid">
           Looks like you&apos;ve already entered — good luck!
         </p>
+      </div>
+    )
+  }
+
+  if (formState === 'closed') {
+    return (
+      <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+        <p className="font-sans text-sm text-ink-mid">This competition has now closed.</p>
       </div>
     )
   }

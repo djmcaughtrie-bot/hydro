@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const publicClient = await createClient()
     const { data: competition, error: competitionError } = await publicClient
       .from('competitions')
-      .select('id, is_active')
+      .select('id, is_active, starts_at, ends_at')
       .eq('id', competition_id)
       .eq('is_active', true)
       .single()
@@ -52,6 +52,18 @@ export async function POST(request: Request) {
         { error: 'Competition not found or not active' },
         { status: 404 }
       )
+    }
+
+    // Check competition date range
+    const now = new Date()
+    const startsAt = competition.starts_at ? new Date(competition.starts_at) : null
+    const endsAt = competition.ends_at ? new Date(competition.ends_at) : null
+
+    if (startsAt && now < startsAt) {
+      return Response.json({ error: 'competition_not_active' }, { status: 400 })
+    }
+    if (endsAt && now > endsAt) {
+      return Response.json({ error: 'competition_not_active' }, { status: 400 })
     }
 
     // Insert entry using admin client

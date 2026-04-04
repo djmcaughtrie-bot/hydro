@@ -21,20 +21,17 @@ export default async function CompetitionsPage() {
     .select('*')
     .order('created_at', { ascending: false })
 
-  // Fetch entry counts for each competition
+  // Fetch entry counts — single query to avoid N+1
   const entryCounts: Record<string, number> = {}
   if (competitions && competitions.length > 0) {
-    const countResults = await Promise.all(
-      competitions.map((c) =>
-        supabase
-          .from('competition_entries')
-          .select('*', { count: 'exact', head: true })
-          .eq('competition_id', c.id)
-      )
-    )
-    competitions.forEach((c, i) => {
-      entryCounts[c.id] = countResults[i].count ?? 0
-    })
+    const { data: entryRows } = await supabase
+      .from('competition_entries')
+      .select('competition_id')
+      .in('competition_id', competitions.map((c) => c.id))
+
+    for (const entry of entryRows ?? []) {
+      entryCounts[entry.competition_id] = (entryCounts[entry.competition_id] ?? 0) + 1
+    }
   }
 
   return (

@@ -29,7 +29,7 @@ const terms = [
   },
   {
     title: '6. General',
-    body: 'H2 Revive reserves the right to amend, suspend, or cancel this competition at any time, without prior notice, if circumstances beyond its control make this necessary. These terms and conditions are governed by English law. H2 Revive is a trading name of [Company Name]. Competitions are run in accordance with UK law.',
+    body: 'H2 Revive reserves the right to amend, suspend, or cancel this competition at any time, without prior notice, if circumstances beyond its control make this necessary. These terms and conditions are governed by English law. H2 Revive is a trading name of H2 Revive Ltd. Competitions are run in accordance with UK law.',
   },
 ]
 
@@ -60,7 +60,7 @@ export default function CompetitionTermsPage() {
 
         <div className="mt-16 border-t border-ink-light/20 pt-8">
           <p className="font-sans text-xs text-ink-light">
-            H2 Revive is a trading name of [Company Name]. Competitions are run in accordance with
+            H2 Revive is a trading name of H2 Revive Ltd. Competitions are run in accordance with
             UK law.
           </p>
         </div>

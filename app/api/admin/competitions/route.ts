@@ -18,16 +18,24 @@ export async function GET() {
 
   if (error) return Response.json({ error: error.message }, { status: 500 })
 
-  // Fetch entry counts
-  const withCounts = await Promise.all(
-    (competitions ?? []).map(async (competition) => {
-      const { count } = await adminClient
-        .from('competition_entries')
-        .select('*', { count: 'exact', head: true })
-        .eq('competition_id', competition.id)
-      return { ...competition, entry_count: count ?? 0 }
-    })
-  )
+  // Fetch entry counts — single query to avoid N+1
+  const competitionList = competitions ?? []
+  const countMap: Record<string, number> = {}
+  if (competitionList.length > 0) {
+    const { data: entryRows } = await adminClient
+      .from('competition_entries')
+      .select('competition_id')
+      .in('competition_id', competitionList.map((c) => c.id))
+
+    for (const entry of entryRows ?? []) {
+      countMap[entry.competition_id] = (countMap[entry.competition_id] ?? 0) + 1
+    }
+  }
+
+  const withCounts = competitionList.map((competition) => ({
+    ...competition,
+    entry_count: countMap[competition.id] ?? 0,
+  }))
 
   return Response.json(withCounts)
 }
