@@ -75,12 +75,19 @@ describe('checkCompliance', () => {
     expect(mockMessagesCreate).not.toHaveBeenCalled()
   })
 
-  it('detects "medical device" as a hard violation', async () => {
+  it('detects "medical device" claim as a hard violation', async () => {
     const { checkCompliance } = await import('@/lib/compliance')
-    const result = await checkCompliance('This is not a medical device actually it is')
+    const result = await checkCompliance('This is a certified medical device')
     expect(result.compliant).toBe(false)
     expect(result.stage).toBe('hard')
     expect(mockMessagesCreate).not.toHaveBeenCalled()
+  })
+
+  it('"not a medical device" does NOT trigger hard violation (brand positioning)', async () => {
+    const { checkCompliance } = await import('@/lib/compliance')
+    const result = await checkCompliance('H2 Revive is not a medical device — it is a wellness technology brand')
+    expect(result.stage).toBe('context')
+    expect(result.compliant).toBe(true)
   })
 
   it('detects "cures" as a hard violation', async () => {
@@ -95,7 +102,8 @@ describe('checkCompliance', () => {
     const { checkCompliance } = await import('@/lib/compliance')
     const result = await checkCompliance('It cures nothing, we make no such claim')
     // Stage 1 should pass; stage 2 mock returns compliant
-    expect(result.stage).not.toBe('hard')
+    expect(result.stage).toBe('context')
+    expect(result.compliant).toBe(true)
   })
 
   it('detects "guaranteed to" as a hard violation', async () => {

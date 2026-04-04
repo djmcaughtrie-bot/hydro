@@ -21,19 +21,21 @@ describe('PersonaSelector', () => {
     })
   })
 
-  it('renders General, Energy, Performance, Longevity buttons', () => {
+  it('renders Energy, Performance, Longevity buttons (no General tab)', () => {
     render(<PersonaSelector />)
-    expect(screen.getByRole('button', { name: 'General' })).toBeDefined()
+    expect(screen.queryByRole('button', { name: 'General' })).toBeNull()
     expect(screen.getByRole('button', { name: 'Energy' })).toBeDefined()
     expect(screen.getByRole('button', { name: 'Performance' })).toBeDefined()
     expect(screen.getByRole('button', { name: 'Longevity' })).toBeDefined()
   })
 
-  it('marks General as active when persona is null', () => {
+  it('marks no button as active when persona is null', () => {
     mockPersona = null
     render(<PersonaSelector />)
-    const general = screen.getByRole('button', { name: 'General' })
-    expect(general.className).toContain('bg-teal')
+    const buttons = screen.getAllByRole('button')
+    buttons.forEach(btn => {
+      expect(btn.className).not.toContain('bg-teal')
+    })
   })
 
   it('marks the active persona with teal background', () => {
@@ -41,8 +43,8 @@ describe('PersonaSelector', () => {
     render(<PersonaSelector />)
     const energy = screen.getByRole('button', { name: 'Energy' })
     expect(energy.className).toContain('bg-teal')
-    const general = screen.getByRole('button', { name: 'General' })
-    expect(general.className).not.toContain('bg-teal')
+    const performance = screen.getByRole('button', { name: 'Performance' })
+    expect(performance.className).not.toContain('bg-teal')
   })
 
   it('clicking a persona button calls setPersona', () => {

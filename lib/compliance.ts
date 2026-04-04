@@ -11,7 +11,8 @@ const HARD_VIOLATIONS: { pattern: RegExp; reason: string }[] = [
     reason: 'Implies medical device status — prohibited',
   },
   {
-    pattern: /\bmedical device\b/i,
+    // Allow "not a medical device" (legitimate brand positioning) but block "is a medical device" / "medical device" as a claim
+    pattern: /(?<!not\s+a\s+)\bmedical device\b/i,
     reason: 'MHRA classification claim — we are a wellness technology brand',
   },
   {
