@@ -68,6 +68,29 @@ export const CONTENT_CONFIG = {
         },
         imageGuidelines: { desktopDimensions: [400, 400], mobileDimensions: [300, 300], maxFileSizeKb: 150 },
       },
+      'trust-bar': {
+        label: 'Trust bar',
+        contentType: 'body',
+        fields: {
+          item1_label:       { label: 'Item 1 label',       hint: 'e.g. 1,000+ peer-reviewed studies', multiline: false, required: true  },
+          item1_description: { label: 'Item 1 description', hint: 'e.g. Research-backed',              multiline: false, required: false },
+          item2_label:       { label: 'Item 2 label',       hint: 'e.g. UK-based',                     multiline: false, required: true  },
+          item2_description: { label: 'Item 2 description', hint: 'e.g. Designed and supported in Britain', multiline: false, required: false },
+          item3_label:       { label: 'Item 3 label',       hint: 'e.g. 2-year warranty',              multiline: false, required: true  },
+          item3_description: { label: 'Item 3 description', hint: 'e.g. Full UK coverage',             multiline: false, required: false },
+          item4_label:       { label: 'Item 4 label',       hint: 'e.g. CE certified',                 multiline: false, required: true  },
+          item4_description: { label: 'Item 4 description', hint: 'e.g. Safety certified',             multiline: false, required: false },
+        },
+      },
+      'persona-cards': {
+        label: 'Persona cards',
+        contentType: 'body',
+        fields: {
+          energy_copy:      { label: 'Energy card copy',      hint: 'first-person · e.g. I want more energy and mental clarity', multiline: false, required: true },
+          performance_copy: { label: 'Performance card copy', hint: 'first-person · e.g. I train hard and want to recover better', multiline: false, required: true },
+          longevity_copy:   { label: 'Longevity card copy',   hint: "first-person · e.g. I'm investing in long-term health and longevity", multiline: false, required: true },
+        },
+      },
       'device-cta': {
         label: 'Device CTA',
         contentType: 'cta',

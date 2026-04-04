@@ -25,14 +25,16 @@ export default async function HomePage({ searchParams }: Props) {
   const personaParam = persona ? `?persona=${persona}` : ''
 
   const [content, testimonials] = await Promise.all([
-    getPageContent('homepage', ['hero', 'features', 'social-proof', 'device-cta'], persona),
+    getPageContent('homepage', ['hero', 'features', 'social-proof', 'device-cta', 'trust-bar', 'persona-cards'], persona),
     getTestimonials('homepage'),
   ])
 
-  const hero       = content['hero']        ?? {}
-  const features   = content['features']    ?? {}
-  const ceoIntro   = content['social-proof'] ?? {}
-  const deviceCta  = content['device-cta']  ?? {}
+  const hero         = content['hero']           ?? {}
+  const features     = content['features']       ?? {}
+  const ceoIntro     = content['social-proof']   ?? {}
+  const deviceCta    = content['device-cta']     ?? {}
+  const trustBar     = content['trust-bar']      ?? {}
+  const personaCards = content['persona-cards']  ?? {}
 
   // Hero
   const heroHeadline      = (hero.headline           as string) ?? 'The smallest molecule in existence. The biggest idea in British wellness.'
@@ -108,10 +110,10 @@ export default async function HomePage({ searchParams }: Props) {
       </section>
 
       {/* Trust bar */}
-      <TrustBar />
+      <TrustBar content={Object.keys(trustBar).length ? trustBar as Parameters<typeof TrustBar>[0]['content'] : undefined} />
 
       {/* Persona cards */}
-      <PersonaCards />
+      <PersonaCards content={Object.keys(personaCards).length ? personaCards as Parameters<typeof PersonaCards>[0]['content'] : undefined} />
 
       {/* CEO intro */}
       <section className="bg-cream py-16">
