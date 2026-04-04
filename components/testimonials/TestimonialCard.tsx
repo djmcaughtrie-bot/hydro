@@ -31,16 +31,21 @@ export function TestimonialCard({ testimonial, showPersonaBadge = false }: Props
 
       {/* Star rating */}
       {testimonial.rating !== null && (
-        <div className="mt-4 flex gap-0.5" aria-label={`Rating: ${testimonial.rating} out of 5`}>
-          {Array.from({ length: 5 }).map((_, i) => (
-            <span
-              key={i}
-              className={i < testimonial.rating! ? 'text-teal' : 'text-ink-light'}
-            >
-              {i < testimonial.rating! ? '★' : '☆'}
-            </span>
-          ))}
-        </div>
+        (() => {
+          const rating = testimonial.rating
+          return (
+            <div className="mt-4 flex gap-0.5" aria-label={`Rating: ${rating} out of 5`}>
+              {Array.from({ length: 5 }).map((_, i) => (
+                <span
+                  key={i}
+                  className={i < rating ? 'text-teal' : 'text-ink-light'}
+                >
+                  {i < rating ? '★' : '☆'}
+                </span>
+              ))}
+            </div>
+          )
+        })()
       )}
 
       {/* Attribution */}

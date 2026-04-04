@@ -14,6 +14,7 @@ export async function getTestimonials(
     .contains('placement', [placement])
     .order('created_at', { ascending: false })
   if (persona) query = query.eq('persona', persona)
-  const { data } = await query
+  const { data, error } = await query
+  if (error) console.error('[getTestimonials] Supabase error:', error)
   return (data ?? []) as Testimonial[]
 }
