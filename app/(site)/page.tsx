@@ -35,10 +35,10 @@ export default async function HomePage({ searchParams }: Props) {
   const socialProof = content['social-proof'] ?? {}
 
   const heroHeadline = (hero.headline as string) ?? 'The smallest molecule in existence. The biggest idea in British wellness.'
-  const heroBody = (hero.body as string) ?? 'Clinically studied. UK-based. Built for the serious.'
+  const heroBody = (hero.body as string) ?? 'Research-backed. UK-based. Built for the serious.'
   const heroCta = (hero.cta_text as string) ?? 'Explore the device'
 
-  const featuresHeadline = (features.headline as string) ?? '50+ peer-reviewed studies. One remarkable molecule.'
+  const featuresHeadline = (features.headline as string) ?? '1,000+ peer-reviewed studies. One remarkable molecule.'
   const featuresBody = (features.body as string) ?? 'Molecular hydrogen is the smallest antioxidant in existence. It crosses the blood-brain barrier, enters mitochondria, and selectively neutralises only the most harmful free radicals.'
 
   return (

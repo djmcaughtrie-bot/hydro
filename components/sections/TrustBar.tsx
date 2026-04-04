@@ -1,5 +1,5 @@
 const items = [
-  { label: '50+ studies', description: 'Research-backed' },
+  { label: '1,000+ peer-reviewed studies', description: 'Research-backed' },
   { label: 'UK-based', description: 'Designed and supported in Britain' },
   { label: '2-year warranty', description: 'Full UK coverage' },
   { label: 'CE certified', description: 'Safety certified' },

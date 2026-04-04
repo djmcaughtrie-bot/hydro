@@ -15,21 +15,6 @@ export function PersonaSelector() {
 
   return (
     <div className="flex flex-wrap gap-2 py-4">
-      <button
-        type="button"
-        onClick={() => {
-          localStorage.removeItem('h2r_persona')
-          window.history.replaceState({}, '', window.location.pathname)
-          window.location.reload()
-        }}
-        className={`rounded-pill border px-4 py-1.5 font-sans text-sm font-medium transition-colors ${
-          persona === null
-            ? 'border-teal bg-teal text-white'
-            : 'border-ink-light/30 text-ink-mid hover:border-teal/50'
-        }`}
-      >
-        General
-      </button>
       {PERSONAS.map((value) => (
         <button
           key={value}
