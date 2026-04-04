@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import type { SectionConfig } from '@/lib/content-config'
 import type { ComplianceViolation } from '@/lib/compliance'
+import { ImagePanel } from './ImagePanel'
 
 interface ExistingItem {
   id: string
@@ -33,6 +34,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 export function PageSectionEditor({ page, sectionKey, sectionConfig, existingItem }: Props) {
   const [open, setOpen] = useState(!existingItem || existingItem.status !== 'published')
+  const [mediaFields, setMediaFields] = useState<Record<string, unknown>>({})
 
   const [itemId, setItemId] = useState<string | null>(existingItem?.id ?? null)
   const [status, setStatus] = useState<string>(existingItem?.status ?? 'empty')
@@ -78,7 +80,7 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
     setViolations([])
     setFieldErrors({})
     try {
-      const content_json = { ...(existingItem?.content_json ?? {}), ...fields }
+      const content_json = { ...(existingItem?.content_json ?? {}), ...fields, ...mediaFields }
 
       if (itemId) {
         // Update existing
@@ -259,6 +261,17 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
               </div>
             ))}
           </div>
+
+          {/* Image upload */}
+          {sectionConfig.imageGuidelines && (
+            <div className="mt-5 border-t border-gray-100 pt-5">
+              <ImagePanel
+                contentJson={{ ...(existingItem?.content_json ?? {}), ...mediaFields }}
+                imageGuidelines={sectionConfig.imageGuidelines}
+                onChange={(updates) => setMediaFields(prev => ({ ...prev, ...updates }))}
+              />
+            </div>
+          )}
 
           {/* Violations panel */}
           {violations.length > 0 && (
