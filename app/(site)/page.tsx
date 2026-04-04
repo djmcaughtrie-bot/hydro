@@ -42,7 +42,6 @@ export default async function HomePage({ searchParams }: Props) {
   const heroSecondaryCta  = (hero.cta_secondary_text  as string) ?? 'See the science'
   const heroSecondaryUrl  = (hero.cta_secondary_url   as string) ?? '/science'
   const heroDesktopImage  = (hero.desktop_image_url   as string) ?? ''
-  const heroMobileImage   = (hero.mobile_image_url    as string) ?? ''
 
   // Science teaser
   const featuresHeadline = (features.headline as string) ?? '1,000+ peer-reviewed studies. One remarkable molecule.'
