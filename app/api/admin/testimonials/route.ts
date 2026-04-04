@@ -22,10 +22,20 @@ export async function POST(request: Request) {
   if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await request.json()
+  const {
+    name, location, persona, format, quote_short, quote_full,
+    video_url, source, rating, compliance_approved, consent_on_file,
+    is_published, placement,
+  } = body
+
   const adminClient = createAdminClient()
   const { data, error } = await adminClient
     .from('testimonials')
-    .insert(body)
+    .insert({
+      name, location, persona, format, quote_short, quote_full,
+      video_url, source, rating, compliance_approved, consent_on_file,
+      is_published, placement,
+    })
     .select('id')
     .single()
 

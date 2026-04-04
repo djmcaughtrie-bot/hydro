@@ -30,6 +30,8 @@ CREATE POLICY "testimonials_public_read" ON public.testimonials
 
 -- Service role can do everything
 CREATE POLICY "testimonials_service_role_all" ON public.testimonials
-  USING (auth.role() = 'service_role');
+  FOR ALL
+  USING (auth.role() = 'service_role')
+  WITH CHECK (auth.role() = 'service_role');
 
 COMMIT;
