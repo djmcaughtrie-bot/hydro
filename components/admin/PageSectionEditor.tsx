@@ -126,19 +126,41 @@ export function PageSectionEditor({ page, sectionKey, sectionConfig, existingIte
   }
 
   async function handlePublish() {
-    if (!itemId) {
-      await handleSave()
-      // handleSave sets itemId via state — but state is async, so we re-check after a tick
-      // Better: save first, then the user clicks publish again. Show a hint.
-      setSaveError('Saved. Click Publish again to go live.')
-      return
-    }
-    setPublishing(true)
+    setSaveError('')
     setPublishError('')
     setViolations([])
     setFieldErrors({})
+
+    // If no item exists yet, create it first, capturing the new id directly
+    let resolvedId = itemId
+    if (!resolvedId) {
+      setSaving(true)
+      try {
+        const content_json = { ...(existingItem?.content_json ?? {}), ...fields, ...mediaFields }
+        const res = await fetch('/api/admin/content', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ page, section: sectionKey, persona: persona ?? null, content_json }),
+        })
+        const data = await res.json()
+        if (!res.ok) {
+          setSaveError(data.error ?? 'Save failed')
+          return
+        }
+        resolvedId = data.id as string
+        setItemId(resolvedId)
+        setSavedAt(new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }))
+      } catch {
+        setSaveError('Network error. Please try again.')
+        return
+      } finally {
+        setSaving(false)
+      }
+    }
+
+    setPublishing(true)
     try {
-      const res = await fetch(`/api/admin/content/${itemId}/publish`, { method: 'POST' })
+      const res = await fetch(`/api/admin/content/${resolvedId}/publish`, { method: 'POST' })
       const data = await res.json()
       if (!res.ok) {
         if (res.status === 422 && data.violations) {
