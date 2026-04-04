@@ -3,7 +3,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { SETTINGS_KEYS } from '@/lib/site-settings'
 
-const ALLOWED_KEYS = Object.values(SETTINGS_KEYS)
+const ALLOWED_KEYS: string[] = Object.values(SETTINGS_KEYS)
 
 const patchSchema = z.object({
   key: z.string().refine(k => ALLOWED_KEYS.includes(k), {
