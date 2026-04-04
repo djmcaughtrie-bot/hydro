@@ -5,6 +5,8 @@ import { PersonaCards } from '@/components/sections/PersonaCards'
 import { PersonaSelector } from '@/components/PersonaSelector'
 import { getPageContent } from '@/lib/content'
 import { resolvePersonaServer } from '@/lib/persona'
+import { getTestimonials } from '@/lib/testimonials'
+import { TestimonialStrip } from '@/components/testimonials/TestimonialStrip'
 
 export const metadata: Metadata = {
   title: 'H2 Revive — Hydrogen Inhalation Technology',
@@ -19,11 +21,14 @@ interface Props {
 export default async function HomePage({ searchParams }: Props) {
   const persona = resolvePersonaServer(searchParams)
 
-  const content = await getPageContent(
-    'homepage',
-    ['hero', 'features', 'social-proof'],
-    persona
-  )
+  const [content, testimonials] = await Promise.all([
+    getPageContent(
+      'homepage',
+      ['hero', 'features', 'social-proof'],
+      persona
+    ),
+    getTestimonials('homepage'),
+  ])
 
   const hero = content['hero'] ?? {}
   const features = content['features'] ?? {}
@@ -119,6 +124,9 @@ export default async function HomePage({ searchParams }: Props) {
           </span>
         </div>
       </section>
+
+      {/* Testimonials */}
+      <TestimonialStrip testimonials={testimonials} />
 
       {/* Product hero */}
       <section className="bg-ink py-20">

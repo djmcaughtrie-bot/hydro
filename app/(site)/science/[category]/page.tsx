@@ -3,7 +3,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getTestimonials } from '@/lib/testimonials'
 import { StudyCard } from '@/components/science/StudyCard'
+import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
+import { TestimonialCard } from '@/components/testimonials/TestimonialCard'
 import type { Study } from '@/lib/types'
 
 const VALID_CATEGORIES = [
@@ -28,6 +31,8 @@ const categoryMeta: Record<
     personaQuote: string | null
     personaCta: string | null
     ctaHeadline: string
+    testimonialPlacement: string | null
+    testimonialPersona: string | null
   }
 > = {
   energy: {
@@ -42,6 +47,8 @@ const categoryMeta: Record<
       '"What if the reason nothing\'s working isn\'t you — it\'s that nothing works at the right level?"',
     personaCta: 'Explore for energy & clarity',
     ctaHeadline: 'Ready to try it for yourself?',
+    testimonialPlacement: 'science-energy',
+    testimonialPersona: 'energy',
   },
   recovery: {
     title: 'Athletic Recovery',
@@ -55,6 +62,8 @@ const categoryMeta: Record<
       '"600ml/min. 99.99% purity. The recovery tool most serious athletes haven\'t discovered yet."',
     personaCta: 'Explore for recovery',
     ctaHeadline: 'Ready to try it for yourself?',
+    testimonialPlacement: 'science-recovery',
+    testimonialPersona: 'performance',
   },
   longevity: {
     title: 'Longevity & Cellular Health',
@@ -68,6 +77,8 @@ const categoryMeta: Record<
       '"The most interesting thing about molecular hydrogen isn\'t what it does — it\'s how it decides what to target."',
     personaCta: 'Explore for longevity',
     ctaHeadline: 'Ready to try it for yourself?',
+    testimonialPlacement: 'science-longevity',
+    testimonialPersona: 'longevity',
   },
   safety: {
     title: 'Safety',
@@ -80,6 +91,8 @@ const categoryMeta: Record<
     personaQuote: null,
     personaCta: null,
     ctaHeadline: 'Fifteen years of research. Ready to experience it?',
+    testimonialPlacement: 'science-safety',
+    testimonialPersona: null,
   },
   inflammation: {
     title: 'Inflammation',
@@ -92,6 +105,8 @@ const categoryMeta: Record<
     personaQuote: null,
     personaCta: null,
     ctaHeadline: 'See the science. Then decide.',
+    testimonialPlacement: null,
+    testimonialPersona: null,
   },
   respiratory: {
     title: 'Respiratory Health',
@@ -104,6 +119,8 @@ const categoryMeta: Record<
     personaQuote: null,
     personaCta: null,
     ctaHeadline: 'Delivered directly to the bloodstream. Ready to explore?',
+    testimonialPlacement: null,
+    testimonialPersona: null,
   },
 }
 
@@ -134,12 +151,18 @@ export default async function CategoryPage({ params }: Props) {
   const meta = categoryMeta[slug]
 
   const supabase = await createClient()
-  const { data } = await supabase
+  const studiesPromise = supabase
     .from('studies')
     .select('*')
     .eq('is_published', true)
     .contains('categories', [slug])
     .order('sort_order', { ascending: true })
+
+  const testimonialsPromise = meta.testimonialPlacement
+    ? getTestimonials(meta.testimonialPlacement, meta.testimonialPersona)
+    : Promise.resolve([])
+
+  const [{ data }, testimonials] = await Promise.all([studiesPromise, testimonialsPromise])
 
   const studies: Study[] = data ?? []
   const productHref = meta.persona ? `/product?persona=${meta.persona}` : '/product'
@@ -219,6 +242,26 @@ export default async function CategoryPage({ params }: Props) {
           )}
         </div>
       </section>
+
+      {/* Testimonials — energy, recovery, longevity: block; safety: single card */}
+      {testimonials.length > 0 && slug !== 'safety' && (
+        <section className="bg-cream py-12">
+          <div className="mx-auto max-w-6xl px-6">
+            <p className="mb-6 font-mono text-xs font-semibold uppercase tracking-wider text-ink-light">
+              What people are saying
+            </p>
+            <TestimonialBlock testimonials={testimonials} />
+          </div>
+        </section>
+      )}
+
+      {testimonials.length > 0 && slug === 'safety' && (
+        <section className="py-12 bg-cream">
+          <div className="mx-auto max-w-3xl px-6">
+            <TestimonialCard testimonial={testimonials[0]} />
+          </div>
+        </section>
+      )}
 
       {/* MHRA disclaimer */}
       <div className="mx-auto max-w-6xl px-6 pb-12">
