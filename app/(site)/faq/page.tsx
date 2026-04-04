@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Accordion } from '@/components/ui/Accordion'
 import { getPageContent } from '@/lib/content'
 
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'FAQ',
   description: 'Common questions about the H2 Revive hydrogen inhalation device.',

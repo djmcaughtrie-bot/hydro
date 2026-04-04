@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { TrustBar } from '@/components/sections/TrustBar'
+
+export const dynamic = 'force-dynamic'
 import { PersonaCards } from '@/components/sections/PersonaCards'
 import { PersonaSelector } from '@/components/PersonaSelector'
 import { getPageContent } from '@/lib/content'

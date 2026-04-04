@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
+
+export const dynamic = 'force-dynamic'
 import { StudyGrid } from '@/components/science/StudyGrid'
 import { getPageContent } from '@/lib/content'
 import type { Study } from '@/lib/types'

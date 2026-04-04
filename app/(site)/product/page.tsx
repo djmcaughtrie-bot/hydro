@@ -1,5 +1,7 @@
 import type { Metadata } from 'next'
 import { getPageContent } from '@/lib/content'
+
+export const dynamic = 'force-dynamic'
 import { getTestimonials } from '@/lib/testimonials'
 import { ProductPageClient } from '@/components/product/ProductPageClient'
 import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
