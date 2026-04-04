@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { ContentItem, ContentStatus } from '@/lib/types'
+import type { ComplianceViolation } from '@/lib/compliance'
 import { CONTENT_CONFIG } from '@/lib/content-config'
 import type { FieldMeta, SectionConfig } from '@/lib/content-config'
 import { ImagePanel } from './ImagePanel'
@@ -45,17 +46,31 @@ export function ContentEditForm({ item }: Props) {
   const [status, setStatus] = useState<ContentStatus>(item.status)
   const [saving, setSaving] = useState(false)
   const [publishing, setPublishing] = useState(false)
+  const [fixing, setFixing] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [publishError, setPublishError] = useState('')
-  // Per-field compliance errors: { fieldName: 'prohibited word' }
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
+  const [violations, setViolations] = useState<ComplianceViolation[]>([])
 
   const imageHint = (item.content_json as Record<string, unknown>).image_suggestion as string | undefined
+
+  function applyViolations(vs: ComplianceViolation[], currentFields: Record<string, string>) {
+    setViolations(vs)
+    const errs: Record<string, string> = {}
+    for (const v of vs) {
+      const key = Object.keys(currentFields).find(k =>
+        v.text && currentFields[k].toLowerCase().includes(v.text.toLowerCase())
+      ) ?? '_general'
+      errs[key] = v.reason || `Compliance violation: "${v.text}"`
+    }
+    setFieldErrors(errs)
+  }
 
   async function handleSave() {
     setSaving(true)
     setSaveError('')
     setFieldErrors({})
+    setViolations([])
     try {
       const res = await fetch(`/api/admin/content/${item.id}`, {
         method: 'PATCH',
@@ -65,14 +80,7 @@ export function ContentEditForm({ item }: Props) {
       const data = await res.json()
       if (!res.ok) {
         if (res.status === 422 && data.violations) {
-          const errs: Record<string, string> = {}
-          for (const v of data.violations as { text: string; reason: string }[]) {
-            const key = Object.keys(fields).find(k =>
-              v.text && fields[k].toLowerCase().includes(v.text.toLowerCase())
-            ) ?? '_general'
-            errs[key] = v.reason || `Compliance violation: "${v.text}"`
-          }
-          setFieldErrors(errs)
+          applyViolations(data.violations as ComplianceViolation[], fields)
         } else {
           setSaveError(data.error ?? 'Save failed')
         }
@@ -81,6 +89,34 @@ export function ContentEditForm({ item }: Props) {
       setSaveError('Network error. Please try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleFix() {
+    setFixing(true)
+    setSaveError('')
+    try {
+      const res = await fetch(`/api/admin/content/${item.id}/fix-compliance`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ violations }),
+      })
+      const data = await res.json()
+      if (res.ok && data.content_json) {
+        const json = data.content_json as Record<string, unknown>
+        setFields(Object.fromEntries(
+          Object.keys(fieldDefs).map(key => [key, String(json[key] ?? '')])
+        ))
+        setViolations([])
+        setFieldErrors({})
+        setStatus('draft')
+      } else {
+        setSaveError(data.error ?? 'Fix failed')
+      }
+    } catch {
+      setSaveError('Network error. Please try again.')
+    } finally {
+      setFixing(false)
     }
   }
 
@@ -93,14 +129,7 @@ export function ContentEditForm({ item }: Props) {
       const data = await res.json()
       if (!res.ok) {
         if (res.status === 422 && data.violations) {
-          const errs: Record<string, string> = {}
-          for (const v of data.violations as { text: string; reason: string }[]) {
-            const key = Object.keys(fields).find(k =>
-              v.text && fields[k].toLowerCase().includes(v.text.toLowerCase())
-            ) ?? '_general'
-            errs[key] = v.reason || `Compliance violation: "${v.text}"`
-          }
-          setFieldErrors(errs)
+          applyViolations(data.violations as ComplianceViolation[], fields)
           setPublishError('Compliance violations must be resolved before publishing.')
         } else {
           setPublishError(data.error ?? 'Publish failed')
@@ -152,6 +181,16 @@ export function ContentEditForm({ item }: Props) {
           >
             {saving ? 'Saving…' : 'Save draft'}
           </button>
+          {violations.length > 0 && (
+            <button
+              type="button"
+              onClick={handleFix}
+              disabled={fixing}
+              className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-2 font-sans text-sm font-medium text-amber-800 transition-colors hover:bg-amber-100 disabled:opacity-50"
+            >
+              {fixing ? 'Fixing…' : '⚡ Fix with AI'}
+            </button>
+          )}
           <button
             type="button"
             onClick={handlePublish}
@@ -213,6 +252,29 @@ export function ContentEditForm({ item }: Props) {
 
           {saveError && <p className="mt-4 font-sans text-sm text-red-500">{saveError}</p>}
           {publishError && <p className="mt-4 font-sans text-sm text-red-500">{publishError}</p>}
+
+          {violations.length > 0 && (
+            <div className="mt-5 rounded-lg border border-amber-200 bg-amber-50 p-4">
+              <p className="mb-3 font-mono text-xs font-semibold uppercase tracking-wider text-amber-800">
+                ⚠ Compliance violations
+              </p>
+              <div className="space-y-3">
+                {violations.map((v, i) => (
+                  <div key={i} className="rounded border border-amber-200 bg-white p-3">
+                    <p className="font-mono text-xs text-red-600">
+                      &ldquo;{v.text}&rdquo;
+                    </p>
+                    <p className="mt-1 font-sans text-xs text-ink-mid">{v.reason}</p>
+                    {v.suggestion && (
+                      <p className="mt-1 font-sans text-xs text-teal-dark">
+                        → {v.suggestion}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Right: AI image suggestion + meta */}
