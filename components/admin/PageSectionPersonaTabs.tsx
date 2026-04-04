@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { SectionConfig } from '@/lib/content-config'
 import type { SectionItem, PersonaKey } from '@/app/admin/(protected)/pages/[page]/page'
 import { PageSectionEditor } from './PageSectionEditor'
+import { PageSectionListEditor } from './PageSectionListEditor'
 
 interface Props {
   page: string
@@ -28,6 +29,19 @@ const STATUS_DOT: Record<string, string> = {
 
 export function PageSectionPersonaTabs({ page, sectionKey, sectionConfig, items, supportsPersonas }: Props) {
   const [activeTab, setActiveTab] = useState<PersonaKey>('general')
+
+  // List sections (e.g. FAQs) use a dedicated multi-item editor, no persona tabs
+  if (sectionConfig.list) {
+    return (
+      <PageSectionListEditor
+        page={page}
+        sectionKey={sectionKey}
+        sectionConfig={sectionConfig}
+        existingItem={items.general}
+        persona={null}
+      />
+    )
+  }
 
   if (!supportsPersonas) {
     // No tabs — just render the general editor directly

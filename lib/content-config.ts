@@ -20,6 +20,7 @@ export interface SectionConfig {
   imageGuidelines?: ImageGuidelines
   videoType?: 'ambient' | 'content'  // undefined = no video (same as null in spec; ? is idiomatic TS)
   lazyLoadDefault?: boolean
+  list?: boolean  // true = section stores an array of items in content_json.items
 }
 
 export interface PageConfig {
@@ -105,6 +106,7 @@ export const CONTENT_CONFIG = {
       faq: {
         label: 'FAQ',
         contentType: 'faq-item',
+        list: true,
         fields: {
           question: { label: 'Question', hint: 'FAQ schema · voice search target',  multiline: false, required: true },
           answer:   { label: 'Answer',   hint: 'paragraph · GEO answer target',     multiline: true,  required: true },
@@ -165,6 +167,15 @@ export const CONTENT_CONFIG = {
         fields: {
           headline: { label: 'Headline', hint: 'H1 · science hub SEO title',  multiline: false, required: true },
           body:     { label: 'Body',     hint: 'paragraph · intro context',   multiline: true,  required: true },
+        },
+      },
+      stats: {
+        label: 'Stats bar',
+        contentType: 'body',
+        fields: {
+          stat1_label: { label: 'Stat 1 label', hint: 'e.g. peer-reviewed studies', multiline: false, required: false },
+          stat2_label: { label: 'Stat 2 label', hint: 'e.g. human trials',          multiline: false, required: false },
+          stat3_label: { label: 'Stat 3 label', hint: 'e.g. research categories',   multiline: false, required: false },
         },
       },
       mechanism: {
@@ -259,8 +270,9 @@ export const CONTENT_CONFIG = {
         lazyLoadDefault: false,
       },
       item: {
-        label: 'FAQ item',
+        label: 'FAQ items',
         contentType: 'faq-item',
+        list: true,
         fields: {
           question: { label: 'Question', hint: 'FAQ schema · voice search target', multiline: false, required: true },
           answer:   { label: 'Answer',   hint: 'paragraph · GEO answer target',   multiline: true,  required: true },

@@ -24,7 +24,7 @@ export default async function SciencePage() {
       .eq('is_published', true)
       .order('sort_order', { ascending: true })
       .order('created_at', { ascending: false }),
-    getPageContent('science', ['hero', 'mechanism', 'cta'], null),
+    getPageContent('science', ['hero', 'stats', 'mechanism', 'cta'], null),
   ])
 
   const studies: Study[] = data ?? []
@@ -36,6 +36,7 @@ export default async function SciencePage() {
   const categorySet = new Set(studies.flatMap(s => s.categories ?? []))
 
   const hero      = content['hero']      ?? {}
+  const stats     = content['stats']     ?? {}
   const mechanism = content['mechanism'] ?? {}
   const cta       = content['cta']       ?? {}
 
@@ -69,15 +70,15 @@ export default async function SciencePage() {
           <div className="mt-8 flex flex-wrap gap-8">
             <div>
               <div className="font-mono text-3xl text-teal">{studies.length}</div>
-              <div className="font-mono text-xs text-ink-light">studies</div>
+              <div className="font-mono text-xs text-ink-light">{(stats.stat1_label as string) ?? 'studies'}</div>
             </div>
             <div>
               <div className="font-mono text-3xl text-teal">{humanTrials}</div>
-              <div className="font-mono text-xs text-ink-light">human trials</div>
+              <div className="font-mono text-xs text-ink-light">{(stats.stat2_label as string) ?? 'human trials'}</div>
             </div>
             <div>
               <div className="font-mono text-3xl text-teal">{categorySet.size}</div>
-              <div className="font-mono text-xs text-ink-light">categories</div>
+              <div className="font-mono text-xs text-ink-light">{(stats.stat3_label as string) ?? 'categories'}</div>
             </div>
           </div>
         </div>

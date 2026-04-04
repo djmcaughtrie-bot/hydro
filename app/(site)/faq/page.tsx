@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   description: 'Common questions about the H2 Revive hydrogen inhalation device.',
 }
 
-const faqs = [
+const FALLBACK_FAQS = [
   {
     question: 'Is hydrogen inhalation safe?',
     answer:
@@ -53,10 +53,19 @@ const faqs = [
 ]
 
 export default async function FAQPage() {
-  const content = await getPageContent('faq', ['hero'], null)
+  const content = await getPageContent('faq', ['hero', 'item'], null)
   const hero = content['hero'] ?? {}
+  const faqSection = content['item'] ?? {}
 
   const heroHeadline = (hero.headline as string) ?? 'Common questions.'
+
+  // Use CMS items if published, otherwise fall back to hardcoded
+  const cmsItems = Array.isArray(faqSection.items)
+    ? (faqSection.items as { question?: string; answer?: string }[])
+        .filter(i => i.question && i.answer)
+        .map(i => ({ question: i.question!, answer: i.answer! }))
+    : []
+  const faqs = cmsItems.length > 0 ? cmsItems : FALLBACK_FAQS
 
   return (
     <div className="bg-cream">
