@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { DM_Serif_Display, DM_Sans, DM_Mono } from 'next/font/google'
 import './globals.css'
+import { TrackingPixels } from '@/components/analytics/TrackingPixels'
 
 const dmSerif = DM_Serif_Display({
   weight: ['400'],
@@ -39,8 +40,18 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        {process.env.NEXT_PUBLIC_COOKIEYES_ID && (
+          <script
+            id="cookieyes"
+            type="text/javascript"
+            src={`https://cdn-cookieyes.com/client_data/${process.env.NEXT_PUBLIC_COOKIEYES_ID}/script.js`}
+          />
+        )}
+      </head>
       <body className={`${dmSerif.variable} ${dmSans.variable} ${dmMono.variable} font-sans`}>
         {children}
+        <TrackingPixels />
       </body>
     </html>
   )
