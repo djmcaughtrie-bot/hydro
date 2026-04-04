@@ -57,7 +57,7 @@ export default async function FAQPage() {
   const hero = content['hero'] ?? {}
   const faqSection = content['item'] ?? {}
 
-  const heroHeadline = (hero.headline as string) ?? 'Common questions.'
+  const heroHeadline = (hero.headline as string) || 'Common questions.'
 
   // Use CMS items if published, otherwise fall back to hardcoded
   const cmsItems = Array.isArray(faqSection.items)

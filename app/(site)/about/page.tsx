@@ -30,9 +30,9 @@ export default async function AboutPage() {
   const hero = content['hero'] ?? {}
   const ceoStory = content['ceo-story'] ?? {}
 
-  const heroHeadline = (hero.headline as string) ?? 'Why I started H2\u00a0Revive.'
-  const storyHeadline = (ceoStory.headline as string) ?? null
-  const storyBody = (ceoStory.body as string) ?? null
+  const heroHeadline = (hero.headline as string) || 'Why I started H2\u00a0Revive.'
+  const storyHeadline = (ceoStory.headline as string) || null
+  const storyBody = (ceoStory.body as string) || null
   return (
     <div className="bg-cream">
       {/* Hero */}

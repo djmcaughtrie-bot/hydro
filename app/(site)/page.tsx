@@ -42,33 +42,33 @@ export default async function HomePage({ searchParams }: Props) {
   const personaCards = content['persona-cards']  ?? {}
 
   // Hero
-  const heroHeadline      = (hero.headline           as string) ?? 'The smallest molecule in existence. The biggest idea in British wellness.'
-  const heroBody          = (hero.body                as string) ?? 'Research-backed. UK-based. Built for the serious.'
-  const heroPrimaryCta    = (hero.cta_text            as string) ?? 'Explore the device'
-  const heroPrimaryUrl    = (hero.cta_url             as string) ?? `/product${personaParam}`
-  const heroSecondaryCta  = (hero.cta_secondary_text  as string) ?? 'See the science'
-  const heroSecondaryUrl  = (hero.cta_secondary_url   as string) ?? '/science'
-  const heroDesktopImage  = (hero.desktop_image_url   as string) ?? ''
+  const heroHeadline      = (hero.headline           as string) || 'The smallest molecule in existence. The biggest idea in British wellness.'
+  const heroBody          = (hero.body                as string) || 'Research-backed. UK-based. Built for the serious.'
+  const heroPrimaryCta    = (hero.cta_text            as string) || 'Explore the device'
+  const heroPrimaryUrl    = (hero.cta_url             as string) || `/product${personaParam}`
+  const heroSecondaryCta  = (hero.cta_secondary_text  as string) || 'See the science'
+  const heroSecondaryUrl  = (hero.cta_secondary_url   as string) || '/science'
+  const heroDesktopImage  = (hero.desktop_image_url   as string) || ''
 
   // Science teaser
-  const featuresHeadline = (features.headline as string) ?? '1,000+ peer-reviewed studies. One remarkable molecule.'
-  const featuresBody     = (features.body     as string) ?? 'Molecular hydrogen is the smallest antioxidant in existence. It crosses the blood-brain barrier, enters mitochondria, and selectively neutralises only the most harmful free radicals.'
-  const featuresCta      = (features.cta_text as string) ?? ''
-  const featuresUrl      = (features.cta_url  as string) ?? '/science'
+  const featuresHeadline = (features.headline as string) || '1,000+ peer-reviewed studies. One remarkable molecule.'
+  const featuresBody     = (features.body     as string) || 'Molecular hydrogen is the smallest antioxidant in existence. It crosses the blood-brain barrier, enters mitochondria, and selectively neutralises only the most harmful free radicals.'
+  const featuresCta      = (features.cta_text as string) || ''
+  const featuresUrl      = (features.cta_url  as string) || '/science'
 
   // CEO intro
-  const ceoQuote         = (ceoIntro.quote       as string) ?? 'I started H2 Revive because I believe the British market deserves honest, research-backed wellness technology. No overclaiming. Just the science.'
-  const ceoAttribution   = (ceoIntro.attribution as string) ?? ''
-  const ceoCta           = (ceoIntro.cta_text    as string) ?? 'Our story'
-  const ceoCtaUrl        = (ceoIntro.cta_url     as string) ?? '/about'
-  const ceoImage         = (ceoIntro.desktop_image_url as string) ?? ''
+  const ceoQuote         = (ceoIntro.quote       as string) || 'I started H2 Revive because I believe the British market deserves honest, research-backed wellness technology. No overclaiming. Just the science.'
+  const ceoAttribution   = (ceoIntro.attribution as string) || ''
+  const ceoCta           = (ceoIntro.cta_text    as string) || 'Our story'
+  const ceoCtaUrl        = (ceoIntro.cta_url     as string) || '/about'
+  const ceoImage         = (ceoIntro.desktop_image_url as string) || ''
 
   // Device CTA
-  const deviceHeadline   = (deviceCta.headline as string) ?? 'The device built around the science.'
-  const deviceBody       = (deviceCta.body     as string) ?? 'CE certified. 2-year UK warranty. Up to 1,200\u00a0ppb H\u2082 concentration.'
-  const deviceCtaText    = (deviceCta.cta_text as string) ?? 'Enquire now'
-  const deviceCtaUrl     = (deviceCta.cta_url  as string) ?? `/product${personaParam}`
-  const deviceImage      = (deviceCta.desktop_image_url as string) ?? ''
+  const deviceHeadline   = (deviceCta.headline as string) || 'The device built around the science.'
+  const deviceBody       = (deviceCta.body     as string) || 'CE certified. 2-year UK warranty. Up to 1,200\u00a0ppb H\u2082 concentration.'
+  const deviceCtaText    = (deviceCta.cta_text as string) || 'Enquire now'
+  const deviceCtaUrl     = (deviceCta.cta_url  as string) || `/product${personaParam}`
+  const deviceImage      = (deviceCta.desktop_image_url as string) || ''
 
   return (
     <div>

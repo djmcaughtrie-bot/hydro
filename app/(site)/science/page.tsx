@@ -41,19 +41,19 @@ export default async function SciencePage() {
   const cta       = content['cta']       ?? {}
 
   // Hero
-  const heroHeadline = (hero.headline as string) ?? '50+ peer-reviewed studies.\nOne remarkable molecule.'
-  const heroBody     = (hero.body     as string) ?? 'Peer-reviewed research on molecular hydrogen — summarised for humans.'
+  const heroHeadline = (hero.headline as string) || '50+ peer-reviewed studies.\nOne remarkable molecule.'
+  const heroBody     = (hero.body     as string) || 'Peer-reviewed research on molecular hydrogen — summarised for humans.'
 
   // Mechanism
-  const mechHeadline  = (mechanism.headline   as string) ?? 'A selective antioxidant.'
-  const mechBody      = (mechanism.body       as string) ?? 'Molecular hydrogen is the smallest antioxidant in existence. Unlike broad-spectrum antioxidants, research suggests H₂ selectively neutralises only the most damaging free radicals — specifically hydroxyl radicals — leaving beneficial reactive oxygen species intact.'
-  const mechStudyText = (mechanism.study_text as string) ?? 'A 2007 study in Nature Medicine by Ohsawa et al.'
-  const mechStudyUrl  = (mechanism.study_url  as string) ?? 'https://doi.org/10.1038/nm1577'
+  const mechHeadline  = (mechanism.headline   as string) || 'A selective antioxidant.'
+  const mechBody      = (mechanism.body       as string) || 'Molecular hydrogen is the smallest antioxidant in existence. Unlike broad-spectrum antioxidants, research suggests H₂ selectively neutralises only the most damaging free radicals — specifically hydroxyl radicals — leaving beneficial reactive oxygen species intact.'
+  const mechStudyText = (mechanism.study_text as string) || 'A 2007 study in Nature Medicine by Ohsawa et al.'
+  const mechStudyUrl  = (mechanism.study_url  as string) || 'https://doi.org/10.1038/nm1577'
 
   // CTA
-  const ctaHeadline = (cta.headline as string) ?? 'Ready to try it?'
-  const ctaText     = (cta.cta_text as string) ?? 'Enquire about the device'
-  const ctaUrl      = (cta.cta_url  as string) ?? '/product'
+  const ctaHeadline = (cta.headline as string) || 'Ready to try it?'
+  const ctaText     = (cta.cta_text as string) || 'Enquire about the device'
+  const ctaUrl      = (cta.cta_url  as string) || '/product'
 
   return (
     <>
@@ -69,16 +69,16 @@ export default async function SciencePage() {
           <p className="mt-4 max-w-xl font-sans text-base text-ink-light">{heroBody}</p>
           <div className="mt-8 flex flex-wrap gap-8">
             <div>
-              <div className="font-mono text-3xl text-teal">{(stats.stat1_number as string) ?? studies.length}</div>
-              <div className="font-mono text-xs text-ink-light">{(stats.stat1_label as string) ?? 'studies'}</div>
+              <div className="font-mono text-3xl text-teal">{(stats.stat1_number as string) || studies.length}</div>
+              <div className="font-mono text-xs text-ink-light">{(stats.stat1_label as string) || 'studies'}</div>
             </div>
             <div>
-              <div className="font-mono text-3xl text-teal">{(stats.stat2_number as string) ?? humanTrials}</div>
-              <div className="font-mono text-xs text-ink-light">{(stats.stat2_label as string) ?? 'human trials'}</div>
+              <div className="font-mono text-3xl text-teal">{(stats.stat2_number as string) || humanTrials}</div>
+              <div className="font-mono text-xs text-ink-light">{(stats.stat2_label as string) || 'human trials'}</div>
             </div>
             <div>
-              <div className="font-mono text-3xl text-teal">{(stats.stat3_number as string) ?? categorySet.size}</div>
-              <div className="font-mono text-xs text-ink-light">{(stats.stat3_label as string) ?? 'categories'}</div>
+              <div className="font-mono text-3xl text-teal">{(stats.stat3_number as string) || categorySet.size}</div>
+              <div className="font-mono text-xs text-ink-light">{(stats.stat3_label as string) || 'categories'}</div>
             </div>
           </div>
         </div>
