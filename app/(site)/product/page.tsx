@@ -34,14 +34,7 @@ export default async function ProductPage() {
         cmsCtaSubheading={cta.subheading as string | undefined}
       />
       {testimonials.length > 0 && (
-        <section className="py-16 bg-cream">
-          <div className="mx-auto max-w-6xl px-6">
-            <p className="mb-6 font-mono text-xs font-semibold uppercase tracking-wider text-ink-light">
-              What people are saying
-            </p>
-            <TestimonialBlock testimonials={testimonials} />
-          </div>
-        </section>
+        <TestimonialBlock testimonials={testimonials} />
       )}
     </>
   )
