@@ -1,12 +1,9 @@
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { SETTINGS_KEYS } from '@/lib/site-settings'
 
-const ALLOWED_KEYS = [
-  'page_win_enabled',
-  'feature_testimonials_enabled',
-  'feature_lead_magnets_enabled',
-]
+const ALLOWED_KEYS = Object.values(SETTINGS_KEYS)
 
 const patchSchema = z.object({
   key: z.string().refine(k => ALLOWED_KEYS.includes(k), {

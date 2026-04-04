@@ -29,20 +29,28 @@ export function SettingsForm({ initialValues }: SettingsFormProps) {
   const [values, setValues] = useState<Record<string, boolean>>(initialValues)
   const [saving, setSaving] = useState<Record<string, boolean>>({})
   const [saved, setSaved] = useState<Record<string, boolean>>({})
+  const [error, setError] = useState<Record<string, boolean>>({})
 
   async function handleToggle(key: string) {
-    const newValue = !values[key]
+    const prevValue = values[key] ?? true
+    const newValue = !prevValue
     setValues(prev => ({ ...prev, [key]: newValue }))
     setSaving(prev => ({ ...prev, [key]: true }))
+    setError(prev => ({ ...prev, [key]: false }))
 
     try {
-      await fetch('/api/admin/settings', {
+      const res = await fetch('/api/admin/settings', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key, value: String(newValue) }),
       })
+      if (!res.ok) throw new Error('Failed to save')
       setSaved(prev => ({ ...prev, [key]: true }))
       setTimeout(() => setSaved(prev => ({ ...prev, [key]: false })), 2000)
+    } catch {
+      setValues(prev => ({ ...prev, [key]: prevValue }))
+      setError(prev => ({ ...prev, [key]: true }))
+      setTimeout(() => setError(prev => ({ ...prev, [key]: false })), 3000)
     } finally {
       setSaving(prev => ({ ...prev, [key]: false }))
     }
@@ -62,6 +70,9 @@ export function SettingsForm({ initialValues }: SettingsFormProps) {
               <div className="flex items-center gap-3 flex-shrink-0">
                 {saved[key] && (
                   <span className="font-mono text-xs text-teal">Saved ✓</span>
+                )}
+                {error[key] && (
+                  <span className="font-mono text-xs text-red-500">Failed to save</span>
                 )}
                 {saving[key] && (
                   <span className="font-mono text-xs text-ink-light">Saving…</span>
