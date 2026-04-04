@@ -11,7 +11,7 @@ export async function POST(request: Request) {
     }
 
     const adminClient = createAdminClient()
-    const { error } = await adminClient.from('email_signups').insert({
+    const { data, error } = await adminClient.from('email_signups').insert({
       email: email.trim().toLowerCase(),
       name: name ? String(name).slice(0, 100) : null,
       persona: persona ?? null,
@@ -24,9 +24,26 @@ export async function POST(request: Request) {
       utm_campaign: utm_campaign ?? null,
       utm_content: utm_content ?? null,
       utm_term: utm_term ?? null,
-    })
+    }).select('id').single()
 
     if (error) return Response.json({ error: error.message }, { status: 500 })
+
+    // Fire-and-forget email sequence trigger
+    void fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email/trigger-sequence`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.EMAIL_TRIGGER_SECRET ?? ''}`,
+      },
+      body: JSON.stringify({
+        type: 'lead-magnet',
+        email: email.trim().toLowerCase(),
+        name: name ? String(name).slice(0, 100) : undefined,
+        persona: persona ?? undefined,
+        signup_id: data?.id,
+      }),
+    }).catch(err => console.error('[email-signup] trigger-sequence failed:', err))
+
     return Response.json({ success: true })
   } catch {
     return Response.json({ error: 'Signup failed' }, { status: 500 })

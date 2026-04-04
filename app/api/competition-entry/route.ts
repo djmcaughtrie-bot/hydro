@@ -91,6 +91,21 @@ export async function POST(request: Request) {
       return Response.json({ error: insertError.message }, { status: 500 })
     }
 
+    // Fire-and-forget email sequence trigger
+    void fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/email/trigger-sequence`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${process.env.EMAIL_TRIGGER_SECRET ?? ''}`,
+      },
+      body: JSON.stringify({
+        type: 'competition',
+        email: email.trim().toLowerCase(),
+        name: name.trim(),
+        competition_id,
+      }),
+    }).catch(err => console.error('[competition-entry] trigger-sequence failed:', err))
+
     return Response.json({ success: true })
   } catch {
     return Response.json({ error: 'Entry failed' }, { status: 500 })
