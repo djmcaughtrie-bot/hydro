@@ -74,7 +74,7 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
 
   try {
     let content: Record<string, unknown> = {}
-    let complianceResult: import('@/lib/compliance').ComplianceResult = { pass: false, violations: [] }
+    let complianceResult: import('@/lib/compliance').ComplianceResult = { compliant: false, violations: [], stage: 'hard' }
     let attempts = 0
 
     while (attempts < 3) {
@@ -82,14 +82,14 @@ The image_suggestion should be a vivid description for a photographer, 1-2 sente
       attempts++
       if (!generated) continue
       content = generated
-      const textFields = Object.fromEntries(
-        Object.entries(content).filter(([, v]) => typeof v === 'string')
-      ) as Record<string, string>
-      complianceResult = checkCompliance(textFields)
-      if (complianceResult.pass) break
+      const textContent = Object.values(content)
+        .filter((v): v is string => typeof v === 'string')
+        .join('\n')
+      complianceResult = await checkCompliance(textContent)
+      if (complianceResult.compliant) break
     }
 
-    const status = complianceResult.pass ? 'draft' : 'needs_review'
+    const status = complianceResult.compliant ? 'draft' : 'needs_review'
     const adminClient = createAdminClient()
 
     const { data, error } = await adminClient

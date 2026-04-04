@@ -23,12 +23,11 @@ export async function PATCH(
   }
 
   if (body.content_json) {
-    const textFields = Object.fromEntries(
-      Object.entries(body.content_json as Record<string, unknown>)
-        .filter(([, v]) => typeof v === 'string')
-    ) as Record<string, string>
-    const result = checkCompliance(textFields)
-    if (!result.pass) {
+    const textContent = Object.values(body.content_json as Record<string, unknown>)
+      .filter((v): v is string => typeof v === 'string')
+      .join('\n')
+    const result = await checkCompliance(textContent)
+    if (!result.compliant) {
       return Response.json({ error: 'Compliance violation', violations: result.violations }, { status: 422 })
     }
   }

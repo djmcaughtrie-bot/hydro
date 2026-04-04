@@ -21,13 +21,12 @@ export async function POST(
 
   if (fetchError || !item) return Response.json({ error: 'Not found' }, { status: 404 })
 
-  const textFields = Object.fromEntries(
-    Object.entries(item.content_json as Record<string, unknown>)
-      .filter(([, v]) => typeof v === 'string')
-  ) as Record<string, string>
+  const textContent = Object.values(item.content_json as Record<string, unknown>)
+    .filter((v): v is string => typeof v === 'string')
+    .join('\n')
 
-  const result = checkCompliance(textFields)
-  if (!result.pass) {
+  const result = await checkCompliance(textContent)
+  if (!result.compliant) {
     return Response.json({ error: 'Compliance violation', violations: result.violations }, { status: 422 })
   }
 

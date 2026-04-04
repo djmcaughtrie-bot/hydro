@@ -20,6 +20,12 @@ vi.mock('@/lib/supabase/admin', () => ({
   })),
 }))
 
+// Mock compliance so tests control pass/fail without real API calls
+const mockCheckCompliance = vi.fn()
+vi.mock('@/lib/compliance', () => ({
+  checkCompliance: mockCheckCompliance,
+}))
+
 describe('POST /api/admin/content/[id]/publish', () => {
   beforeEach(() => {
     vi.resetAllMocks()
@@ -27,6 +33,8 @@ describe('POST /api/admin/content/[id]/publish', () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
     mockSingle.mockResolvedValue({ data: null, error: null })
     mockEqForUpdate.mockResolvedValue({ error: null })
+    // Default: compliance passes
+    mockCheckCompliance.mockResolvedValue({ compliant: true, violations: [], stage: 'pass' })
   })
 
   it('returns 401 when unauthenticated', async () => {
@@ -53,6 +61,11 @@ describe('POST /api/admin/content/[id]/publish', () => {
     mockSingle.mockResolvedValue({
       data: { id: 'item-1', content_json: { headline: 'This treats fatigue' } },
       error: null,
+    })
+    mockCheckCompliance.mockResolvedValue({
+      compliant: false,
+      violations: [{ text: 'treats fatigue', reason: 'Treatment claim', suggestion: 'may support energy' }],
+      stage: 'hard',
     })
     const { POST } = await import('@/app/api/admin/content/[id]/publish/route')
     const res = await POST(

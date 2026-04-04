@@ -20,6 +20,12 @@ vi.mock('@/lib/supabase/admin', () => ({
   })),
 }))
 
+// Mock compliance so tests control pass/fail without real API calls
+const mockCheckCompliance = vi.fn()
+vi.mock('@/lib/compliance', () => ({
+  checkCompliance: mockCheckCompliance,
+}))
+
 describe('PATCH /api/admin/content/[id]', () => {
   beforeEach(() => {
     vi.resetAllMocks()
@@ -27,6 +33,8 @@ describe('PATCH /api/admin/content/[id]', () => {
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
     mockUpdate.mockResolvedValue({ error: null })
     mockDelete.mockResolvedValue({ error: null })
+    // Default: compliance passes
+    mockCheckCompliance.mockResolvedValue({ compliant: true, violations: [], stage: 'pass' })
   })
 
   it('returns 401 when unauthenticated', async () => {
@@ -44,6 +52,11 @@ describe('PATCH /api/admin/content/[id]', () => {
   })
 
   it('returns 422 when content_json contains prohibited words', async () => {
+    mockCheckCompliance.mockResolvedValue({
+      compliant: false,
+      violations: [{ text: 'treats fatigue', reason: 'Treatment claim', suggestion: 'may support energy' }],
+      stage: 'hard',
+    })
     const { PATCH } = await import('@/app/api/admin/content/[id]/route')
     const res = await PATCH(
       new Request('http://localhost', {
@@ -92,6 +105,7 @@ describe('DELETE /api/admin/content/[id]', () => {
     vi.resetModules()
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
     mockDelete.mockResolvedValue({ error: null })
+    mockCheckCompliance.mockResolvedValue({ compliant: true, violations: [], stage: 'pass' })
   })
 
   it('returns 200 on success', async () => {

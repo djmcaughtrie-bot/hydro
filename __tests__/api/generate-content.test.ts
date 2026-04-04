@@ -18,7 +18,15 @@ vi.mock('@/lib/supabase/admin', () => ({
 
 const mockAnthropicCreate = vi.fn()
 vi.mock('@anthropic-ai/sdk', () => ({
-  default: vi.fn(function () { return { messages: { create: mockAnthropicCreate } } }),
+  default: vi.fn(function () { return { messages: { create: mockAnthropicCreate } } },
+  ),
+}))
+
+// Mock compliance so its internal Anthropic call doesn't interfere with
+// the content-generation mock and does not make real API calls.
+const mockCheckCompliance = vi.fn()
+vi.mock('@/lib/compliance', () => ({
+  checkCompliance: mockCheckCompliance,
 }))
 
 describe('POST /api/generate-content', () => {
@@ -27,6 +35,8 @@ describe('POST /api/generate-content', () => {
     vi.resetModules()
     mockGetUser.mockResolvedValue({ data: { user: { id: 'user-1' } } })
     mockInsertSingle.mockResolvedValue({ data: { id: 'item-1' }, error: null })
+    // Default: compliance passes
+    mockCheckCompliance.mockResolvedValue({ compliant: true, violations: [], stage: 'pass' })
   })
 
   it('returns 401 when unauthenticated', async () => {
@@ -80,6 +90,12 @@ describe('POST /api/generate-content', () => {
         cta_text: 'Try it',
         image_suggestion: 'Device photo',
       }) }],
+    })
+    // Compliance always fails
+    mockCheckCompliance.mockResolvedValue({
+      compliant: false,
+      violations: [{ text: 'treats fatigue', reason: 'Treatment claim', suggestion: '' }],
+      stage: 'hard',
     })
     const { POST } = await import('@/app/api/generate-content/route')
     const res = await POST(new Request('http://localhost', {
