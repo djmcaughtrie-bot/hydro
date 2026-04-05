@@ -1,5 +1,6 @@
 import type { Persona } from '@/lib/persona'
 import type { PersonaPageContent } from '@/lib/persona-page-content'
+import { SESSION_STEPS } from '@/lib/persona-page-content'
 
 interface Props {
   persona: Persona
@@ -12,12 +13,6 @@ const eyebrowClass: Record<Persona, string> = {
   longevity: 'text-persona-longevity',
 }
 
-const steps = [
-  { number: '1', label: 'Fill', description: 'Add distilled water to the chamber.' },
-  { number: '2', label: 'Breathe', description: 'Put on the nasal cannula and breathe normally.' },
-  { number: '3', label: 'Feel', description: 'Let the session run. Work, read, or rest alongside.' },
-]
-
 export function PersonaPageSession({ persona, session }: Props) {
   return (
     <section className="bg-ink py-16">
@@ -26,15 +21,15 @@ export function PersonaPageSession({ persona, session }: Props) {
           {/* Left: visual steps */}
           <div>
             <ol className="space-y-8">
-              {steps.map((step) => (
-                <li key={step.number} className="flex items-start gap-4">
+              {SESSION_STEPS.map((step) => (
+                <li key={step.n} className="flex items-start gap-4">
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-ink-mid/40 font-mono text-sm text-ink-light">
-                    {step.number}
+                    {step.n}
                   </span>
                   <div>
-                    <p className="font-sans text-sm font-medium text-white">{step.label}</p>
+                    <p className="font-sans text-sm font-medium text-white">{step.title}</p>
                     <p className="mt-1 font-sans text-sm leading-relaxed text-ink-light">
-                      {step.description}
+                      {step.body}
                     </p>
                   </div>
                 </li>

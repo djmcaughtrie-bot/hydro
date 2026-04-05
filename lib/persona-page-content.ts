@@ -20,6 +20,7 @@ export interface CtaLink {
 }
 
 export interface StudyReference {
+  id: string
   title: string
   citation: string
   evidenceLevel: 'Strong' | 'Moderate' | 'Emerging'
@@ -57,6 +58,7 @@ export interface PersonaPageContent {
     leadSpec: 'purity' | 'flow' | 'membrane'
     leadLine: string
     ctaLabel: string
+    specs: Array<{ key: 'purity' | 'flow' | 'membrane'; label: string; detail: string }>
   }
   cta: {
     headline: string
@@ -82,6 +84,12 @@ export const MECHANISM_SHARED = {
   doi: 'https://doi.org/10.1038/nm1577',
   doiLabel: 'Ohsawa et al., Nature Medicine, 2007',
 } as const
+
+export const SESSION_STEPS = [
+  { n: 1, title: 'Fill',    body: 'Fill the chamber with distilled or filtered water.' },
+  { n: 2, title: 'Breathe', body: 'Breathe the hydrogen-enriched air through the included nasal cannula.' },
+  { n: 3, title: 'Feel',    body: 'Complete your session in 20–60 minutes. Use daily for best results.' },
+] as const
 
 // ---------------------------------------------------------------------------
 // Per-persona content
@@ -113,6 +121,11 @@ const energyContent: PersonaPageContent = {
     leadSpec: 'purity',
     leadLine: 'The concentration matters. 99.99% pure molecular hydrogen, at the output that research protocols use.',
     ctaLabel: 'Explore what might help',
+    specs: [
+      { key: 'purity',   label: '99.99% H₂ purity',  detail: 'Confirmed by independent lab analysis' },
+      { key: 'flow',     label: '600ml/min',            detail: 'Flow rate matching research protocols' },
+      { key: 'membrane', label: 'PEM/SPE membrane',    detail: 'Not alkaline electrolysis' },
+    ],
   },
   cta: {
     headline: 'If any of this resonates, the next step is straightforward.',
@@ -148,6 +161,7 @@ const energyContent: PersonaPageContent = {
   ],
   studies: [
     {
+      id: 'fat-oxidation-2025',
       title: 'Hydrogen inhalation and fat oxidation at rest',
       citation: 'Pala\u010dk\u00fd University, 2025',
       evidenceLevel: 'Moderate',
@@ -158,6 +172,7 @@ const energyContent: PersonaPageContent = {
       pubmedUrl: null,
     },
     {
+      id: 'nakao-antioxidant-2010',
       title: 'Antioxidant status and oxidative stress markers',
       citation: 'Nakao et al., Nutrition Research, 2010',
       evidenceLevel: 'Moderate',
@@ -168,6 +183,7 @@ const energyContent: PersonaPageContent = {
       pubmedUrl: null,
     },
     {
+      id: 'ros-reduction-2024',
       title: 'Acute blood ROS reduction following hydrogen inhalation',
       citation: 'Free Radical Biology & Medicine, 2024',
       evidenceLevel: 'Moderate',
@@ -210,6 +226,11 @@ const performanceContent: PersonaPageContent = {
     leadSpec: 'flow',
     leadLine: '600ml/min. The output that matches the sessions in the studies.',
     ctaLabel: 'See the full spec',
+    specs: [
+      { key: 'purity',   label: '99.99% H₂ purity',  detail: 'Confirmed by independent lab analysis' },
+      { key: 'flow',     label: '600ml/min',            detail: 'Flow rate matching research protocols' },
+      { key: 'membrane', label: 'PEM/SPE membrane',    detail: 'Not alkaline electrolysis' },
+    ],
   },
   cta: {
     headline: "The spec is what it is. The question is whether it fits your stack.",
@@ -245,6 +266,7 @@ const performanceContent: PersonaPageContent = {
   ],
   studies: [
     {
+      id: 'aoki-muscle-fatigue-2012',
       title: 'Molecular hydrogen and exercise-induced muscle fatigue',
       citation: 'Aoki et al., Medical Gas Research, 2012',
       evidenceLevel: 'Moderate',
@@ -255,6 +277,7 @@ const performanceContent: PersonaPageContent = {
       pubmedUrl: null,
     },
     {
+      id: 'ros-reduction-2024-perf',
       title: 'Acute blood ROS reduction following hydrogen inhalation',
       citation: 'Free Radical Biology & Medicine, 2024',
       evidenceLevel: 'Moderate',
@@ -265,6 +288,7 @@ const performanceContent: PersonaPageContent = {
       pubmedUrl: null,
     },
     {
+      id: 'frontiers-inflammation-2024',
       title: 'Hydrogen and inflammatory markers: meta-analysis of lung studies',
       citation: 'Frontiers, 2024',
       evidenceLevel: 'Strong',
@@ -307,6 +331,11 @@ const longevityContent: PersonaPageContent = {
     leadSpec: 'membrane',
     leadLine: 'PEM/SPE electrolysis, not alkaline. The difference in hydrogen purity is not marginal.',
     ctaLabel: 'Read the research case',
+    specs: [
+      { key: 'purity',   label: '99.99% H₂ purity',  detail: 'Confirmed by independent lab analysis' },
+      { key: 'flow',     label: '600ml/min',            detail: 'Flow rate matching research protocols' },
+      { key: 'membrane', label: 'PEM/SPE membrane',    detail: 'Not alkaline electrolysis' },
+    ],
   },
   cta: {
     headline: "The research is there. The question is whether you're ready to act on it.",
@@ -342,6 +371,7 @@ const longevityContent: PersonaPageContent = {
   ],
   studies: [
     {
+      id: 'hybrid-ii-2023',
       title: 'HYBRID II: hydrogen inhalation in cardiac arrest recovery',
       citation: 'Lancet eClinicalMedicine, 2023',
       evidenceLevel: 'Strong',
@@ -352,6 +382,7 @@ const longevityContent: PersonaPageContent = {
       pubmedUrl: null,
     },
     {
+      id: 'ohsawa-2007',
       title: 'Selective antioxidant mechanism of molecular hydrogen',
       citation: 'Ohsawa et al., Nature Medicine, 2007',
       evidenceLevel: 'Strong',
@@ -362,6 +393,7 @@ const longevityContent: PersonaPageContent = {
       pubmedUrl: null,
     },
     {
+      id: 'ros-reduction-2024-lon',
       title: 'Acute blood ROS reduction following hydrogen inhalation',
       citation: 'Free Radical Biology & Medicine, 2024',
       evidenceLevel: 'Moderate',

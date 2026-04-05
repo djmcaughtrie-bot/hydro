@@ -17,7 +17,7 @@ const eyebrowClass: Record<Persona, string> = {
 
 function studyReferenceToStudy(ref: StudyReference, index: number): Study {
   return {
-    id: String(index),
+    id: ref.id,
     title: ref.title,
     authors: null,
     journal: ref.citation,
@@ -46,9 +46,10 @@ export function PersonaPageEvidence({ persona, studies, scienceLink }: Props) {
           What the research shows.
         </h2>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {studies.map((ref, index) => (
-            <StudyCard key={index} study={studyReferenceToStudy(ref, index)} />
-          ))}
+          {studies.map((ref, index) => {
+            const study = studyReferenceToStudy(ref, index)
+            return <StudyCard key={study.id} study={study} />
+          })}
         </div>
         <div className="mt-8">
           <a

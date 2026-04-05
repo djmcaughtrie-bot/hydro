@@ -25,9 +25,9 @@ const eyebrowClass: Record<Persona, string> = {
 }
 
 const ghostHoverClass: Record<Persona, string> = {
-  energy: 'hover:border-persona-energy hover:text-white',
-  performance: 'hover:border-persona-performance hover:text-white',
-  longevity: 'hover:border-persona-longevity hover:text-white',
+  energy:      'hover:border-persona-energy hover:bg-persona-energy hover:text-white',
+  performance: 'hover:border-persona-performance hover:bg-persona-performance hover:text-white',
+  longevity:   'hover:border-persona-longevity hover:bg-persona-longevity hover:text-white',
 }
 
 export function PersonaPageHero({ persona, hero }: Props) {

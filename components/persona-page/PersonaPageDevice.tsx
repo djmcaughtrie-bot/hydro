@@ -1,9 +1,11 @@
+import Image from 'next/image'
 import type { Persona } from '@/lib/persona'
 import type { PersonaPageContent } from '@/lib/persona-page-content'
 
 interface Props {
   persona: Persona
   device: PersonaPageContent['device']
+  imageUrl?: string
 }
 
 const eyebrowClass: Record<Persona, string> = {
@@ -18,17 +20,7 @@ const leadBorderClass: Record<Persona, string> = {
   longevity: 'border-l-4 border-l-persona-longevity',
 }
 
-const SPECS: Array<{
-  key: 'purity' | 'flow' | 'membrane'
-  label: string
-  detail: string
-}> = [
-  { key: 'purity',   label: '99.99% H₂ purity',  detail: 'Confirmed by independent lab analysis' },
-  { key: 'flow',     label: '600ml/min',           detail: 'Flow rate matching research protocols' },
-  { key: 'membrane', label: 'PEM/SPE membrane',   detail: 'Not alkaline electrolysis' },
-]
-
-export function PersonaPageDevice({ persona, device }: Props) {
+export function PersonaPageDevice({ persona, device, imageUrl }: Props) {
   return (
     <section className="bg-cream py-16">
       <div className="mx-auto max-w-5xl px-6">
@@ -42,7 +34,7 @@ export function PersonaPageDevice({ persona, device }: Props) {
               {device.leadLine}
             </p>
             <ul className="mb-8 space-y-3">
-              {SPECS.map((spec) => {
+              {device.specs.map((spec) => {
                 const isLead = spec.key === device.leadSpec
                 return (
                   <li
@@ -72,11 +64,19 @@ export function PersonaPageDevice({ persona, device }: Props) {
             </p>
           </div>
 
-          {/* Right: product image placeholder */}
+          {/* Right: product image */}
           <div className="flex items-center justify-center">
-            <div className="flex aspect-[4/5] w-full max-w-xs items-center justify-center rounded-lg bg-ink-light/20">
-              <span className="font-sans text-sm text-ink-light">Product image</span>
-            </div>
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt="H2 Revive device"
+                width={600}
+                height={750}
+                className="rounded-lg object-cover"
+              />
+            ) : (
+              <div className="aspect-[4/5] w-full max-w-xs rounded-lg bg-ink-light/20" />
+            )}
           </div>
         </div>
       </div>
