@@ -22,18 +22,18 @@ export const dynamic = 'force-dynamic'
 // ---------------------------------------------------------------------------
 
 const PAGE_TITLE: Record<Persona, string> = {
-  energy: 'Energy & Mental Clarity | H2 Revive',
-  performance: 'Athletic Recovery & Performance | H2 Revive',
-  longevity: 'Longevity & Cellular Health | H2 Revive',
+  energy:      'Hydrogen Therapy for Energy & Fatigue | H2 Revive',
+  performance: 'Hydrogen Inhalation for Athletes & Recovery | H2 Revive',
+  longevity:   'Molecular Hydrogen for Longevity & Healthy Ageing | H2 Revive',
 }
 
 const PAGE_DESCRIPTION: Record<Persona, string> = {
   energy:
-    'Research suggests molecular hydrogen may support cellular energy and mental clarity. Discover the science behind H2 Revive.',
+    'Research suggests molecular hydrogen may support cellular energy and reduce oxidative stress at the mitochondrial level. Explore the evidence and the device. UK-based.',
   performance:
-    'Serious athletes are exploring molecular hydrogen for recovery. Explore the research and what H2 Revive may offer.',
+    '600ml/min output. 99.99% H₂ purity. PEM membrane technology. Explore the recovery research and the spec behind the H2 Revive device.',
   longevity:
-    'Molecular hydrogen research explores its role in oxidative stress and healthy ageing. See the evidence behind H2 Revive.',
+    'The most selective antioxidant in existence. Research into molecular hydrogen and longevity spans 1,000+ peer-reviewed studies. Explore the evidence.',
 }
 
 interface Props {
@@ -71,6 +71,23 @@ export default async function ForPersonaPage({ params }: Props) {
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: content.faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+              },
+            })),
+          }),
+        }}
+      />
       <PersonaPageHero persona={persona} hero={content.hero} />
 
       <PersonaPageProblem persona={persona} problem={content.problem} />

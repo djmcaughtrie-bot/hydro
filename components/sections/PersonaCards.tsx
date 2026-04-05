@@ -17,7 +17,7 @@ const PERSONAS = [
     iconColor:   'text-persona-energy',
     icon:        '⚡',
     defaultCopy: 'I want more energy and mental clarity',
-    href:        '/product?persona=energy',
+    href:        '/for/energy',
   },
   {
     key:         'performance',
@@ -27,7 +27,7 @@ const PERSONAS = [
     iconColor:   'text-persona-performance',
     icon:        '↑',
     defaultCopy: 'I train hard and want to recover better',
-    href:        '/product?persona=performance',
+    href:        '/for/performance',
   },
   {
     key:         'longevity',
@@ -37,7 +37,7 @@ const PERSONAS = [
     iconColor:   'text-persona-longevity',
     icon:        '◇',
     defaultCopy: "I'm investing in long-term health and longevity",
-    href:        '/product?persona=longevity',
+    href:        '/for/longevity',
   },
 ] as const
 

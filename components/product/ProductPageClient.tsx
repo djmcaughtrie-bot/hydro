@@ -144,6 +144,14 @@ export function ProductPageClient({
               <h1 className="mb-4 font-display text-5xl leading-tight text-white">{heroHeadline}</h1>
               <p className="mb-6 font-sans text-base text-ink-light">{heroBody}</p>
               <PersonaSelector />
+              <p className="mt-2 font-sans text-xs text-ink-light">
+                Looking for more context before the spec?{' '}
+                <a href="/for/energy" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Energy</a>
+                {' · '}
+                <a href="/for/performance" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Performance</a>
+                {' · '}
+                <a href="/for/longevity" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Longevity</a>
+              </p>
               <div className="mt-4">
                 <a
                   href="#enquiry"
