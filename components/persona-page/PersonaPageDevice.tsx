@@ -12,10 +12,20 @@ const eyebrowClass: Record<Persona, string> = {
   longevity: 'text-persona-longevity',
 }
 
-const specs = [
-  { label: '99.99% H₂ purity', description: 'Pharmaceutical-grade output.' },
-  { label: '600ml/min flow rate', description: 'Matches study protocols.' },
-  { label: 'PEM/SPE membrane', description: 'No alkaline electrolysis byproducts.' },
+const leadBorderClass: Record<Persona, string> = {
+  energy: 'border-l-4 border-l-persona-energy',
+  performance: 'border-l-4 border-l-persona-performance',
+  longevity: 'border-l-4 border-l-persona-longevity',
+}
+
+const SPECS: Array<{
+  key: 'purity' | 'flow' | 'membrane'
+  label: string
+  detail: string
+}> = [
+  { key: 'purity',   label: '99.99% H₂ purity',  detail: 'Confirmed by independent lab analysis' },
+  { key: 'flow',     label: '600ml/min',           detail: 'Flow rate matching research protocols' },
+  { key: 'membrane', label: 'PEM/SPE membrane',   detail: 'Not alkaline electrolysis' },
 ]
 
 export function PersonaPageDevice({ persona, device }: Props) {
@@ -32,15 +42,24 @@ export function PersonaPageDevice({ persona, device }: Props) {
               {device.leadLine}
             </p>
             <ul className="mb-8 space-y-3">
-              {specs.map((spec) => (
-                <li
-                  key={spec.label}
-                  className="rounded-lg bg-white p-4 shadow-subtle"
-                >
-                  <p className="font-sans text-sm font-semibold text-ink">{spec.label}</p>
-                  <p className="mt-0.5 font-sans text-xs text-ink-mid">{spec.description}</p>
-                </li>
-              ))}
+              {SPECS.map((spec) => {
+                const isLead = spec.key === device.leadSpec
+                return (
+                  <li
+                    key={spec.key}
+                    className={
+                      isLead
+                        ? `rounded-lg bg-white p-4 shadow-subtle ${leadBorderClass[persona]}`
+                        : 'rounded-lg border border-ink-light/20 bg-cream/50 p-4'
+                    }
+                  >
+                    <p className={`font-sans text-sm text-ink ${isLead ? 'font-bold' : 'font-semibold'}`}>
+                      {spec.label}
+                    </p>
+                    <p className="mt-0.5 font-sans text-xs text-ink-mid">{spec.detail}</p>
+                  </li>
+                )
+              })}
             </ul>
             <a
               href={`/product?persona=${persona}`}
