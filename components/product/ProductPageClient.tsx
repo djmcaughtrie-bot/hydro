@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { EnquiryForm } from '@/components/forms/EnquiryForm'
 import { Accordion } from '@/components/ui/Accordion'
 import { PersonaSelector } from '@/components/PersonaSelector'
@@ -146,11 +147,11 @@ export function ProductPageClient({
               <PersonaSelector />
               <p className="mt-2 font-sans text-xs text-ink-light">
                 Looking for more context before the spec?{' '}
-                <a href="/for/energy" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Energy</a>
+                <Link href="/for/energy" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Energy</Link>
                 {' · '}
-                <a href="/for/performance" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Performance</a>
+                <Link href="/for/performance" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Performance</Link>
                 {' · '}
-                <a href="/for/longevity" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Longevity</a>
+                <Link href="/for/longevity" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Longevity</Link>
               </p>
               <div className="mt-4">
                 <a
