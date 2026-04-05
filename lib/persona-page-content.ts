@@ -1,3 +1,13 @@
+/**
+ * Single source of truth for all /for/[persona] landing page copy.
+ *
+ * Content is consumed by:
+ *   app/(site)/for/[persona]/page.tsx   → server component reads PERSONA_PAGE_CONTENT
+ *   components/persona-page/*           → section components receive typed props
+ *
+ * To update copy: edit this file only — do not hardcode strings in page or component files.
+ */
+
 import type { Persona } from './persona'
 
 // ---------------------------------------------------------------------------
@@ -33,7 +43,7 @@ export interface PersonaPageContent {
   }
   problem: {
     headline: string
-    body: string[]
+    body: string[] // string[] supports multi-paragraph problems in future
   }
   mechanism: {
     /** Per-persona application paragraph — the shared intro is in MECHANISM_SHARED */
@@ -176,7 +186,7 @@ const energyContent: PersonaPageContent = {
 
 const performanceContent: PersonaPageContent = {
   hero: {
-    headline: "The recovery tool serious athletes haven't found yet.",
+    headline: "600ml/min. The recovery tool serious athletes haven't found yet.",
     subline:
       '600ml/min output. 99.99% H\u2082 purity. PEM membrane technology. The specs matter — here\'s why.',
     primaryCta: { label: 'See the full spec', href: '/product?persona=performance' },
