@@ -147,11 +147,11 @@ export function ProductPageClient({
               <PersonaSelector />
               <p className="mt-2 font-sans text-xs text-ink-light">
                 Looking for more context before the spec?{' '}
-                <Link href="/for/energy" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Energy</Link>
+                <Link href="/for/energy" className="text-teal underline underline-offset-2 hover:text-teal-dark">Energy</Link>
                 {' · '}
-                <Link href="/for/performance" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Performance</Link>
+                <Link href="/for/performance" className="text-teal underline underline-offset-2 hover:text-teal-dark">Performance</Link>
                 {' · '}
-                <Link href="/for/longevity" className="text-teal underline-offset-2 hover:text-teal-dark hover:underline">Longevity</Link>
+                <Link href="/for/longevity" className="text-teal underline underline-offset-2 hover:text-teal-dark">Longevity</Link>
               </p>
               <div className="mt-4">
                 <a
