@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { isValidPersona, PERSONAS } from '@/lib/persona'
+import { isValidPersona } from '@/lib/persona'
 import type { Persona } from '@/lib/persona'
 import { PERSONA_PAGE_CONTENT } from '@/lib/persona-page-content'
 import { getTestimonials } from '@/lib/testimonials'
@@ -16,14 +16,6 @@ import { TestimonialBlock } from '@/components/testimonials/TestimonialBlock'
 import { SetPersonaOnMount } from '@/components/persona/SetPersonaOnMount'
 
 export const dynamic = 'force-dynamic'
-
-// ---------------------------------------------------------------------------
-// Static params — lets Next.js know the valid persona slugs
-// ---------------------------------------------------------------------------
-
-export function generateStaticParams() {
-  return PERSONAS.map((persona) => ({ persona }))
-}
 
 // ---------------------------------------------------------------------------
 // Metadata
@@ -45,12 +37,12 @@ const PAGE_DESCRIPTION: Record<Persona, string> = {
 }
 
 interface Props {
-  params: { persona: string }
+  params: Promise<{ persona: string }>
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  if (!isValidPersona(params.persona)) return {}
-  const persona = params.persona
+  const { persona } = await params
+  if (!isValidPersona(persona)) return {}
   return {
     title: PAGE_TITLE[persona],
     description: PAGE_DESCRIPTION[persona],
@@ -72,9 +64,8 @@ const TESTIMONIAL_FRAMING: Record<Persona, string> = {
 // ---------------------------------------------------------------------------
 
 export default async function ForPersonaPage({ params }: Props) {
-  if (!isValidPersona(params.persona)) notFound()
-
-  const persona = params.persona
+  const { persona } = await params
+  if (!isValidPersona(persona)) notFound()
   const content = PERSONA_PAGE_CONTENT[persona]
   const testimonials = await getTestimonials('persona-page', persona)
 
