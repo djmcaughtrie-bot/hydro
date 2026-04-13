@@ -6,8 +6,11 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/cn'
 
-const navLinks = [
+const navLinksBefore = [
   { label: 'Home', href: '/' },
+] as const
+
+const navLinksAfter = [
   { label: 'Product', href: '/product' },
   { label: 'Science', href: '/science' },
   { label: 'About', href: '/about' },
@@ -54,7 +57,7 @@ export function Nav() {
 
         {/* Desktop nav */}
         <ul className="hidden items-center gap-6 md:flex">
-          {navLinks.map(({ label, href }) => (
+          {navLinksBefore.map(({ label, href }) => (
             <li key={href}>
               <Link
                 href={href}
@@ -117,6 +120,22 @@ export function Nav() {
               </div>
             )}
           </li>
+
+          {navLinksAfter.map(({ label, href }) => (
+            <li key={href}>
+              <Link
+                href={href}
+                className={cn(
+                  'font-sans text-sm transition-colors hover:text-ink',
+                  isActive(href)
+                    ? 'border-b-2 border-teal pb-0.5 text-ink'
+                    : 'text-ink-mid'
+                )}
+              >
+                {label}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         <Link
@@ -144,7 +163,7 @@ export function Nav() {
       {mobileOpen && (
         <div className="border-t border-ink-light/20 bg-cream px-6 py-4 md:hidden">
           <ul className="flex flex-col gap-4">
-            {navLinks.map(({ label, href }) => (
+            {navLinksBefore.map(({ label, href }) => (
               <li key={href}>
                 <Link
                   href={href}
@@ -200,6 +219,21 @@ export function Nav() {
                 </ul>
               )}
             </li>
+
+            {navLinksAfter.map(({ label, href }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  className={cn(
+                    'font-sans text-sm hover:text-ink',
+                    isActive(href) ? 'font-medium text-ink' : 'text-ink-mid'
+                  )}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
 
             <li>
               <Link
