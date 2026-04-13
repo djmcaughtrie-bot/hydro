@@ -19,6 +19,9 @@ const LIVE_ROUTES = new Set([
   '/win/terms',
   '/get-the-research',
   '/confirm',
+  '/for/energy',
+  '/for/performance',
+  '/for/longevity',
 ])
 
 export function middleware(request: NextRequest) {
